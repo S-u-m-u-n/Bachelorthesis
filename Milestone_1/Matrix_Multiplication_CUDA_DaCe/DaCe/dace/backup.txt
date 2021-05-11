@@ -1,0 +1,68 @@
+#include <iostream>
+using namespace std;
+
+#define CUDA_CHECK(call)                                                       \
+  do {                                                                         \
+    cudaError_t status = call;                                                 \
+    if (status != cudaSuccess) {                                               \
+      printf("FAIL: call='%s'. Reason:%s\n", #call,                            \
+             cudaGetErrorString(status));                                      \
+      return -1;                                                               \
+    }                                                                          \
+  } while (0)
+
+int main() {
+  int devId;
+  CUDA_CHECK(cudaGetDevice(&devId));
+
+  printf("%d\n", devId);
+
+  int maxSmemPerBlock, maxSmemPerSM, maxThreadsPerSM, maxRegistersPerSM,
+      maxThreadsPerBlock, threadsPerWarp, maxRegistersPerBlock, numSMs;
+
+  CUDA_CHECK(
+      cudaDeviceGetAttribute(&numSMs, cudaDevAttrMultiProcessorCount, devId));
+  CUDA_CHECK(
+      cudaDeviceGetAttribute(&threadsPerWarp, cudaDevAttrWarpSize, devId));
+
+  CUDA_CHECK(cudaDeviceGetAttribute(
+      &maxSmemPerSM, cudaDevAttrMaxSharedMemoryPerMultiprocessor, devId));
+  CUDA_CHECK(cudaDeviceGetAttribute(
+      &maxThreadsPerSM, cudaDevAttrMaxThreadsPerMultiProcessor, devId));
+  CUDA_CHECK(cudaDeviceGetAttribute(
+      &maxRegistersPerSM, cudaDevAttrMaxRegistersPerMultiprocessor, devId));
+
+  CUDA_CHECK(cudaDeviceGetAttribute(&maxSmemPerBlock,
+                                    cudaDevAttrMaxSharedMemoryPerBlock, devId));
+  CUDA_CHECK(cudaDeviceGetAttribute(&maxThreadsPerBlock,
+                                    cudaDevAttrMaxThreadsPerBlock, devId));
+
+  CUDA_CHECK(cudaDeviceGetAttribute(&maxRegistersPerBlock,
+                                    cudaDevAttrMaxRegistersPerBlock, devId));
+
+  int driverVersion = 0, runtimeVersion = 0;
+  cudaDeviceProp deviceProp;
+  cudaGetDeviceProperties(&deviceProp, devId);
+  printf("\nDevice %d: \"%s\"\n", devId, deviceProp.name);
+  cudaDriverGetVersion(&driverVersion);
+  cudaRuntimeGetVersion(&runtimeVersion);
+  printf("  CUDA Driver Version / Runtime Version          %d.%d / %d.%d\n",
+         driverVersion / 1000, (driverVersion % 100) / 10,
+         runtimeVersion / 1000, (runtimeVersion % 100) / 10);
+  printf("  CUDA Capability Major/Minor version number:    %d.%d\n",
+         deviceProp.major, deviceProp.minor);
+
+  cout << "cudaDeviceGetAttribute:"
+       << "\n  === Device attributes === "
+       << "\n  | Device Name: " << deviceProp.name
+       << "\n  | Number of SMs: " << numSMs
+       << "\n  | Threads per Warp: " << threadsPerWarp
+       << "\n  === SM attributes === "
+       << "\n  | Maximum Shared Memory per SM: " << maxSmemPerSM
+       << "\n  | Maximum Number of Threads per SM: " << maxThreadsPerSM
+       << "\n  === Threadblock attributes === "
+       << "\n  | Maximum Shared Memory per Block: " << maxSmemPerBlock
+       << "\n  | Maximum Number of Threads per Block: " << maxThreadsPerBlock
+       << "\n  | Maximum Number of Registers per Block: "
+       << maxRegistersPerBlock;
+}
