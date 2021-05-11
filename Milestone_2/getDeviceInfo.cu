@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 using namespace std;
 
@@ -63,4 +64,21 @@ int main(int argc, char **argv) {
        << deviceProp.maxThreadsPerBlock
        << "\n  | Maximum Number of Registers per Block: "
        << deviceProp.regsPerBlock << "\n  ===" << endl;
+
+  ofstream out;
+  out.open("device_data.py");
+  if (!out) {
+    cerr << "Error: file could not be opened" << endl;
+    exit(1);
+  }
+
+  int warps_per_SM = (int)(deviceProp.maxThreadsPerMultiProcessor /
+                           deviceProp.maxThreadsPerBlock);
+  out << "Name = " << deviceProp.name
+      << "\nSMs = " << deviceProp.multiProcessorCount
+      << "\nwarps_per_SM = " << warps_per_SM
+      << "\nthreads_per_warp = " << deviceProp.warpSize
+      << "\nregisters_per_thread_block = " << deviceProp.regsPerBlock;
+
+  out.close();
 }

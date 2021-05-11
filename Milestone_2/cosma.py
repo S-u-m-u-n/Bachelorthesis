@@ -1,6 +1,9 @@
 import dace
 import sys
 import subprocess
+from argparse import ArgumentParser
+from csv import DictReader
+import helpers
 import numpy as np
 from dace.transformation.interstate import GPUTransformSDFG, StateFusion
 from dace.transformation.dataflow import MapTiling, InLocalStorage, MapExpansion, MapCollapse
@@ -22,6 +25,13 @@ N = dace.symbol('N')
 K = dace.symbol('K')
 alpha = dace.symbol('alpha')
 beta = dace.symbol('beta')
+
+parser = ArgumentParser()
+parser.add_argument("-v", dest='verbose', help="explain what is being done", action="store_true", default=False)
+parser.add_argument("-c", dest='colorless_mode', help="does not print colors, useful when writing to a file", action="store_true", default=False)
+args = parser.parse_args()
+if args.verbose:
+    print(args)
 
 @dace.program
 def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
@@ -141,21 +151,35 @@ def create_sdfg(schedule):
 # Main function
 
 if __name__ == "__main__":
-    # Define set of possible values for schedule generator
+    ### Define set of possible values for schedule generator
     load_k_possible = [8, 4, 2, 1]
     threadtiles_possible = [1, 2, 4, 8, 16, 32, 64, 128, 256]
-    # Hardcoded for V100
-    registers_per_thread_block = 65536 / (sys.getsizeof(dace.float64()) / 4)
-    registers_per_warp = registers_per_thread_block # Why??
-    warps_per_SM = 2
-    threads_per_warp = 32
-    SMs = 80
+    ### Hardcoded for V100
+    # registers_per_warp = registers_per_thread_block # Why??
 
-    output = subprocess.run(["./getDeviceInfo"])
-    print(output)
 
+    helpers.print_info("Phase 1/3: Querying device info...", args.verbose)
+    if args.verbose:
+        getDeviceInfo = subprocess.run(["./getDeviceInfo"])
+    else:
+        getDeviceInfo = subprocess.run(["./getDeviceInfo"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+
+
+    if getDeviceInfo.returncode == 0:
+        helpers.print_success("Successfully read Device Info", args.verbose)
+        import device_data as device
+    else:
+        helpers.print_warning("No CUDA Capable GPU found, using hardcoded values for a Tesla V100", args.verbose)
+        import TeslaV100 as device
+
+    helpers.print_info("Using the following GPU for the schedule generator: ", args.verbose)
+    helpers.print_device_info(device, args.verbose)
+    device.registers_per_thread_block = device.registers_per_thread_block / (sys.getsizeof(dace.float64()) / 4)
+
+    helpers.print_info("Phase 2/3: Finding best schedule...", args.verbose)
     ### Find best schedule
     # schedule = find_best_schedule(load_k_possible, threadtiles_possible, registers_per_warp, registers_per_thread_block, warps_per_SM, SMs)
 
+    helpers.print_info("Phase 3/3: Creating SDFG...", args.verbose)
     ### Create sdfg
     # create_sdfg(schedule)
