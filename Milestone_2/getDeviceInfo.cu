@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
 
   int warps_per_SM = (int)(deviceProp.maxThreadsPerMultiProcessor /
                            deviceProp.maxThreadsPerBlock);
-  out << "Name = " << deviceProp.name
+  out << "Name = \"" << deviceProp.name << "\""
       << "\nSMs = " << deviceProp.multiProcessorCount
       << "\nwarps_per_SM = " << warps_per_SM
       << "\nthreads_per_warp = " << deviceProp.warpSize
