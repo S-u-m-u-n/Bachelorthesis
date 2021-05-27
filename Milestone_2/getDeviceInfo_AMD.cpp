@@ -1,21 +1,30 @@
+#include </usr/local/cuda/include/CL/cl.h>
+#include <fstream>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+using namespace std;
 
-#include </usr/local/cuda/include/CL/cl.h>
+// compile this with: nvcc getDeviceInfo_AMD.cpp -o getDeviceInfo_AMD -lOpenCL
+
+void check_cl_error(cl_int err_num, char *msg) {
+  if (err_num != CL_SUCCESS) {
+    printf("[Error] OpenCL error code: %d in %s \n", err_num, msg);
+    exit(EXIT_FAILURE);
+  }
+}
 
 int main() {
+  cout << "Querying AMD Device Info...\n\n";
 
   /* Host/device data structures */
-  cl_platform_id platform;
-  cl_device_id *devices;
-  cl_uint num_devices, addr_data;
-  cl_int i, err;
+  cl_int err;
 
-  /* Extension data */
-  char name_data[48], ext_data[4096];
+  char name_data[48];
 
   /* Identify a platform */
+  cl_platform_id platform;
   err = clGetPlatformIDs(1, &platform, NULL);
   if (err < 0) {
     perror("Couldn't find any platforms");
@@ -23,35 +32,82 @@ int main() {
   }
 
   /* Determine number of connected devices */
+  cl_uint num_devices;
   err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, NULL, &num_devices);
   if (err < 0) {
     perror("Couldn't find any devices");
     exit(1);
   }
 
-  /* Access connected devices */
-  devices = (cl_device_id *)malloc(sizeof(cl_device_id) * num_devices);
-  clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, num_devices, devices, NULL);
+  /* Access connected device */
+  cl_device_id *device = (cl_device_id *)malloc(sizeof(cl_device_id));
+  clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, device, NULL);
 
-  /* Obtain data for each connected device */
-  for (i = 0; i < num_devices; i++) {
+  /* Obtain data for the connected device */
 
-    err = clGetDeviceInfo(devices[i], CL_DEVICE_NAME, sizeof(name_data),
-                          name_data, NULL);
-    if (err < 0) {
-      perror("Couldn't read extension data");
-      exit(1);
-    }
-    clGetDeviceInfo(devices[i], CL_DEVICE_ADDRESS_BITS, sizeof(ext_data),
-                    &addr_data, NULL);
-
-    clGetDeviceInfo(devices[i], CL_DEVICE_EXTENSIONS, sizeof(ext_data),
-                    ext_data, NULL);
-
-    printf("NAME: %s\nADDRESS_WIDTH: %u\nEXTENSIONS: %s", name_data, addr_data,
-           ext_data);
+  err = clGetDeviceInfo(*device, CL_DEVICE_NAME, sizeof(name_data), name_data,
+                        NULL);
+  if (err < 0) {
+    perror("Couldn't read extension data");
+    exit(1);
   }
 
-  free(devices);
+  char str_buffer[1024];
+  clGetDeviceInfo(*device, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(str_buffer),
+                  &str_buffer, NULL);
+
+  printf("\t\t\t [Platform %d] Device ID: %d\n", platform, device);
+  printf("\t\t\t ---------------------------\n\n");
+
+  err = clGetDeviceInfo(*device, CL_DEVICE_NAME, sizeof(str_buffer),
+                        &str_buffer, NULL);
+  check_cl_error(err, "clGetDeviceInfo: Getting device name");
+  printf("\t\t\t\t\t [Platform %d] [Device %d] CL_DEVICE_NAME: %s\n", platform,
+         device, str_buffer);
+
+  // Get device hardware version
+  err = clGetDeviceInfo(*device, CL_DEVICE_VERSION, sizeof(str_buffer),
+                        &str_buffer, NULL);
+  check_cl_error(err, "clGetDeviceInfo: Getting device hardware version");
+  printf("\t\t\t\t\t [Platform %d] [Device %d] CL_DEVICE_VERSION: %s\n",
+         platform, device, str_buffer);
+
+  // Get device software version
+  err = clGetDeviceInfo(*device, CL_DRIVER_VERSION, sizeof(str_buffer),
+                        &str_buffer, NULL);
+  check_cl_error(err, "clGetDeviceInfo: Getting device software version");
+  printf("\t\t\t\t\t [Platform %d] [Device %d] CL_DRIVER_VERSION: %s\n",
+         platform, device, str_buffer);
+
+  // Get device OpenCL C version
+  err = clGetDeviceInfo(*device, CL_DEVICE_OPENCL_C_VERSION, sizeof(str_buffer),
+                        &str_buffer, NULL);
+  check_cl_error(err, "clGetDeviceInfo: Getting device OpenCL C version");
+  printf(
+      "\t\t\t\t\t [Platform %d] [Device %d] CL_DEVICE_OPENCL_C_VERSION: %s\n",
+      platform, device, str_buffer);
+
+  free(device);
+
+  // ofstream out;
+  // out.open("device_data_AMD.py");
+  // if (!out) {
+  //   cerr << "Error: file could not be opened" << endl;
+  //   exit(1);
+  // }
+
+  // int warps_per_SM = (int)(deviceProp.maxThreadsPerMultiProcessor /
+  //                          deviceProp.maxThreadsPerBlock);
+  // out << "Name = \"" << deviceProp.name << "\""
+  //     << "\nSMs = " << deviceProp.multiProcessorCount
+  //     << "\nwarps_per_SM = " << warps_per_SM
+  //     << "\nthreads_per_warp = " << deviceProp.warpSize
+  //     << "\nregisters_per_thread_block = " << deviceProp.regsPerBlock
+  //     << "\nregisters_per_warp = " << deviceProp.regsPerBlock
+  //     << "\ntotal_cuda_cores = "
+  //     << cuda_cores_per_SM * deviceProp.multiProcessorCount
+  //     << "\ncuda_capability_version = " << deviceProp.major << "."
+  //     << deviceProp.minor;
+
   return 0;
 }

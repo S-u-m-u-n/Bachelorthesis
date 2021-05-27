@@ -2,6 +2,8 @@
 #include <iostream>
 using namespace std;
 
+// compile this with: nvcc getDeviceInfo.cu -o getDeviceInfo
+
 #define CUDA_CHECK(call)                                                       \
   do {                                                                         \
     cudaError_t status = call;                                                 \
@@ -18,7 +20,7 @@ char **pArgv = NULL;
 int main(int argc, char **argv) {
   pArgc = &argc;
   pArgv = argv;
-  cout << "Querying Device Info...\n\n";
+  cout << "Querying NVIDIA Device Info...\n\n";
 
   int deviceCount = 0;
   cudaError_t error_id = cudaGetDeviceCount(&deviceCount);
@@ -72,7 +74,7 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  int cuda_cores_per_SM = 0;
+  int cuda_cores_per_SM;
   switch (deviceProp.major) {
   case 2: // Fermi
     if (deviceProp.minor == 1)
@@ -81,10 +83,10 @@ int main(int argc, char **argv) {
       cuda_cores_per_SM = 32;
     break;
   case 3: // Kepler
-    cores_per_SM = 192;
+    cuda_cores_per_SM = 192;
     break;
   case 5: // Maxwell
-    cores_per_SM = 128;
+    cuda_cores_per_SM = 128;
     break;
   case 6: // Pascal
     if ((deviceProp.minor == 1) || (deviceProp.minor == 2))
@@ -112,21 +114,20 @@ int main(int argc, char **argv) {
     cout << "Unknown device type\n";
     break;
   }
-  return cores;
-}
 
-int warps_per_SM = (int)(deviceProp.maxThreadsPerMultiProcessor /
-                         deviceProp.maxThreadsPerBlock);
-out << "Name = \"" << deviceProp.name << "\""
-    << "\nSMs = " << deviceProp.multiProcessorCount
-    << "\nwarps_per_SM = " << warps_per_SM
-    << "\nthreads_per_warp = " << deviceProp.warpSize
-    << "\nregisters_per_thread_block = " << deviceProp.regsPerBlock
-    << "\nregisters_per_warp = " << deviceProp.regsPerBlock
-    << "\ntotal_cuda_cores = "
-    << cuda_cores_per_SM * deviceProp.multiProcessorCount
-    << "\ncuda_capability_version = " << deviceProp.major << "."
-    << deviceProp.minor;
+  int warps_per_SM = (int)(deviceProp.maxThreadsPerMultiProcessor /
+                           deviceProp.maxThreadsPerBlock);
+  out << "Name = \"" << deviceProp.name << "\""
+      << "\nSMs = " << deviceProp.multiProcessorCount
+      << "\nwarps_per_SM = " << warps_per_SM
+      << "\nthreads_per_warp = " << deviceProp.warpSize
+      << "\nregisters_per_thread_block = " << deviceProp.regsPerBlock
+      << "\nregisters_per_warp = " << deviceProp.regsPerBlock
+      << "\ntotal_cuda_cores = "
+      << cuda_cores_per_SM * deviceProp.multiProcessorCount
+      << "\ncuda_capability_version = " << deviceProp.major << "."
+      << deviceProp.minor;
 
-out.close();
+  out.close();
+  return 0;
 }
