@@ -32,10 +32,12 @@ alpha = dace.symbol('alpha')
 beta = dace.symbol('beta')
 
 parser = ArgumentParser()
-parser.add_argument("-v", dest='verbose', help="explain what is being done",
+parser.add_argument("-v", "--verbose", dest='verbose', help="explain what is being done",
                     action="store_true", default=False)
-parser.add_argument("-c", dest='colorless',
+parser.add_argument("-c", "--colorless", dest='colorless',
                     help="does not print colors, useful when writing to a file", action="store_true", default=False)
+parser.add_argument("-g", "--gpu_type", dest='gpu_type',
+                    help="use this if you want to specify the gpu type (\"NVIDIA\" or \"AMD\") instead of determining it during runtime", action="store", default="AUTO")
 args = parser.parse_args()
 if args.verbose:
     print(args)
@@ -202,6 +204,43 @@ def create_sdfg(schedule):
     sdfg.save('matmul_cosma.sdfg')
     sdfg.compile()
 
+#####################################################################
+# Query functions
+
+def queryNVIDIA():
+    helpers.print_info("Querying NVIDIA device info...", args.colorless)
+    if args.verbose:
+        getDeviceInfo_NVIDIA = subprocess.run(["./getDeviceInfo_NVIDIA"])
+    else:
+        getDeviceInfo_NVIDIA = subprocess.run(
+            ["./getDeviceInfo_NVIDIA"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+    if getDeviceInfo_NVIDIA.returncode == 0:
+        helpers.print_success("Successfully read NVIDIA device Info", args.colorless)
+        # import device_data as device
+        return True
+    else:
+        helpers.print_warning(
+            "No CUDA Capable GPU found", args.colorless)
+        # import TeslaV100_data as device
+        return False
+
+def queryAMD():
+    helpers.print_info("Querying AMD device info...", args.colorless)
+    if args.verbose:
+        getDeviceInfo_AMD = subprocess.run(["./getDeviceInfo_AMD"])
+    else:
+        getDeviceInfo_AMD = subprocess.run(
+            ["./getDeviceInfo_AMD"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+    if getDeviceInfo_AMD.returncode == 0:
+        helpers.print_success("Successfully read AMD device Info", args.colorless)
+        # import device_data as device
+        return True
+    else:
+        helpers.print_warning(
+            "No AMD GPU found", args.colorless)
+        # import TeslaV100_data as device
+        # helpers.print_info("Using default GPU: Tesla V100")
+        return False
 
 #####################################################################
 # Main function
@@ -214,20 +253,28 @@ if __name__ == "__main__":
 
     ########################################################
     # 1. Get Device Properties or use default (Tesla V100)
+    default_device_data = open('device_data.py', 'w')
+    default_device_data.write("""Name = "Tesla V100-PCIE-32GB"
+SMs = 80
+warps_per_SM = 2
+threads_per_warp = 32
+registers_per_thread_block = 65536
+registers_per_warp = 65536
+total_cuda_cores = 5120
+cuda_capability_version = 7.0""")
+    default_device_data.close()
+    
     helpers.print_info("Phase 1/3: Querying device info...", args.colorless)
-    if args.verbose:
-        getDeviceInfo = subprocess.run(["./getDeviceInfo"])
-    else:
-        getDeviceInfo = subprocess.run(
-            ["./getDeviceInfo"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+    if args.gpu_type == "AUTO":
+        if queryNVIDIA() == False:
+            helpers.print_info("No CUDA-capable GPU found, looking for an AMD GPU...", args.colorless)
+            queryAMD()
+    elif args.gpu_type == "NVIDIA":
+        queryNVIDIA()
+    elif args.gpu_type == "AMD":
+        queryAMD()
 
-    if getDeviceInfo.returncode == 0:
-        helpers.print_success("Successfully read Device Info", args.colorless)
-        import device_data as device
-    else:
-        helpers.print_warning(
-            "No CUDA Capable GPU found, using hardcoded values for a Tesla V100", args.colorless)
-        import TeslaV100_data as device
+    import device_data as device
 
     helpers.print_info(
         "Using the following GPU for the schedule generator: ", args.colorless)
@@ -249,3 +296,6 @@ if __name__ == "__main__":
     # 3. Create sdfg
     helpers.print_info("Phase 3/3: Creating SDFG...", args.colorless)
     # create_sdfg(schedule)
+
+    # 4. Convert to HiP code (if needed)
+

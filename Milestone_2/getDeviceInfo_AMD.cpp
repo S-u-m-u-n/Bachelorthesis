@@ -53,39 +53,60 @@ int main() {
   }
 
   char str_buffer[1024];
-  clGetDeviceInfo(*device, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(str_buffer),
-                  &str_buffer, NULL);
+  err = clGetDeviceInfo(*device, CL_DEVICE_MAX_COMPUTE_UNITS,
+                        sizeof(str_buffer), &str_buffer, NULL);
+  check_cl_error(err, "clGetDeviceInfo: Getting device name");
+  printf("\t\t\t\t [Platform %d] [Device %d] CL_DEVICE_MAX_COMPUTE_UNITS: %s\n",
+         platform, device, str_buffer);
 
-  printf("\t\t\t [Platform %d] Device ID: %d\n", platform, device);
-  printf("\t\t\t ---------------------------\n\n");
+  printf("\t\t [Platform %d] Device ID: %d\n", platform, device);
+  printf("\t\t ---------------------------\n\n");
 
   err = clGetDeviceInfo(*device, CL_DEVICE_NAME, sizeof(str_buffer),
                         &str_buffer, NULL);
   check_cl_error(err, "clGetDeviceInfo: Getting device name");
-  printf("\t\t\t\t\t [Platform %d] [Device %d] CL_DEVICE_NAME: %s\n", platform,
+  printf("\t\t\t\t [Platform %d] [Device %d] CL_DEVICE_NAME: %s\n", platform,
          device, str_buffer);
 
   // Get device hardware version
   err = clGetDeviceInfo(*device, CL_DEVICE_VERSION, sizeof(str_buffer),
                         &str_buffer, NULL);
   check_cl_error(err, "clGetDeviceInfo: Getting device hardware version");
-  printf("\t\t\t\t\t [Platform %d] [Device %d] CL_DEVICE_VERSION: %s\n",
-         platform, device, str_buffer);
+  printf("\t\t\t\t [Platform %d] [Device %d] CL_DEVICE_VERSION: %s\n", platform,
+         device, str_buffer);
 
   // Get device software version
   err = clGetDeviceInfo(*device, CL_DRIVER_VERSION, sizeof(str_buffer),
                         &str_buffer, NULL);
   check_cl_error(err, "clGetDeviceInfo: Getting device software version");
-  printf("\t\t\t\t\t [Platform %d] [Device %d] CL_DRIVER_VERSION: %s\n",
-         platform, device, str_buffer);
+  printf("\t\t\t\t [Platform %d] [Device %d] CL_DRIVER_VERSION: %s\n", platform,
+         device, str_buffer);
 
   // Get device OpenCL C version
   err = clGetDeviceInfo(*device, CL_DEVICE_OPENCL_C_VERSION, sizeof(str_buffer),
                         &str_buffer, NULL);
   check_cl_error(err, "clGetDeviceInfo: Getting device OpenCL C version");
-  printf(
-      "\t\t\t\t\t [Platform %d] [Device %d] CL_DEVICE_OPENCL_C_VERSION: %s\n",
-      platform, device, str_buffer);
+  printf("\t\t\t\t [Platform %d] [Device %d] CL_DEVICE_OPENCL_C_VERSION: %s\n",
+         platform, device, str_buffer);
+
+  // Get device max compute units available
+  cl_uint max_compute_units_available;
+  err = clGetDeviceInfo(*device, CL_DEVICE_MAX_COMPUTE_UNITS,
+                        sizeof(max_compute_units_available),
+                        &max_compute_units_available, NULL);
+  check_cl_error(err,
+                 "clGetDeviceInfo: Getting device max compute units available");
+  printf("\t\t\t\t [Platform %d] [Device %d] CL_DEVICE_MAX_COMPUTE_UNITS: %d\n",
+         platform, device, max_compute_units_available);
+
+  // Get device local mem size
+  cl_ulong local_mem_size;
+  err = clGetDeviceInfo(*device, CL_DEVICE_LOCAL_MEM_SIZE,
+                        sizeof(local_mem_size), &local_mem_size, NULL);
+  check_cl_error(err, "clGetDeviceInfo: Getting device local mem size");
+  printf("\t\t\t\t [Platform %d] [Device %d] CL_DEVICE_LOCAL_MEM_SIZE: %llu "
+         "KB\n",
+         platform, device, (unsigned long long)local_mem_size / 1024);
 
   free(device);
 
