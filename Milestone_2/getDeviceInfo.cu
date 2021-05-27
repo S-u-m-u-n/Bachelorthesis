@@ -72,13 +72,61 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  int warps_per_SM = (int)(deviceProp.maxThreadsPerMultiProcessor /
-                           deviceProp.maxThreadsPerBlock);
-  out << "Name = \"" << deviceProp.name << "\""
-      << "\nSMs = " << deviceProp.multiProcessorCount
-      << "\nwarps_per_SM = " << warps_per_SM
-      << "\nthreads_per_warp = " << deviceProp.warpSize
-      << "\nregisters_per_thread_block = " << deviceProp.regsPerBlock;
+  int cuda_cores_per_SM = 0;
+  switch (deviceProp.major) {
+  case 2: // Fermi
+    if (deviceProp.minor == 1)
+      cuda_cores_per_SM = 48;
+    else
+      cuda_cores_per_SM = 32;
+    break;
+  case 3: // Kepler
+    cores_per_SM = 192;
+    break;
+  case 5: // Maxwell
+    cores_per_SM = 128;
+    break;
+  case 6: // Pascal
+    if ((deviceProp.minor == 1) || (deviceProp.minor == 2))
+      cuda_cores_per_SM = 128;
+    else if (deviceProp.minor == 0)
+      cuda_cores_per_SM = 64;
+    else
+      cout << "Unknown device type\n";
+    break;
+  case 7: // Volta & Turing
+    if ((deviceProp.minor == 0) || (deviceProp.minor == 5))
+      cuda_cores_per_SM = 64;
+    else
+      cout << "Unknown device type\n";
+    break;
+  case 8: // Ampere
+    if (deviceProp.minor == 0)
+      cuda_cores_per_SM = 64;
+    else if (deviceProp.minor == 6)
+      cuda_cores_per_SM = 128;
+    else
+      cout << "Unknown device type\n";
+    break;
+  default:
+    cout << "Unknown device type\n";
+    break;
+  }
+  return cores;
+}
 
-  out.close();
+int warps_per_SM = (int)(deviceProp.maxThreadsPerMultiProcessor /
+                         deviceProp.maxThreadsPerBlock);
+out << "Name = \"" << deviceProp.name << "\""
+    << "\nSMs = " << deviceProp.multiProcessorCount
+    << "\nwarps_per_SM = " << warps_per_SM
+    << "\nthreads_per_warp = " << deviceProp.warpSize
+    << "\nregisters_per_thread_block = " << deviceProp.regsPerBlock
+    << "\nregisters_per_warp = " << deviceProp.regsPerBlock
+    << "\ntotal_cuda_cores = "
+    << cuda_cores_per_SM * deviceProp.multiProcessorCount
+    << "\ncuda_capability_version = " << deviceProp.major << "."
+    << deviceProp.minor;
+
+out.close();
 }
