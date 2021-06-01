@@ -4,23 +4,15 @@ using namespace std;
 
 // compile this with: nvcc getDeviceInfo.cu -o getDeviceInfo
 
-#define CUDA_CHECK(call)                                                       \
-  do {                                                                         \
-    cudaError_t status = call;                                                 \
-    if (status != cudaSuccess) {                                               \
-      printf("FAIL: call='%s'. Reason:%s\n", #call,                            \
-             cudaGetErrorString(status));                                      \
-      return -1;                                                               \
-    }                                                                          \
-  } while (0)
+int CUDA_CHECK(cudaError_t status) {
+  if (status != cudaSuccess) {
+    printf("FAIL: call='%s'. Reason:%s\n", #call, cudaGetErrorString(status));
+    return -1;
+  }
+}
 
-int *pArgc = NULL;
-char **pArgv = NULL;
-
-int main(int argc, char **argv) {
-  pArgc = &argc;
-  pArgv = argv;
-  cout << "Querying NVIDIA Device Info...\n\n";
+int main() {
+  cout << "Querying NVIDIA device info...\n\n";
 
   int deviceCount = 0;
   cudaError_t error_id = cudaGetDeviceCount(&deviceCount);
@@ -38,16 +30,17 @@ int main(int argc, char **argv) {
     cout << "Detected " << deviceCount << " CUDA Capable device(s)\n";
   }
 
-  int devId = 0;
-  CUDA_CHECK(cudaGetDevice(&devId));
+  int deviceId = 0;
+  CUDA_CHECK(cudaGetDevice(&deviceId));
+
+  cudaDeviceProp deviceProp;
+  cudaGetDeviceProperties(&deviceProp, deviceId);
 
   int driverVersion = 0, runtimeVersion = 0;
-  cudaDeviceProp deviceProp;
-  cudaGetDeviceProperties(&deviceProp, devId);
   cudaDriverGetVersion(&driverVersion);
   cudaRuntimeGetVersion(&runtimeVersion);
 
-  cout << "Info for device " << devId << "\n  === Device attributes === "
+  cout << "Info for device " << deviceId << "\n  === Device attributes === "
        << "\n  | Device Name: " << deviceProp.name
        << "\n  | CUDA Driver Version / Runtime Version: "
        << driverVersion / 1000 << "." << (driverVersion % 100) / 10 << " / "
@@ -67,52 +60,56 @@ int main(int argc, char **argv) {
        << "\n  | Maximum Number of Registers per Block: "
        << deviceProp.regsPerBlock << "\n  ===" << endl;
 
-  ofstream out;
-  out.open("device_data.py");
-  if (!out) {
-    cerr << "Error: file could not be opened" << endl;
-    exit(1);
-  }
-
-  int cuda_cores_per_SM;
+  // to get the number of cores per SM, we need to know the major & minor
+  // version of the GPU
+  // https://stackoverflow.com/questions/32530604/how-can-i-get-number-of-cores-in-cuda-device
+  // https://github.com/NVIDIA/cuda-samples/blob/6be514679b201c8a0f0cda050bc7c01c8cda32ec/Common/helper_cuda.h
+  int compute_cores_per_SM; // = cuda cores per SM
   switch (deviceProp.major) {
   case 2: // Fermi
     if (deviceProp.minor == 1)
-      cuda_cores_per_SM = 48;
+      compute_cores_per_SM = 48;
     else
-      cuda_cores_per_SM = 32;
+      compute_cores_per_SM = 32;
     break;
   case 3: // Kepler
-    cuda_cores_per_SM = 192;
+    compute_cores_per_SM = 192;
     break;
   case 5: // Maxwell
-    cuda_cores_per_SM = 128;
+    compute_cores_per_SM = 128;
     break;
   case 6: // Pascal
     if ((deviceProp.minor == 1) || (deviceProp.minor == 2))
-      cuda_cores_per_SM = 128;
+      compute_cores_per_SM = 128;
     else if (deviceProp.minor == 0)
-      cuda_cores_per_SM = 64;
+      compute_cores_per_SM = 64;
     else
       cout << "Unknown device type\n";
     break;
   case 7: // Volta & Turing
     if ((deviceProp.minor == 0) || (deviceProp.minor == 5))
-      cuda_cores_per_SM = 64;
+      compute_cores_per_SM = 64;
     else
       cout << "Unknown device type\n";
     break;
   case 8: // Ampere
     if (deviceProp.minor == 0)
-      cuda_cores_per_SM = 64;
+      compute_cores_per_SM = 64;
     else if (deviceProp.minor == 6)
-      cuda_cores_per_SM = 128;
+      compute_cores_per_SM = 128;
     else
       cout << "Unknown device type\n";
     break;
   default:
     cout << "Unknown device type\n";
     break;
+  }
+
+  ofstream out;
+  out.open("device_data_NVIDIA.py");
+  if (!out) {
+    cerr << "Error: file could not be opened" << endl;
+    exit(1);
   }
 
   int warps_per_SM = (int)(deviceProp.maxThreadsPerMultiProcessor /
@@ -123,9 +120,9 @@ int main(int argc, char **argv) {
       << "\nthreads_per_warp = " << deviceProp.warpSize
       << "\nregisters_per_thread_block = " << deviceProp.regsPerBlock
       << "\nregisters_per_warp = " << deviceProp.regsPerBlock
-      << "\ntotal_cuda_cores = "
-      << cuda_cores_per_SM * deviceProp.multiProcessorCount
-      << "\ncuda_capability_version = " << deviceProp.major << "."
+      << "\ntotal_compute_cores = "
+      << compute_cores_per_SM * deviceProp.multiProcessorCount
+      << "\ncapability_version = " << deviceProp.major << "."
       << deviceProp.minor;
 
   out.close();

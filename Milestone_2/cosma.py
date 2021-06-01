@@ -32,12 +32,12 @@ alpha = dace.symbol('alpha')
 beta = dace.symbol('beta')
 
 parser = ArgumentParser()
-parser.add_argument("-v", "--verbose", dest='verbose', help="explain what is being done",
+parser.add_argument("-v", "--verbose", dest='verbose', help="explain what is being done. Default: False",
                     action="store_true", default=False)
 parser.add_argument("-c", "--colorless", dest='colorless',
-                    help="does not print colors, useful when writing to a file", action="store_true", default=False)
+                    help="does not print colors, useful when writing to a file. Default: False", action="store_true", default=False)
 parser.add_argument("-g", "--gpu_type", dest='gpu_type',
-                    help="use this if you want to specify the gpu type (\"NVIDIA\" or \"AMD\") instead of determining it during runtime", action="store", default="AUTO")
+                    help="use this to specify the gpu type (\"NVIDIA\" or \"AMD\"). Default: NVIDIA, action="store", default="NVIDIA")
 args = parser.parse_args()
 if args.verbose:
     print(args)
@@ -53,6 +53,8 @@ N = 128
 K = 128
 
 # Finds and returns the best schedule
+
+
 def find_best_schedule(load_k_possible, threadtiles_possible):
     best_schedule = Schedule()
 
@@ -161,7 +163,7 @@ class Schedule:
         total_threads_used = threads_used_full + threads_used_top + \
             threads_used_bottom + threads_used_top_right
 
-        return min(total_threads_used, device.total_cuda_cores)
+        return min(total_threads_used, device.total_compute_cores)
 
     def global_communication_volume(self):
         volume_A_global = self.thread_block_m * self.thread_block_k
@@ -215,13 +217,12 @@ def queryNVIDIA():
         getDeviceInfo_NVIDIA = subprocess.run(
             ["./getDeviceInfo_NVIDIA"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     if getDeviceInfo_NVIDIA.returncode == 0:
-        helpers.print_success("Successfully read NVIDIA device Info", args.colorless)
-        # import device_data as device
+        helpers.print_success(
+            "Successfully read NVIDIA device Info", args.colorless)
         return True
     else:
         helpers.print_warning(
             "No CUDA Capable GPU found", args.colorless)
-        # import TeslaV100_data as device
         return False
 
 def queryAMD():
@@ -232,18 +233,16 @@ def queryAMD():
         getDeviceInfo_AMD = subprocess.run(
             ["./getDeviceInfo_AMD"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     if getDeviceInfo_AMD.returncode == 0:
-        helpers.print_success("Successfully read AMD device Info", args.colorless)
-        # import device_data as device
+        helpers.print_success(
+            "Successfully read AMD device Info", args.colorless)
         return True
     else:
-        helpers.print_warning(
-            "No AMD GPU found", args.colorless)
-        # import TeslaV100_data as device
-        # helpers.print_info("Using default GPU: Tesla V100")
+        helpers.print_warning("No AMD GPU found", args.colorless)
         return False
 
 #####################################################################
 # Main function
+
 
 if __name__ == "__main__":
     # Define set of possible values for schedule generator
@@ -260,19 +259,19 @@ warps_per_SM = 2
 threads_per_warp = 32
 registers_per_thread_block = 65536
 registers_per_warp = 65536
-total_cuda_cores = 5120
-cuda_capability_version = 7.0""")
+total_compute_cores = 5120
+capability_version = 7.0""")
     default_device_data.close()
     
     helpers.print_info("Phase 1/3: Querying device info...", args.colorless)
-    if args.gpu_type == "AUTO":
-        if queryNVIDIA() == False:
-            helpers.print_info("No CUDA-capable GPU found, looking for an AMD GPU...", args.colorless)
-            queryAMD()
-    elif args.gpu_type == "NVIDIA":
+    if args.gpu_type == "NVIDIA":
         queryNVIDIA()
     elif args.gpu_type == "AMD":
+        os.environ['DACE_compiler_cuda_backend'] = 'hip'
         queryAMD()
+    else:
+        helpers.print_error("Invalid -g parameter!")
+        exit(-1)
 
     import device_data as device
 
@@ -290,12 +289,26 @@ cuda_capability_version = 7.0""")
     helpers.print_info("Phase 2/3: Finding best schedule...", args.colorless)
     # schedule = find_best_schedule(load_k_possible, threadtiles_possible, device.registers_per_warp, device.registers_per_thread_block, device.threads_per_warp, device.warps_per_SM, device.SMs, device.total_cuda_cores)
     schedule = find_best_schedule(load_k_possible, threadtiles_possible)
+    helpers.print_success("Found schedule.", args.colorless)
     print(schedule)
 
     ########################################################
     # 3. Create sdfg
     helpers.print_info("Phase 3/3: Creating SDFG...", args.colorless)
     # create_sdfg(schedule)
+    helpers.print_success("Created SDFG.", args.colorless)
 
-    # 4. Convert to HiP code (if needed)
-
+    ########################################################
+    # Convert to HIP code (if needed)
+    if args.gpu_type == "AMD":
+        helpers.print_info("Converting CUDA code to HIP...", args.colorless)
+        if args.verbose:
+            convert_CUDA_to_HIP = subprocess.run(["ls"])
+        else:
+            getDeviceInfo_AMD = subprocess.run(
+                ["ls"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+        
+        if convert_CUDA_to_HIP.returncode == 0:
+            helpers.print_success("Converted CUDA code to HIP.", args.colorless)
+        else:
+            helpers.print_error("Error: Could not convert CUDA code to HIP.", args.colorless)
