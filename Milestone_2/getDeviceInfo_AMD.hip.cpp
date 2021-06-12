@@ -8,7 +8,7 @@ using namespace std;
 int HIP_CHECK(hipError_t status) {
   if (status != hipSuccess) {
     printf("FAIL: call='%s'. Reason:%s\n", status, hipGetErrorString(status));
-    return -1;
+    exit(EXIT_FAILURE);
   }
 }
 
@@ -70,11 +70,8 @@ int main(int argc, char *argv[]) {
        << "\n  | Maximum Number of Registers per Block: "
        << deviceProp.regsPerBlock << "\n  ===" << endl;
 
-  // TODO: figure out how to get this number!!
-  int compute_cores_per_SM = 128;
-
   ofstream out;
-  out.open("device_data_AMD.py");
+  out.open("device_data.py");
   if (!out) {
     cerr << "Error: file could not be opened" << endl;
     exit(1);
@@ -82,6 +79,9 @@ int main(int argc, char *argv[]) {
 
   int warps_per_SM = (int)(deviceProp.maxThreadsPerMultiProcessor /
                            deviceProp.maxThreadsPerBlock);
+  // TODO: figure out how to get this number!!
+  // number of compute cores per SM = warps_per_SM * warpSize?
+  int compute_cores_per_SM = warps_per_SM * deviceProp.warpSize;
   out << "Name = \"" << deviceProp.name << "\""
       << "\nSMs = " << deviceProp.multiProcessorCount
       << "\nwarps_per_SM = " << warps_per_SM

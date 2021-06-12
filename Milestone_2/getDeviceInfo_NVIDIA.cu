@@ -7,7 +7,7 @@ using namespace std;
 int CUDA_CHECK(cudaError_t status) {
   if (status != cudaSuccess) {
     printf("FAIL: call='%s'. Reason:%s\n", #call, cudaGetErrorString(status));
-    return -1;
+    exit(EXIT_FAILURE);
   }
 }
 
@@ -114,6 +114,8 @@ int main() {
 
   int warps_per_SM = (int)(deviceProp.maxThreadsPerMultiProcessor /
                            deviceProp.maxThreadsPerBlock);
+  // number of compute cores per SM = warps_per_SM * warpSize?
+  int compute_cores_per_SM = warps_per_SM * deviceProp.warpSize;
   out << "Name = \"" << deviceProp.name << "\""
       << "\nSMs = " << deviceProp.multiProcessorCount
       << "\nwarps_per_SM = " << warps_per_SM
