@@ -2,7 +2,7 @@ def print_success(text, colorless = False):
     if colorless:
         print("[Sucess] ", text)
     else:
-        print("\033[01m\033[32m[Sucess] \033[0m", text)
+        print("\033[01m\033[32m[Success] \033[0m", text)
 
 def print_warning(text, colorless = False):
     if colorless:
