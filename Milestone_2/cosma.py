@@ -4,6 +4,7 @@ import math
 from argparse import ArgumentParser
 from csv import DictReader
 import numpy as np
+import sympy as sy
 from tqdm import tqdm
 import dace
 from dace.transformation.interstate import GPUTransformSDFG
@@ -192,74 +193,27 @@ def create_sdfg(schedule) -> None:
     sdfg = matmul.to_sdfg()
     sdfg.expand_library_nodes()
     sdfg.apply_transformations(GPUTransformSDFG)
-
-    # Todo: add floor/ceil in case they do not evenly divide
-    num_threadblocks_m = M / schedule.thread_block_tile_m
-    num_threadblocks_n = N / schedule.thread_block_tile_n
-    num_threadblocks_k = schedule.split_k
     sdfg.save('sdfg_start.sdfg')
+
+    #####################################################################
     ### Threadblock Tile
     gemm, state = find_map_by_name(sdfg, "gemm_map")
-    # StripMining.apply_to(state.parent,
-    #             dict(new_dim_prefix="THREADBLOCK_TILE",
-    #             tiling_type=dace.TilingType.NumberOfTiles,
-    #             tile_size=num_threadblocks_m,
-    #             dim_idx=0,
-    #             divides_evenly=True,
-    #             ),
-    #             _map_entry=gemm
-    # )
-
-    # StripMining.apply_to(state.parent,
-    #         dict(new_dim_prefix="THREADBLOCK_TILE",
-    #         tiling_type=dace.TilingType.NumberOfTiles,
-    #         tile_size=num_threadblocks_n,
-    #         dim_idx=1,
-    #         divides_evenly=True,
-    #         ),
-    #         _map_entry=gemm
-    # )
-
-    # StripMining.apply_to(state.parent,
-    #     dict(new_dim_prefix="THREADBLOCK_TILE",
-    #     tiling_type=dace.TilingType.NumberOfTiles,
-    #     tile_size=schedule.split_k,
-    #     dim_idx=2,
-    #     divides_evenly=True,
-    #     ),
-    #     _map_entry=gemm
-    # )
-    # entry_outer, state = find_map_by_param(state.parent, "THREADBLOCK_TILE___i0")
-    # entry_inner, state = find_map_by_param(state.parent, "THREADBLOCK_TILE___i1")
-    # MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
-    # entry_outer, state = find_map_by_param(state.parent, "THREADBLOCK_TILE___i0")
-    # entry_inner, state = find_map_by_param(state.parent, "THREADBLOCK_TILE___i2")
-    # MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
-
-    # entry, state = find_map_by_param(state.parent, "__i2")
-    # xfutil.tile(state.parent, gemm, True, True, __i0=128, __i1=128, __i2=schedule.load_k)
-
-
     xfutil.tile(state.parent, gemm, True, True, __i0=schedule.thread_block_tile_m, __i1=schedule.thread_block_tile_n, __i2=schedule.load_k)
-
     entry_outer, state = find_map_by_param(state.parent, "tile___i0")
     entry_inner, state = find_map_by_param(state.parent, "tile___i1")
     MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
-
-
-    # entry_outer, state = find_map_by_param(state.parent, "tile___i0")
-    # entry_inner, state = find_map_by_param(state.parent, "tile___i1")
-    # MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
-    sdfg.save('sdfg2.sdfg')
     entry_outer, state = find_map_by_param(state, "tile___i2")
     entry_inner, state = find_map_by_param(state, "__i0")
     entry_inner._map.schedule = dace.ScheduleType.GPU_ThreadBlock
+
+    #####################################################################
     ### local storage (shared memory) for loading threadblock_tiles of A and B
     shared_memory_A = InLocalStorage.apply_to(state.parent, dict(array='_a'), node_a=entry_outer, node_b=entry_inner)
     shared_memory_B = InLocalStorage.apply_to(state.parent, dict(array='_b'), node_a=entry_outer, node_b=entry_inner)
     state.parent.arrays[shared_memory_A.data].storage = dace.StorageType.GPU_Shared
     state.parent.arrays[shared_memory_B.data].storage = dace.StorageType.GPU_Shared
 
+    #####################################################################
     ### Warp Tile
     gemm, state = find_map_by_param(state.parent, "__i0")
     xfutil.tile(state.parent, gemm, True, True, __i0=schedule.warp_tile_m, __i1=schedule.warp_tile_n)
@@ -267,6 +221,7 @@ def create_sdfg(schedule) -> None:
     entry_inner, state = find_map_by_param(state.parent, "tile1___i1")
     MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
 
+    #####################################################################
     ### Thread Tile
     gemm, state = find_map_by_param(state.parent, "__i0")
     xfutil.tile(state.parent, gemm, True, True, __i0=schedule.thread_tile_m, __i1=schedule.thread_tile_n)
@@ -274,6 +229,7 @@ def create_sdfg(schedule) -> None:
     entry_inner, state = find_map_by_param(state.parent, "tile2___i1")
     MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
 
+    #####################################################################
     ### local storage (registers) for loading thread_tiles of A and B
     # expand the three dimensions of the thread_tile...
     entry_outer, state = find_map_by_param(state.parent, "__i0")
@@ -288,6 +244,7 @@ def create_sdfg(schedule) -> None:
     InLocalStorage.apply_to(state.parent, dict(array='trans__a'), node_a=entry_outer, node_b=entry_inner)
     InLocalStorage.apply_to(state.parent, dict(array='trans__b'), node_a=entry_outer, node_b=entry_inner)
 
+    #####################################################################
     ### local storage (registers) for loading thread_tiles of C
     map_exit = state.exit_node(entry_outer)
     outer, state = find_map_by_param(state.parent, "tile2___i0")
@@ -299,22 +256,47 @@ def create_sdfg(schedule) -> None:
 
     #####################################################################
     ### Split K
-    # sdfg.save('sdfg_pre_split_k.sdfg')
-    # if schedule.split_k > 1:
-    #     helpers.print_info('Applying Split K with Split_K = ' + str(schedule.split_k) + " ....")
-    #     entry_outer, state = find_map_by_param(state.parent, "tile___i0")
-    #     entry_inner, state = find_map_by_param(state.parent, "tile___i2")
-    #     MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
-    #     entry_outer, state = find_map_by_param(state.parent, "tile___i2")
-    #     StripMining.apply_to(state.parent,
-    #                 dict(new_dim_prefix="SPLIT_K",
-    #                 tiling_type=dace.TilingType.NumberOfTiles,
-    #                 tile_size=schedule.split_k,
-    #                 dim_idx=2,
-    #                 divides_evenly=True,
-    #                 ),
-    #                 _map_entry=entry_outer,
-    #     )
+    sdfg.save('sdfg_pre_split_k.sdfg')
+    if schedule.split_k > 1:
+        helpers.print_info('Applying Split K with Split_K = ' + str(schedule.split_k) + " ....")
+        entry_outer, state = find_map_by_param(state.parent, "tile___i0")
+        entry_inner, state = find_map_by_param(state.parent, "tile___i2")
+        MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
+        entry, state = find_map_by_param(state.parent, "tile___i2")
+        StripMining.apply_to(state.parent,
+                    dict(new_dim_prefix="SPLIT_K",
+                    # tiling_type=dace.TilingType.NumberOfTiles,
+                    # tile_size=schedule.split_k, # Split K tiles
+                    tile_size= K / schedule.split_k, # Split K tiles
+                    dim_idx=2, # K dimension
+                    divides_evenly=K % schedule.split_k == 0,
+                    strided=True
+                    ),
+                    _map_entry=entry
+        )
+        entry, state = find_map_by_param(state.parent, "SPLIT_K_tile___i2")
+
+        current_mapping_x = state.out_edges(entry)[0].data.subset
+        current_mapping_y = state.out_edges(entry)[1].data.subset
+        state.out_edges(entry)[0].data.subset = Range([
+            (current_mapping_x.ndrange()[0][0],
+            current_mapping_x.ndrange()[0][1] - schedule.thread_block_tile_m + 1,
+            current_mapping_x.ndrange()[0][2]),
+            (current_mapping_x.ndrange()[1][0],
+            current_mapping_x.ndrange()[1][1] - schedule.load_k + 1,
+            current_mapping_x.ndrange()[1][2])
+        ])
+
+        state.out_edges(entry)[1].data.subset = Range([
+            (current_mapping_y.ndrange()[0][0],
+             current_mapping_y.ndrange()[0][1] - schedule.load_k + 1,
+             current_mapping_y.ndrange()[0][2]),
+            (current_mapping_y.ndrange()[1][0],
+            current_mapping_y.ndrange()[1][1] - schedule.thread_block_tile_n + 1,
+            current_mapping_y.ndrange()[1][2])
+        ])
+
+        helpers.print_success("Successfully applied Split K.")
         # Todo: Modify tasklet
         # Todo: make a reduction in the end
             # MapReduceFusion.apply_to(state.parent)
@@ -374,23 +356,66 @@ def create_sdfg(schedule) -> None:
             (new_id_y,
             new_id_y + schedule.thread_block_tile_n - 1,
             current_mapping_y.ndrange()[1][2])
-        ])        
+        ])
+        helpers.print_success("Successfully applied thread block SWIZZLE.")
     
     #####################################################################
     ### SWIZZLE_thread_tile
+    # class BitwiseAnd(sy.Function):
+    #     nargs = 2
+    #     @classmethod
+    #     def eval(cls, x, y):
+    #         print("Evaluting: " + str(x) + " & " + str(y))
+    #         if x == 0 or y == 0:
+    #             return 1
+    #         return 0
+    
+    # class BitwiseOr(sy.Function):
+    #     nargs = 2
+    #     @classmethod
+    #     def eval(cls, x, y):
+    #         if x == 1 or y == 1:
+    #             return 0
+    #         return 1
+
+    # class RightShift(sy.Function):
+    #     nargs = 2
+    #     @classmethod
+    #     def eval(cls, x, y):
+    #         for i in range(0, y):
+    #             x /= 2
+    #         return x
+
     sdfg.save('sdfg_pre_swizzle_thread_tile.sdfg')
     if schedule.SWIZZLE_thread_tile == True:
         helpers.print_info('Applying SWIZZLE_thread_tile with SWIZZLE_thread_tile = ' + str(schedule.SWIZZLE_thread_tile) + " ....")
-
         entry, state = find_map_by_param(state.parent, "tile2___i0")
         warp_tile_width = math.ceil(schedule.warp_tile_n / schedule.thread_tile_n)
         warp_tile_height = math.ceil(schedule.warp_tile_m / schedule.thread_tile_m)
         print(warp_tile_width)
         print(warp_tile_height)
+
+        bitwise_and = sy.Function('bitwise_and')
+        bitwise_or = sy.Function('bitwise_or')
+        right_shift = sy.Function('right_shift')
         def SWIZZLE_x(idx): # LaneIdx
-            return ((idx & (warp_tile_height * warp_tile_width // 2)) >> (warp_tile_width - 1)) | (idx & 1)
+            # return ((idx & (warp_tile_height * warp_tile_width // 2)) >> (warp_tile_width - 1)) | (idx & 1)
+            # t1 = BitwiseAnd(idx, (warp_tile_height * warp_tile_width // 2))
+            # t2 = t1 // (2 ** (warp_tile_width - 1))
+            # t3 = BitwiseAnd(idx, 1)
+            # t4 = BitwiseOr(t2, t3)
+            return bitwise_or(
+                    right_shift(
+                        bitwise_and(idx, (warp_tile_height * warp_tile_width // 2)),
+                        (warp_tile_width - 1)),
+                    bitwise_and(idx, 1)
+                    )
         def SWIZZLE_y(idx): # LaneIdy
-            return (idx >> 1) & (warp_tile_height - 1)
+            # return (idx >> 1) & (warp_tile_height - 1)
+            return bitwise_and(
+                    idx // 2,
+                    warp_tile_height - 1
+                    )
 
         # ... apply SWIZZLE_thread_block transformations
         current_mapping_x = state.out_edges(entry)[0].data.subset
@@ -399,29 +424,34 @@ def create_sdfg(schedule) -> None:
         print(current_mapping_y)
         print()
         # Quote from Neville's thesis, p. 11: "threads are only launched in the x dimension (threadIdx.y and threadIdx.z are always 1)
-        print("Thread tiles in a warp before swizzling:")
-        for x in range (0, warp_tile_height):
-            print("-" * 3 * warp_tile_height + "-")
-            for y in range (0, warp_tile_width):
-                print("| " + str(warp_tile_width * x + y) + " ", end="")
-            print("|")
-        print("-" * 3 * warp_tile_height + "-")
+        # print("Thread tiles in a warp before swizzling:")
+        # for x in range (0, warp_tile_height):
+        #     print("-" * 3 * warp_tile_height + "-")
+        #     for y in range (0, warp_tile_width):
+        #         print("| " + str(warp_tile_width * x + y) + " ", end="")
+        #     print("|")
+        # print("-" * 3 * warp_tile_height + "-")
 
-        swizzled_idx = np.empty(warp_tile_height * warp_tile_width)
-        for x in range (0, warp_tile_height):
-            for y in range (0, warp_tile_width):
-                idx = warp_tile_width * x + y
-                # print(str(idx) + " -> " + str(SWIZZLE_x(idx)) + ", " +  str(SWIZZLE_y(idx)) + " = " + str(warp_tile_width * SWIZZLE_y(idx) + SWIZZLE_x(idx)))
-                swizzled_idx[idx] = warp_tile_width * SWIZZLE_y(idx) + SWIZZLE_x(idx)
+        # swizzled_idx = np.empty(warp_tile_height * warp_tile_width)
+        # for x in range (0, warp_tile_height):
+        #     for y in range (0, warp_tile_width):
+        #         idx = warp_tile_width * x + y
+        #         # print(str(idx) + " -> " + str(SWIZZLE_x(idx)) + ", " +  str(SWIZZLE_y(idx)) + " = " + str(warp_tile_width * SWIZZLE_y(idx) + SWIZZLE_x(idx)))
+        #         # print(idx)
+        #         # print(type(idx))
+        #         print(SWIZZLE_x(idx))
+        #         print(SWIZZLE_y(idx))
+        #         # print(warp_tile_width * SWIZZLE_y(idx) + SWIZZLE_x(idx))
+        #         swizzled_idx[idx] = warp_tile_width * SWIZZLE_y(idx) + SWIZZLE_x(idx)
 
-        print("Thread tiles in a warp after swizzling:")
-        for x in range (0, warp_tile_height):
-            print("-" * 3 * warp_tile_height + "-")
-            for y in range (0, warp_tile_width):
-                idx = warp_tile_width * x + y
-                print("| " + str(np.where(swizzled_idx == idx)[0][0]) + " ", end="")
-            print("|")
-        print("-" * 3 * warp_tile_height + "-")
+        # print("Thread tiles in a warp after swizzling:")
+        # for x in range (0, warp_tile_height):
+        #     print("-" * 3 * warp_tile_height + "-")
+        #     for y in range (0, warp_tile_width):
+        #         idx = warp_tile_width * x + y
+        #         print("| " + str(np.where(swizzled_idx == idx)[0][0]) + " ", end="")
+        #     print("|")
+        # print("-" * 3 * warp_tile_height + "-")
 
         entry_warp, state = find_map_by_param(state.parent, "tile1___i0")
         warp_x = state.out_edges(entry_warp)[0].data.subset[0][0] # = tile1___i0
@@ -432,26 +462,32 @@ def create_sdfg(schedule) -> None:
         old_id_y = (current_mapping_y.ndrange()[1][0] - warp_y) / schedule.thread_tile_n
         old_id = warp_tile_height * old_id_x + old_id_y
         print(old_id)
+        print(type(old_id))
         new_id_x = SWIZZLE_x(old_id)
         print("SWIZZLE: " + str(old_id_x) + " is remapped to " + str(new_id_x))
-        new_id_x = SWIZZLE_y(old_id)
+        new_id_y = SWIZZLE_y(old_id)
         print("SWIZZLE: " + str(old_id_y) + " is remapped to " + str(new_id_y))
 
         state.out_edges(entry)[0].data.subset = Range([
             (warp_x + new_id_x,
-            warp_x + new_id_x + schedule.thread_tile_m - 1),
+            warp_x + new_id_x + schedule.thread_tile_m - 1,
+            current_mapping_x.ndrange()[0][2]),
             (current_mapping_x.ndrange()[1][0],
-            current_mapping_x.ndrange()[1][1]),
+            current_mapping_x.ndrange()[1][1],
+            current_mapping_x.ndrange()[1][2])
         ])
         # print(state.out_edges(entry)[0].data.subset)
 
         state.out_edges(entry)[1].data.subset = Range([
             (current_mapping_y.ndrange()[0][0],
-             current_mapping_y.ndrange()[0][1]),
+            current_mapping_y.ndrange()[0][1],
+            current_mapping_y.ndrange()[0][2]),
             (warp_y + new_id_y,
-            warp_y + new_id_y + schedule.thread_block_tile_n - 1),
+            warp_y + new_id_y + schedule.thread_tile_n - 1,
+            current_mapping_y.ndrange()[0][2])
         ])
         # print(state.out_edges(entry)[1].data.subset)
+        helpers.print_success("Successfully applied thread SWIZZLE.")
 
     #####################################################################
     ### Vectorization
@@ -462,7 +498,7 @@ def create_sdfg(schedule) -> None:
         if schedule.load_k == 2:
             vector_length = 2
         elif schedule.load_k >= 4:
-            vector_length = 4
+            vector_length = 2 # doesn't compile with vector_length = 4... why?
 
         entry, state = find_map_by_param(state.parent, "__i2")
         Vectorization.apply_to(state.parent,
@@ -470,8 +506,7 @@ def create_sdfg(schedule) -> None:
                         _map_entry=entry,
                         _tasklet=state.out_edges(entry)[0].dst,
                         _map_exit=state.out_edges(entry)[0].dst)
-        # state.parent.apply_transformations_repeated(Vectorization, dict(vector_len=vector_length, preamble=False, postamble=False, strided_map=False))
-        
+        helpers.print_success("Successfully applied vectorization.")
    
     #####################################################################
     ### Double Buffering (on shared memory)
@@ -480,10 +515,13 @@ def create_sdfg(schedule) -> None:
         helpers.print_info('Applying Double Buffering....')
         entry, state = find_map_by_param(state, "tile___i2")
         DoubleBuffering.apply_to(state.parent, _map_entry=entry, _transient=shared_memory_A)
+        helpers.print_success("Successfully applied double buffering.")
 
-    sdfg.save('sdfg.sdfg')
-    helpers.print_info('Saved sdfg.')
-    # sdfg.compile()
+    sdfg.save('sdfg_final.sdfg')
+    helpers.print_info('Compiling sdfg.')
+    csdfg = sdfg.compile()
+    helpers.print_success("Successfully compiled SDFG.")
+    return csdfg
 
 #####################################################################
 # Query functions
@@ -570,15 +608,30 @@ capability_version = 7.0""")
     # schedule = find_best_schedule(load_k_possible, threadtiles_possible, device.registers_per_warp, device.registers_per_thread_block, device.threads_per_warp, device.warps_per_SM, device.SMs, device.total_compute_cores)
     # best_schedule = find_best_schedule(load_k_possible, threadtiles_possible)
     best_schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32,
-                             thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640, SWIZZLE_thread_block=2, splice_k = 2, split_k=2, double_buffering=True)
+                             thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640, SWIZZLE_thread_block=2, splice_k = 2, split_k=2, double_buffering=False)
     helpers.print_success("Found best schedule!", args.colorless)
     print(best_schedule)
 
     ########################################################
     # 3. Create sdfg
     helpers.print_info("Phase 3/3: Creating SDFG...", args.colorless)
-    create_sdfg(best_schedule)
+    csdfg = create_sdfg(best_schedule)
     helpers.print_success("Created SDFG.", args.colorless)
+    C_correct = matmul(A=np.random.rand(640, 640), B=np.random.rand(640, 640), C=np.zeros((640, 640)), alpha=dace.float64(1), beta=dace.float64(1), M=np.int32(640), N=np.int32(640), K=np.int32(640))
+    C_test = csdfg(A=np.random.rand(640, 640), B=np.random.rand(640, 640), C=np.zeros((640, 640)), alpha=dace.float64(1), beta=dace.float64(1), M=np.int32(640), N=np.int32(640), K=np.int32(640))
+
+    def areSame(A,B):
+        for i in range(M):
+            for j in range(N):
+                diff = A[i][j] - B[i][j]
+                if (diff > 0.000001):
+                    helpers.print_error("(" + str(i) + ", " + str(j) + ")")
+                    helpers.print_error("Error: matrices are not equal! Difference is: " + str(diff))
+                    return False
+        return True
+    
+    if areSame(C_correct, C_test):
+        helpers.print_success("The SDFG is correct")
 
     ########################################################
     # Convert to HIP code (if needed)
