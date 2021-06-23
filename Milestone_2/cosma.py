@@ -232,8 +232,8 @@ def create_sdfg(schedule) -> None:
     #####################################################################
     ### local storage (registers) for loading thread_tiles of A and B
     # expand the three dimensions of the thread_tile...
-    entry_outer, state = find_map_by_param(state.parent, "__i0")
-    MapExpansion.apply_to(state.parent, map_entry=entry_outer)
+    entry, state = find_map_by_param(state.parent, "__i0")
+    MapExpansion.apply_to(state.parent, map_entry=entry)
     # ...then collapse the first two dimensions again...
     entry_outer, state = find_map_by_param(state.parent, "__i0")
     entry_inner, state = find_map_by_param(state.parent, "__i1")
@@ -295,6 +295,13 @@ def create_sdfg(schedule) -> None:
             current_mapping_y.ndrange()[1][1] - schedule.thread_block_tile_n + 1,
             current_mapping_y.ndrange()[1][2])
         ])
+        # expand the three dimensions of the thread_tile...
+        entry, state = find_map_by_param(state.parent, "tile___i0")
+        MapExpansion.apply_to(state.parent, map_entry=entry)
+        # ...then collapse the first two dimensions again...
+        entry_outer, state = find_map_by_param(state.parent, "tile___i0")
+        entry_inner, state = find_map_by_param(state.parent, "tile___i1")
+        MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner) 
 
         helpers.print_success("Successfully applied Split K.")
         # Todo: Modify tasklet
@@ -608,7 +615,7 @@ capability_version = 7.0""")
     # schedule = find_best_schedule(load_k_possible, threadtiles_possible, device.registers_per_warp, device.registers_per_thread_block, device.threads_per_warp, device.warps_per_SM, device.SMs, device.total_compute_cores)
     # best_schedule = find_best_schedule(load_k_possible, threadtiles_possible)
     best_schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32,
-                             thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640, SWIZZLE_thread_block=2, splice_k = 2, split_k=2, double_buffering=False)
+                             thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640, SWIZZLE_thread_block=2, splice_k = 2, split_k=2, double_buffering=True)
     helpers.print_success("Found best schedule!", args.colorless)
     print(best_schedule)
 

@@ -4,12 +4,15 @@ using namespace std;
 
 // compile this with: nvcc getDeviceInfo.cu -o getDeviceInfo
 
-int CUDA_CHECK(cudaError_t status) {
-  if (status != cudaSuccess) {
-    printf("FAIL: call='%s'. Reason:%s\n", #call, cudaGetErrorString(status));
-    exit(EXIT_FAILURE);
-  }
-}
+#define CUDA_CHECK(call)                                                       \
+  do {                                                                         \
+    cudaError_t status = call;                                                 \
+    if (status != cudaSuccess) {                                               \
+      printf("FAIL: call='%s'. Reason:%s\n", #call,                            \
+             cudaGetErrorString(status));                                      \
+      return -1;                                                               \
+    }                                                                          \
+  } while (0)
 
 int main() {
   cout << "Querying NVIDIA device info...\n\n";
@@ -64,46 +67,46 @@ int main() {
   // version of the GPU
   // https://stackoverflow.com/questions/32530604/how-can-i-get-number-of-cores-in-cuda-device
   // https://github.com/NVIDIA/cuda-samples/blob/6be514679b201c8a0f0cda050bc7c01c8cda32ec/Common/helper_cuda.h
-  int compute_cores_per_SM; // = cuda cores per SM
-  switch (deviceProp.major) {
-  case 2: // Fermi
-    if (deviceProp.minor == 1)
-      compute_cores_per_SM = 48;
-    else
-      compute_cores_per_SM = 32;
-    break;
-  case 3: // Kepler
-    compute_cores_per_SM = 192;
-    break;
-  case 5: // Maxwell
-    compute_cores_per_SM = 128;
-    break;
-  case 6: // Pascal
-    if ((deviceProp.minor == 1) || (deviceProp.minor == 2))
-      compute_cores_per_SM = 128;
-    else if (deviceProp.minor == 0)
-      compute_cores_per_SM = 64;
-    else
-      cout << "Unknown device type\n";
-    break;
-  case 7: // Volta & Turing
-    if ((deviceProp.minor == 0) || (deviceProp.minor == 5))
-      compute_cores_per_SM = 64;
-    else
-      cout << "Unknown device type\n";
-    break;
-  case 8: // Ampere
-    if (deviceProp.minor == 0)
-      compute_cores_per_SM = 64;
-    else if (deviceProp.minor == 6)
-      compute_cores_per_SM = 128;
-    else
-      cout << "Unknown device type\n";
-    break;
-  default:
-    cout << "Unknown device type\n";
-    break;
-  }
+  // int compute_cores_per_SM; // = cuda cores per SM
+  // switch (deviceProp.major) {
+  // case 2: // Fermi
+  //   if (deviceProp.minor == 1)
+  //     compute_cores_per_SM = 48;
+  //   else
+  //     compute_cores_per_SM = 32;
+  //   break;
+  // case 3: // Kepler
+  //   compute_cores_per_SM = 192;
+  //   break;
+  // case 5: // Maxwell
+  //   compute_cores_per_SM = 128;
+  //   break;
+  // case 6: // Pascal
+  //   if ((deviceProp.minor == 1) || (deviceProp.minor == 2))
+  //     compute_cores_per_SM = 128;
+  //   else if (deviceProp.minor == 0)
+  //     compute_cores_per_SM = 64;
+  //   else
+  //     cout << "Unknown device type\n";
+  //   break;
+  // case 7: // Volta & Turing
+  //   if ((deviceProp.minor == 0) || (deviceProp.minor == 5))
+  //     compute_cores_per_SM = 64;
+  //   else
+  //     cout << "Unknown device type\n";
+  //   break;
+  // case 8: // Ampere
+  //   if (deviceProp.minor == 0)
+  //     compute_cores_per_SM = 64;
+  //   else if (deviceProp.minor == 6)
+  //     compute_cores_per_SM = 128;
+  //   else
+  //     cout << "Unknown device type\n";
+  //   break;
+  // default:
+  //   cout << "Unknown device type\n";
+  //   break;
+  // }
 
   ofstream out;
   out.open("device_data_NVIDIA.py");
