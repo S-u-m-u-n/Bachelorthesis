@@ -256,33 +256,6 @@
           "debuginfo": null
         }
       },
-      "gpu_C": {
-        "type": "Array",
-        "attributes": {
-          "allow_conflicts": false,
-          "strides": [
-            "N",
-            "1"
-          ],
-          "total_size": "M*N",
-          "offset": [
-            "0",
-            "0"
-          ],
-          "may_alias": false,
-          "alignment": 0,
-          "dtype": "float64",
-          "shape": [
-            "M",
-            "N"
-          ],
-          "transient": true,
-          "storage": "GPU_Global",
-          "lifetime": "Scope",
-          "location": {},
-          "debuginfo": null
-        }
-      },
       "gpu_B": {
         "type": "Array",
         "attributes": {
@@ -301,6 +274,33 @@
           "dtype": "float64",
           "shape": [
             "K",
+            "N"
+          ],
+          "transient": true,
+          "storage": "GPU_Global",
+          "lifetime": "Scope",
+          "location": {},
+          "debuginfo": null
+        }
+      },
+      "gpu_C": {
+        "type": "Array",
+        "attributes": {
+          "allow_conflicts": false,
+          "strides": [
+            "N",
+            "1"
+          ],
+          "total_size": "M*N",
+          "offset": [
+            "0",
+            "0"
+          ],
+          "may_alias": false,
+          "alignment": 0,
+          "dtype": "float64",
+          "shape": [
+            "M",
             "N"
           ],
           "transient": true,
@@ -2513,7 +2513,7 @@
     ],
     "openmp_sections": true,
     "name": "matmul",
-    "hash": "833c4b75ea59fd03de1537a6945dc94705f72c03ba21209dd2ce19ff33b93adb"
+    "hash": "601d91acae074b68613d4a08288e9ce655a691ea70e864ee41f6176da2a8ba27"
   },
   "nodes": [
     {
@@ -4673,8 +4673,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile2___i0",
-                                  "end": "tile1___i0 + tile2___i0 + 7",
+                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
+                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -4696,8 +4696,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile2___i0",
-                                  "end": "tile1___i0 + tile2___i0 + 7",
+                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
+                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -4731,8 +4731,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "128*floor(tile___i0/256)",
-                                  "end": "128*floor(tile___i0/256) + 127",
+                                  "start": "tile___i0",
+                                  "end": "tile___i0 + 127",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -4754,8 +4754,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "128*floor(tile___i0/256)",
-                                  "end": "128*floor(tile___i0/256) + 127",
+                                  "start": "tile___i0",
+                                  "end": "tile___i0 + 127",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -5027,8 +5027,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile2___i1",
-                                  "end": "tile1___i1 + tile2___i1 + 7",
+                                  "start": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7)",
+                                  "end": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5050,8 +5050,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile2___i1",
-                                  "end": "tile1___i1 + tile2___i1 + 7",
+                                  "start": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7)",
+                                  "end": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5085,8 +5085,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "2*tile___i1 + 128*Mod(tile___i0/128, 2)",
-                                  "end": "2*tile___i1 + 128*Mod(tile___i0/128, 2) + 127",
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 127",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5108,8 +5108,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "2*tile___i1 + 128*Mod(tile___i0/128, 2)",
-                                  "end": "2*tile___i1 + 128*Mod(tile___i0/128, 2) + 127",
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 127",
                                   "step": "1",
                                   "tile": "1"
                                 }

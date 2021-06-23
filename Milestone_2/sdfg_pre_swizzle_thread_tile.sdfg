@@ -256,33 +256,6 @@
           "debuginfo": null
         }
       },
-      "gpu_C": {
-        "type": "Array",
-        "attributes": {
-          "allow_conflicts": false,
-          "strides": [
-            "N",
-            "1"
-          ],
-          "total_size": "M*N",
-          "offset": [
-            "0",
-            "0"
-          ],
-          "may_alias": false,
-          "alignment": 0,
-          "dtype": "float64",
-          "shape": [
-            "M",
-            "N"
-          ],
-          "transient": true,
-          "storage": "GPU_Global",
-          "lifetime": "Scope",
-          "location": {},
-          "debuginfo": null
-        }
-      },
       "gpu_B": {
         "type": "Array",
         "attributes": {
@@ -301,6 +274,33 @@
           "dtype": "float64",
           "shape": [
             "K",
+            "N"
+          ],
+          "transient": true,
+          "storage": "GPU_Global",
+          "lifetime": "Scope",
+          "location": {},
+          "debuginfo": null
+        }
+      },
+      "gpu_C": {
+        "type": "Array",
+        "attributes": {
+          "allow_conflicts": false,
+          "strides": [
+            "N",
+            "1"
+          ],
+          "total_size": "M*N",
+          "offset": [
+            "0",
+            "0"
+          ],
+          "may_alias": false,
+          "alignment": 0,
+          "dtype": "float64",
+          "shape": [
+            "M",
             "N"
           ],
           "transient": true,
@@ -2513,7 +2513,7 @@
     ],
     "openmp_sections": true,
     "name": "matmul",
-    "hash": "21b94f2ff81654ee2d5363b7515af6070f9afbdf737415c06b098bbab7a6295d"
+    "hash": "ae9268f30060713d2a2c1901b7ce8ab654e40f3bec169e480222e739b77a5827"
   },
   "nodes": [
     {
@@ -4731,8 +4731,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "floor(tile___i0/256)",
-                                  "end": "floor(tile___i0/256) + 127",
+                                  "start": "tile___i0",
+                                  "end": "tile___i0 + 127",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -4754,8 +4754,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "floor(tile___i0/256)",
-                                  "end": "floor(tile___i0/256) + 127",
+                                  "start": "tile___i0",
+                                  "end": "tile___i0 + 127",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -5085,8 +5085,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1/64 + Mod(tile___i0/128, 2)",
-                                  "end": "tile___i1/64 + Mod(tile___i0/128, 2) + 127",
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 127",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5108,8 +5108,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1/64 + Mod(tile___i0/128, 2)",
-                                  "end": "tile___i1/64 + Mod(tile___i0/128, 2) + 127",
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 127",
                                   "step": "1",
                                   "tile": "1"
                                 }
