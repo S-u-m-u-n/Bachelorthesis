@@ -256,33 +256,6 @@
           "debuginfo": null
         }
       },
-      "gpu_C": {
-        "type": "Array",
-        "attributes": {
-          "allow_conflicts": false,
-          "strides": [
-            "N",
-            "1"
-          ],
-          "total_size": "M*N",
-          "offset": [
-            "0",
-            "0"
-          ],
-          "may_alias": false,
-          "alignment": 0,
-          "dtype": "float64",
-          "shape": [
-            "M",
-            "N"
-          ],
-          "transient": true,
-          "storage": "GPU_Global",
-          "lifetime": "Scope",
-          "location": {},
-          "debuginfo": null
-        }
-      },
       "gpu_B": {
         "type": "Array",
         "attributes": {
@@ -301,6 +274,33 @@
           "dtype": "float64",
           "shape": [
             "K",
+            "N"
+          ],
+          "transient": true,
+          "storage": "GPU_Global",
+          "lifetime": "Scope",
+          "location": {},
+          "debuginfo": null
+        }
+      },
+      "gpu_C": {
+        "type": "Array",
+        "attributes": {
+          "allow_conflicts": false,
+          "strides": [
+            "N",
+            "1"
+          ],
+          "total_size": "M*N",
+          "offset": [
+            "0",
+            "0"
+          ],
+          "may_alias": false,
+          "alignment": 0,
+          "dtype": "float64",
+          "shape": [
+            "M",
             "N"
           ],
           "transient": true,
@@ -2513,7 +2513,7 @@
     ],
     "openmp_sections": true,
     "name": "matmul",
-    "hash": "d9e69095dc771c26d7b7c952022d47ad6fb95af3ef260b7a8f1db6d6793f725a"
+    "hash": "0bc551ca1d2ad2883bd7c6dbe09ec4a022872582156604893d13147fcb24ca85"
   },
   "nodes": [
     {
@@ -3768,28 +3768,6 @@
                     },
                     {
                       "type": "AccessNode",
-                      "label": "_a",
-                      "attributes": {
-                        "access": "ReadOnly",
-                        "setzero": false,
-                        "debuginfo": {
-                          "type": "DebugInfo",
-                          "start_line": 1334,
-                          "end_line": 1334,
-                          "start_column": 0,
-                          "end_column": 0,
-                          "filename": "/home/sumun/.local/lib/python3.9/site-packages/dace/sdfg/state.py"
-                        },
-                        "data": "_a",
-                        "in_connectors": {},
-                        "out_connectors": {}
-                      },
-                      "id": 3,
-                      "scope_entry": null,
-                      "scope_exit": null
-                    },
-                    {
-                      "type": "AccessNode",
                       "label": "_b",
                       "attributes": {
                         "access": "ReadOnly",
@@ -3803,6 +3781,28 @@
                           "filename": "/home/sumun/.local/lib/python3.9/site-packages/dace/sdfg/state.py"
                         },
                         "data": "_b",
+                        "in_connectors": {},
+                        "out_connectors": {}
+                      },
+                      "id": 3,
+                      "scope_entry": null,
+                      "scope_exit": null
+                    },
+                    {
+                      "type": "AccessNode",
+                      "label": "_a",
+                      "attributes": {
+                        "access": "ReadOnly",
+                        "setzero": false,
+                        "debuginfo": {
+                          "type": "DebugInfo",
+                          "start_line": 1334,
+                          "end_line": 1334,
+                          "start_column": 0,
+                          "end_column": 0,
+                          "filename": "/home/sumun/.local/lib/python3.9/site-packages/dace/sdfg/state.py"
+                        },
+                        "data": "_a",
                         "in_connectors": {},
                         "out_connectors": {}
                       },
@@ -4366,7 +4366,7 @@
                           }
                         }
                       },
-                      "src": "3",
+                      "src": "4",
                       "dst": "17",
                       "dst_connector": "IN__a",
                       "src_connector": null
@@ -4482,7 +4482,7 @@
                           }
                         }
                       },
-                      "src": "4",
+                      "src": "3",
                       "dst": "17",
                       "dst_connector": "IN__b",
                       "src_connector": null
@@ -4673,8 +4673,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
-                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
+                                  "start": "tile1___i0 + tile2___i0",
+                                  "end": "tile1___i0 + tile2___i0 + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -4696,8 +4696,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
-                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
+                                  "start": "tile1___i0 + tile2___i0",
+                                  "end": "tile1___i0 + tile2___i0 + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -4731,8 +4731,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "floor(tile___i0/256)",
-                                  "end": "floor(tile___i0/256) + 127",
+                                  "start": "tile___i0",
+                                  "end": "tile___i0 + 127",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -4754,8 +4754,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "floor(tile___i0/256)",
-                                  "end": "floor(tile___i0/256) + 127",
+                                  "start": "tile___i0",
+                                  "end": "tile___i0 + 127",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -5027,8 +5027,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7)",
-                                  "end": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7) + 7",
+                                  "start": "tile1___i1 + tile2___i1",
+                                  "end": "tile1___i1 + tile2___i1 + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5050,8 +5050,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7)",
-                                  "end": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7) + 7",
+                                  "start": "tile1___i1 + tile2___i1",
+                                  "end": "tile1___i1 + tile2___i1 + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5085,8 +5085,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1/64 + Mod(tile___i0/128, 2)",
-                                  "end": "tile___i1/64 + Mod(tile___i0/128, 2) + 127",
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 127",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5108,8 +5108,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1/64 + Mod(tile___i0/128, 2)",
-                                  "end": "tile___i1/64 + Mod(tile___i0/128, 2) + 127",
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 127",
                                   "step": "1",
                                   "tile": "1"
                                 }
