@@ -348,10 +348,10 @@ def create_sdfg(schedule) -> None:
         print("-" * 9 * math.ceil(M / schedule.thread_block_tile_m) + "-")
 
         old_id_x = current_mapping_x.ndrange()[0][0] / schedule.thread_block_tile_m
-        new_id_x = SWIZZLE_x(old_id_x)
+        new_id_x = SWIZZLE_x(old_id_x) * schedule.thread_block_tile_m
         print("SWIZZLE: " + str(old_id_x) + " is remapped to " + str(new_id_x))
         old_id_y = current_mapping_y.ndrange()[1][0] / schedule.thread_block_tile_n
-        new_id_y = SWIZZLE_y(old_id_y, old_id_x)
+        new_id_y = SWIZZLE_y(old_id_y, old_id_x) * schedule.thread_block_tile_n
         print("SWIZZLE: " + str(old_id_y) + " is remapped to " + str(new_id_y))
 
         state.out_edges(entry)[0].data.subset = Range([
