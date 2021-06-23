@@ -231,16 +231,19 @@ def create_sdfg(schedule) -> None:
 
     #####################################################################
     ### local storage (registers) for loading thread_tiles of A and B
-    # expand the three dimensions of the thread_tile...
     entry, state = find_map_by_param(state.parent, "__i0")
+    # Reorder internal map to "k, i, j"
+    xfutil.permute_map(entry, [2, 0, 1])
+    sdfg.save("reordered.sdfg")
+    # expand the three dimensions of the thread_tile...
     MapExpansion.apply_to(state.parent, map_entry=entry)
-    # ...then collapse the first two dimensions again...
+    # ...then collapse the inner two dimensions again...
     entry_outer, state = find_map_by_param(state.parent, "__i0")
     entry_inner, state = find_map_by_param(state.parent, "__i1")
     MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner) 
     # ...and finally apply local storage transformation
-    entry_outer, state = find_map_by_param(state.parent, "__i0")
-    entry_inner, state = find_map_by_param(state.parent, "__i2")
+    entry_outer, state = find_map_by_param(state.parent, "__i2")
+    entry_inner, state = find_map_by_param(state.parent, "__i0")
     InLocalStorage.apply_to(state.parent, dict(array='trans__a'), node_a=entry_outer, node_b=entry_inner)
     InLocalStorage.apply_to(state.parent, dict(array='trans__b'), node_a=entry_outer, node_b=entry_inner)
 
@@ -263,7 +266,8 @@ def create_sdfg(schedule) -> None:
         entry_inner, state = find_map_by_param(state.parent, "tile___i2")
         MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
         entry, state = find_map_by_param(state.parent, "tile___i2")
-        StripMining.apply_to(state.parent,
+        # entry.schedule = dace.ScheduleType.GPU_Device
+        entry_new = StripMining.apply_to(state.parent,
                     dict(new_dim_prefix="SPLIT_K",
                     # tiling_type=dace.TilingType.NumberOfTiles,
                     # tile_size=schedule.split_k, # Split K tiles
@@ -274,6 +278,9 @@ def create_sdfg(schedule) -> None:
                     ),
                     _map_entry=entry
         )
+        # entry_new.schedule = dace.ScheduleType.Sequential
+
+        # We need to modify the memlets due to a bug - probably not necessary in the future
         entry, state = find_map_by_param(state.parent, "SPLIT_K_tile___i2")
 
         current_mapping_x = state.out_edges(entry)[0].data.subset
@@ -313,7 +320,7 @@ def create_sdfg(schedule) -> None:
     sdfg.save('sdfg_pre_swizzle_thread_block.sdfg')
     if schedule.SWIZZLE_thread_block > 1:
         helpers.print_info('Applying SWIZZLE_thread_block with SWIZZLE_thread_block = ' + str(schedule.SWIZZLE_thread_block) + " ....")
-        entry, state = find_map_by_param(state.parent, "tile___i0")
+        entry, state = find_map_by_param(state.parent, "tile___i2")
         def SWIZZLE_x(x):
             return x // schedule.SWIZZLE_thread_block # // stands for floor division
         def SWIZZLE_y(y, x):
@@ -396,7 +403,7 @@ def create_sdfg(schedule) -> None:
     sdfg.save('sdfg_pre_swizzle_thread_tile.sdfg')
     if schedule.SWIZZLE_thread_tile == True:
         helpers.print_info('Applying SWIZZLE_thread_tile with SWIZZLE_thread_tile = ' + str(schedule.SWIZZLE_thread_tile) + " ....")
-        entry, state = find_map_by_param(state.parent, "tile2___i0")
+        entry, state = find_map_by_param(state.parent, "__i2")
         warp_tile_width = math.ceil(schedule.warp_tile_n / schedule.thread_tile_n)
         warp_tile_height = math.ceil(schedule.warp_tile_m / schedule.thread_tile_m)
         print(warp_tile_width)
@@ -501,15 +508,16 @@ def create_sdfg(schedule) -> None:
     # Todo: this probably depends on hardware as well as datatype size... how to query the maximum vector instruction size?
     sdfg.save('sdfg_pre_vectorization.sdfg')
     if schedule.load_k > 1:
+        # 128 bits maximum
         helpers.print_info('Applying Vectorization....')
         if schedule.load_k == 2:
             vector_length = 2
         elif schedule.load_k >= 4:
-            vector_length = 2 # doesn't compile with vector_length = 4... why?
+            vector_length = 2
 
-        entry, state = find_map_by_param(state.parent, "__i2")
+        entry, state = find_map_by_param(state.parent, "__i0")
         Vectorization.apply_to(state.parent,
-                        dict(vector_len=vector_length, preamble=False, postamble=False, strided_map=False),
+                        dict(vector_len=vector_length, preamble=False, postamble=False, strided_map=True),
                         _map_entry=entry,
                         _tasklet=state.out_edges(entry)[0].dst,
                         _map_exit=state.out_edges(entry)[0].dst)
@@ -624,6 +632,9 @@ capability_version = 7.0""")
     helpers.print_info("Phase 3/3: Creating SDFG...", args.colorless)
     csdfg = create_sdfg(best_schedule)
     helpers.print_success("Created SDFG.", args.colorless)
+    # 4096 x 4096
+    # (1024 x 8192) x (8192 x 1024)
+    # 1024 x 1024
     C_correct = matmul(A=np.random.rand(640, 640), B=np.random.rand(640, 640), C=np.zeros((640, 640)), alpha=dace.float64(1), beta=dace.float64(1), M=np.int32(640), N=np.int32(640), K=np.int32(640))
     C_test = csdfg(A=np.random.rand(640, 640), B=np.random.rand(640, 640), C=np.zeros((640, 640)), alpha=dace.float64(1), beta=dace.float64(1), M=np.int32(640), N=np.int32(640), K=np.int32(640))
 
