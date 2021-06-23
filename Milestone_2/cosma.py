@@ -317,88 +317,88 @@ def create_sdfg(schedule) -> None:
 
     #####################################################################
     ### SWIZZLE_thread_block
-    # sdfg.save('sdfg_pre_swizzle_thread_block.sdfg')
-    # if schedule.SWIZZLE_thread_block > 1:
-    #     helpers.print_info('Applying SWIZZLE_thread_block with SWIZZLE_thread_block = ' + str(schedule.SWIZZLE_thread_block) + " ....")
-    #     entry, state = find_map_by_param(state.parent, "tile___i2")
-    #     def SWIZZLE_x(x):
-    #         return x // schedule.SWIZZLE_thread_block # // stands for floor division
-    #     def SWIZZLE_y(y, x):
-    #         return (y * schedule.SWIZZLE_thread_block) + (x % schedule.SWIZZLE_thread_block)
-    #     # ... apply SWIZZLE_thread_block transformations
-    #     current_mapping_x = state.out_edges(entry)[0].data.subset
-    #     current_mapping_y = state.out_edges(entry)[1].data.subset
-    #     print(current_mapping_x)
-    #     print(current_mapping_y)
-    #     print()
-    #     print("Thread block grid before swizzling:")
-    #     for x in range (0, math.ceil(M / schedule.thread_block_tile_m)):
-    #         print("-" * 9 * math.ceil(M / schedule.thread_block_tile_m) + "-")
-    #         for y in range (0, math.ceil(N / schedule.thread_block_tile_n)):
-    #             print("| (" + str(x) + ", " + str(y) + ") ", end="")
-    #         print("|")
-    #     print("-" * 9 * math.ceil(M / schedule.thread_block_tile_m) + "-")
+    sdfg.save('sdfg_pre_swizzle_thread_block.sdfg')
+    if schedule.SWIZZLE_thread_block > 1:
+        helpers.print_info('Applying SWIZZLE_thread_block with SWIZZLE_thread_block = ' + str(schedule.SWIZZLE_thread_block) + " ....")
+        entry, state = find_map_by_param(state.parent, "tile___i2")
+        def SWIZZLE_x(x):
+            return x // schedule.SWIZZLE_thread_block # // stands for floor division
+        def SWIZZLE_y(y, x):
+            return (y * schedule.SWIZZLE_thread_block) + (x % schedule.SWIZZLE_thread_block)
+        # ... apply SWIZZLE_thread_block transformations
+        current_mapping_x = state.out_edges(entry)[0].data.subset
+        current_mapping_y = state.out_edges(entry)[1].data.subset
+        print(current_mapping_x)
+        print(current_mapping_y)
+        print()
+        print("Thread block grid before swizzling:")
+        for x in range (0, math.ceil(M / schedule.thread_block_tile_m)):
+            print("-" * 9 * math.ceil(M / schedule.thread_block_tile_m) + "-")
+            for y in range (0, math.ceil(N / schedule.thread_block_tile_n)):
+                print("| (" + str(x) + ", " + str(y) + ") ", end="")
+            print("|")
+        print("-" * 9 * math.ceil(M / schedule.thread_block_tile_m) + "-")
 
-    #     print("Thread block grid after swizzling:")
-    #     for x in range (0, math.ceil(M / schedule.thread_block_tile_m)):
-    #         print("-" * 9 * math.ceil(M / schedule.thread_block_tile_m) + "-")
-    #         for y in range (0, math.ceil(N / schedule.thread_block_tile_n)):
-    #             print("| (" + str(SWIZZLE_x(x)) + ", " + str(SWIZZLE_y(y, x)) + ") ", end="")
-    #         print("|")
-    #     print("-" * 9 * math.ceil(M / schedule.thread_block_tile_m) + "-")
+        print("Thread block grid after swizzling:")
+        for x in range (0, math.ceil(M / schedule.thread_block_tile_m)):
+            print("-" * 9 * math.ceil(M / schedule.thread_block_tile_m) + "-")
+            for y in range (0, math.ceil(N / schedule.thread_block_tile_n)):
+                print("| (" + str(SWIZZLE_x(x)) + ", " + str(SWIZZLE_y(y, x)) + ") ", end="")
+            print("|")
+        print("-" * 9 * math.ceil(M / schedule.thread_block_tile_m) + "-")
 
-    #     old_id_x = current_mapping_x.ndrange()[0][0] / schedule.thread_block_tile_m
-    #     new_id_x = SWIZZLE_x(old_id_x)
-    #     print("SWIZZLE: " + str(old_id_x) + " is remapped to " + str(new_id_x))
-    #     old_id_y = current_mapping_y.ndrange()[1][0] / schedule.thread_block_tile_n
-    #     new_id_y = SWIZZLE_y(old_id_y, old_id_x)
-    #     print("SWIZZLE: " + str(old_id_y) + " is remapped to " + str(new_id_y))
+        old_id_x = current_mapping_x.ndrange()[0][0] / schedule.thread_block_tile_m
+        new_id_x = SWIZZLE_x(old_id_x)
+        print("SWIZZLE: " + str(old_id_x) + " is remapped to " + str(new_id_x))
+        old_id_y = current_mapping_y.ndrange()[1][0] / schedule.thread_block_tile_n
+        new_id_y = SWIZZLE_y(old_id_y, old_id_x)
+        print("SWIZZLE: " + str(old_id_y) + " is remapped to " + str(new_id_y))
 
-    #     state.out_edges(entry)[0].data.subset = Range([
-    #         (new_id_x,
-    #         new_id_x + schedule.thread_block_tile_m - 1,
-    #         current_mapping_x.ndrange()[0][2]),
-    #         (current_mapping_x.ndrange()[1][0],
-    #         current_mapping_x.ndrange()[1][1],
-    #         current_mapping_x.ndrange()[1][2])
-    #     ])
+        state.out_edges(entry)[0].data.subset = Range([
+            (new_id_x,
+            new_id_x + schedule.thread_block_tile_m - 1,
+            current_mapping_x.ndrange()[0][2]),
+            (current_mapping_x.ndrange()[1][0],
+            current_mapping_x.ndrange()[1][1],
+            current_mapping_x.ndrange()[1][2])
+        ])
 
-    #     state.out_edges(entry)[1].data.subset = Range([
-    #         (current_mapping_y.ndrange()[0][0],
-    #          current_mapping_y.ndrange()[0][1],
-    #          current_mapping_y.ndrange()[0][2]),
-    #         (new_id_y,
-    #         new_id_y + schedule.thread_block_tile_n - 1,
-    #         current_mapping_y.ndrange()[1][2])
-    #     ])
-    #     helpers.print_success("Successfully applied thread block SWIZZLE.")
+        state.out_edges(entry)[1].data.subset = Range([
+            (current_mapping_y.ndrange()[0][0],
+             current_mapping_y.ndrange()[0][1],
+             current_mapping_y.ndrange()[0][2]),
+            (new_id_y,
+            new_id_y + schedule.thread_block_tile_n - 1,
+            current_mapping_y.ndrange()[1][2])
+        ])
+        helpers.print_success("Successfully applied thread block SWIZZLE.")
     
-    # #####################################################################
-    # ### SWIZZLE_thread_tile
-    # # class BitwiseAnd(sy.Function):
-    # #     nargs = 2
-    # #     @classmethod
-    # #     def eval(cls, x, y):
-    # #         print("Evaluting: " + str(x) + " & " + str(y))
-    # #         if x == 0 or y == 0:
-    # #             return 1
-    # #         return 0
+    #####################################################################
+    ### SWIZZLE_thread_tile
+    # class BitwiseAnd(sy.Function):
+    #     nargs = 2
+    #     @classmethod
+    #     def eval(cls, x, y):
+    #         print("Evaluting: " + str(x) + " & " + str(y))
+    #         if x == 0 or y == 0:
+    #             return 1
+    #         return 0
     
-    # # class BitwiseOr(sy.Function):
-    # #     nargs = 2
-    # #     @classmethod
-    # #     def eval(cls, x, y):
-    # #         if x == 1 or y == 1:
-    # #             return 0
-    # #         return 1
+    # class BitwiseOr(sy.Function):
+    #     nargs = 2
+    #     @classmethod
+    #     def eval(cls, x, y):
+    #         if x == 1 or y == 1:
+    #             return 0
+    #         return 1
 
-    # # class RightShift(sy.Function):
-    # #     nargs = 2
-    # #     @classmethod
-    # #     def eval(cls, x, y):
-    # #         for i in range(0, y):
-    # #             x /= 2
-    # #         return x
+    # class RightShift(sy.Function):
+    #     nargs = 2
+    #     @classmethod
+    #     def eval(cls, x, y):
+    #         for i in range(0, y):
+    #             x /= 2
+    #         return x
 
     # sdfg.save('sdfg_pre_swizzle_thread_tile.sdfg')
     # if schedule.SWIZZLE_thread_tile == True:
