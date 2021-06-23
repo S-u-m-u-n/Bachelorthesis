@@ -635,8 +635,11 @@ capability_version = 7.0""")
     # 4096 x 4096
     # (1024 x 8192) x (8192 x 1024)
     # 1024 x 1024
-    C_correct = matmul(A=np.random.rand(640, 640), B=np.random.rand(640, 640), C=np.zeros((640, 640)), alpha=dace.float64(1), beta=dace.float64(1), M=np.int32(640), N=np.int32(640), K=np.int32(640))
-    C_test = csdfg(A=np.random.rand(640, 640), B=np.random.rand(640, 640), C=np.zeros((640, 640)), alpha=dace.float64(1), beta=dace.float64(1), M=np.int32(640), N=np.int32(640), K=np.int32(640))
+    A = np.random.rand(640, 640)
+    B = np.random.rand(640, 640)
+    C = np.zeros((640, 640))
+    C_correct = matmul(A=A, B=B, C=C, alpha=dace.float64(1), beta=dace.float64(1), M=np.int32(640), N=np.int32(640), K=np.int32(640))
+    C_test = csdfg(A=A, B=B, C=C, alpha=dace.float64(1), beta=dace.float64(1), M=np.int32(640), N=np.int32(640), K=np.int32(640))
 
     def areSame(A,B):
         for i in range(M):
