@@ -259,64 +259,64 @@ def create_sdfg(schedule) -> None:
 
     #####################################################################
     ### Split K
-    # sdfg.save('sdfg_pre_split_k.sdfg')
-    # if schedule.split_k > 1:
-    #     helpers.print_info('Applying Split K with Split_K = ' + str(schedule.split_k) + " ....")
-    #     entry_outer, state = find_map_by_param(state.parent, "tile___i0")
-    #     entry_inner, state = find_map_by_param(state.parent, "tile___i2")
-    #     MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
-    #     entry, state = find_map_by_param(state.parent, "tile___i2")
-    #     # entry.schedule = dace.ScheduleType.GPU_Device
-    #     entry_new = StripMining.apply_to(state.parent,
-    #                 dict(new_dim_prefix="SPLIT_K",
-    #                 # tiling_type=dace.TilingType.NumberOfTiles,
-    #                 # tile_size=schedule.split_k, # Split K tiles
-    #                 tile_size= K / schedule.split_k, # Split K tiles
-    #                 dim_idx=2, # K dimension
-    #                 divides_evenly=K % schedule.split_k == 0,
-    #                 strided=True
-    #                 ),
-    #                 _map_entry=entry
-    #     )
-    #     # entry_new.schedule = dace.ScheduleType.Sequential
+    sdfg.save('sdfg_pre_split_k.sdfg')
+    if schedule.split_k > 1:
+        helpers.print_info('Applying Split K with Split_K = ' + str(schedule.split_k) + " ....")
+        entry_outer, state = find_map_by_param(state.parent, "tile___i0")
+        entry_inner, state = find_map_by_param(state.parent, "tile___i2")
+        MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
+        entry, state = find_map_by_param(state.parent, "tile___i2")
+        # entry.schedule = dace.ScheduleType.GPU_Device
+        entry_new = StripMining.apply_to(state.parent,
+                    dict(new_dim_prefix="SPLIT_K",
+                    # tiling_type=dace.TilingType.NumberOfTiles,
+                    # tile_size=schedule.split_k, # Split K tiles
+                    tile_size= K / schedule.split_k, # Split K tiles
+                    dim_idx=2, # K dimension
+                    divides_evenly=K % schedule.split_k == 0,
+                    strided=True
+                    ),
+                    _map_entry=entry
+        )
+        # entry_new.schedule = dace.ScheduleType.Sequential
 
-    #     # We need to modify the memlets due to a bug - probably not necessary in the future
-    #     entry, state = find_map_by_param(state.parent, "SPLIT_K_tile___i2")
+        # We need to modify the memlets due to a bug - probably not necessary in the future
+        entry, state = find_map_by_param(state.parent, "SPLIT_K_tile___i2")
 
-    #     current_mapping_x = state.out_edges(entry)[0].data.subset
-    #     current_mapping_y = state.out_edges(entry)[1].data.subset
-    #     state.out_edges(entry)[0].data.subset = Range([
-    #         (current_mapping_x.ndrange()[0][0],
-    #         current_mapping_x.ndrange()[0][1] - schedule.thread_block_tile_m + 1,
-    #         current_mapping_x.ndrange()[0][2]),
-    #         (current_mapping_x.ndrange()[1][0],
-    #         current_mapping_x.ndrange()[1][1] - schedule.load_k + 1,
-    #         current_mapping_x.ndrange()[1][2])
-    #     ])
+        current_mapping_x = state.out_edges(entry)[0].data.subset
+        current_mapping_y = state.out_edges(entry)[1].data.subset
+        state.out_edges(entry)[0].data.subset = Range([
+            (current_mapping_x.ndrange()[0][0],
+            current_mapping_x.ndrange()[0][1] - schedule.thread_block_tile_m + 1,
+            current_mapping_x.ndrange()[0][2]),
+            (current_mapping_x.ndrange()[1][0],
+            current_mapping_x.ndrange()[1][1] - schedule.load_k + 1,
+            current_mapping_x.ndrange()[1][2])
+        ])
 
-    #     state.out_edges(entry)[1].data.subset = Range([
-    #         (current_mapping_y.ndrange()[0][0],
-    #          current_mapping_y.ndrange()[0][1] - schedule.load_k + 1,
-    #          current_mapping_y.ndrange()[0][2]),
-    #         (current_mapping_y.ndrange()[1][0],
-    #         current_mapping_y.ndrange()[1][1] - schedule.thread_block_tile_n + 1,
-    #         current_mapping_y.ndrange()[1][2])
-    #     ])
-    #     # expand the three dimensions of the thread_tile...
-    #     entry, state = find_map_by_param(state.parent, "tile___i0")
-    #     MapExpansion.apply_to(state.parent, map_entry=entry)
-    #     # ...then collapse the first two dimensions again...
-    #     entry_outer, state = find_map_by_param(state.parent, "tile___i0")
-    #     entry_inner, state = find_map_by_param(state.parent, "tile___i1")
-    #     MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner) 
+        state.out_edges(entry)[1].data.subset = Range([
+            (current_mapping_y.ndrange()[0][0],
+             current_mapping_y.ndrange()[0][1] - schedule.load_k + 1,
+             current_mapping_y.ndrange()[0][2]),
+            (current_mapping_y.ndrange()[1][0],
+            current_mapping_y.ndrange()[1][1] - schedule.thread_block_tile_n + 1,
+            current_mapping_y.ndrange()[1][2])
+        ])
+        # expand the three dimensions of the thread_tile...
+        entry, state = find_map_by_param(state.parent, "tile___i0")
+        MapExpansion.apply_to(state.parent, map_entry=entry)
+        # ...then collapse the first two dimensions again...
+        entry_outer, state = find_map_by_param(state.parent, "tile___i0")
+        entry_inner, state = find_map_by_param(state.parent, "tile___i1")
+        MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner) 
 
-    #     helpers.print_success("Successfully applied Split K.")
-    #     # Todo: Modify tasklet
-    #     # Todo: make a reduction in the end
-    #         # MapReduceFusion.apply_to(state.parent)
+        helpers.print_success("Successfully applied Split K.")
+        # Todo: Modify tasklet
+        # Todo: make a reduction in the end
+            # MapReduceFusion.apply_to(state.parent)
 
-    # #####################################################################
-    # ### SWIZZLE_thread_block
+    #####################################################################
+    ### SWIZZLE_thread_block
     # sdfg.save('sdfg_pre_swizzle_thread_block.sdfg')
     # if schedule.SWIZZLE_thread_block > 1:
     #     helpers.print_info('Applying SWIZZLE_thread_block with SWIZZLE_thread_block = ' + str(schedule.SWIZZLE_thread_block) + " ....")
