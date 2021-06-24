@@ -229,15 +229,15 @@
           "debuginfo": null
         }
       },
-      "gpu_A": {
+      "gpu_C": {
         "type": "Array",
         "attributes": {
           "allow_conflicts": false,
           "strides": [
-            "K",
+            "N",
             "1"
           ],
-          "total_size": "K*M",
+          "total_size": "M*N",
           "offset": [
             "0",
             "0"
@@ -247,7 +247,7 @@
           "dtype": "float64",
           "shape": [
             "M",
-            "K"
+            "N"
           ],
           "transient": true,
           "storage": "GPU_Global",
@@ -283,15 +283,15 @@
           "debuginfo": null
         }
       },
-      "gpu_C": {
+      "gpu_A": {
         "type": "Array",
         "attributes": {
           "allow_conflicts": false,
           "strides": [
-            "N",
+            "K",
             "1"
           ],
-          "total_size": "M*N",
+          "total_size": "K*M",
           "offset": [
             "0",
             "0"
@@ -301,7 +301,7 @@
           "dtype": "float64",
           "shape": [
             "M",
-            "N"
+            "K"
           ],
           "transient": true,
           "storage": "GPU_Global",
@@ -2206,7 +2206,7 @@
     ],
     "openmp_sections": true,
     "name": "matmul",
-    "hash": "bbaa28f4b2803ca0870cf9f75252d456afeba6ea4b97ca02cca945cfffe42f3d"
+    "hash": "b10e5b02bdbd2b1d2521d377409985929666ee94727178ceb3ac3bb92283fa14"
   },
   "nodes": [
     {
@@ -3311,28 +3311,6 @@
                     },
                     {
                       "type": "AccessNode",
-                      "label": "_b",
-                      "attributes": {
-                        "access": "ReadOnly",
-                        "setzero": false,
-                        "debuginfo": {
-                          "type": "DebugInfo",
-                          "start_line": 1334,
-                          "end_line": 1334,
-                          "start_column": 0,
-                          "end_column": 0,
-                          "filename": "/home/sumun/.local/lib/python3.9/site-packages/dace/sdfg/state.py"
-                        },
-                        "data": "_b",
-                        "in_connectors": {},
-                        "out_connectors": {}
-                      },
-                      "id": 3,
-                      "scope_entry": null,
-                      "scope_exit": null
-                    },
-                    {
-                      "type": "AccessNode",
                       "label": "_a",
                       "attributes": {
                         "access": "ReadOnly",
@@ -3346,6 +3324,28 @@
                           "filename": "/home/sumun/.local/lib/python3.9/site-packages/dace/sdfg/state.py"
                         },
                         "data": "_a",
+                        "in_connectors": {},
+                        "out_connectors": {}
+                      },
+                      "id": 3,
+                      "scope_entry": null,
+                      "scope_exit": null
+                    },
+                    {
+                      "type": "AccessNode",
+                      "label": "_b",
+                      "attributes": {
+                        "access": "ReadOnly",
+                        "setzero": false,
+                        "debuginfo": {
+                          "type": "DebugInfo",
+                          "start_line": 1334,
+                          "end_line": 1334,
+                          "start_column": 0,
+                          "end_column": 0,
+                          "filename": "/home/sumun/.local/lib/python3.9/site-packages/dace/sdfg/state.py"
+                        },
+                        "data": "_b",
                         "in_connectors": {},
                         "out_connectors": {}
                       },
@@ -3430,7 +3430,7 @@
                           }
                         }
                       },
-                      "src": "4",
+                      "src": "3",
                       "dst": "0",
                       "dst_connector": "IN__a",
                       "src_connector": null
@@ -3488,7 +3488,7 @@
                           }
                         }
                       },
-                      "src": "3",
+                      "src": "4",
                       "dst": "0",
                       "dst_connector": "IN__b",
                       "src_connector": null

@@ -506,27 +506,28 @@ def create_sdfg(schedule) -> None:
     # #####################################################################
     # ### Vectorization
     # Todo: this probably depends on hardware as well as datatype size... how to query the maximum vector instruction size?
-    # sdfg.save('sdfg_pre_vectorization.sdfg')
-    # if schedule.load_k > 1:
-    #     # 128 bits maximum
-    #     helpers.print_info('Applying Vectorization....')
-    #     if schedule.load_k == 2:
-    #         vector_length = 2
-    #     elif schedule.load_k >= 4:
-    #         vector_length = 2
+    sdfg.save('sdfg_pre_vectorization.sdfg')
+    if schedule.load_k > 1:
+        # 128 bits maximum
+        helpers.print_info('Applying Vectorization....')
+        if schedule.load_k == 2:
+            vector_length = 2
+        elif schedule.load_k >= 4:
+            vector_length = 2
 
-    #     entry, state = find_map_by_param(state.parent, "__i2")
-    #     Vectorization.apply_to(state.parent,
-    #                     dict(vector_len=vector_length, preamble=False, postamble=False),
-    #                     _map_entry=entry,
-    #                     _tasklet=state.out_edges(entry)[0].data,
-    #                     _map_exit=state.out_edges(entry)[0].dst)
-    #     # Vectorization.apply_to(state.parent,
-    #     #                 dict(vector_len=vector_length, preamble=False, postamble=False),
-    #     #                 _map_entry=entry,
-    #     #                 _tasklet=state.out_edges(entry)[1].data,
-    #     #                 _map_exit=state.out_edges(entry)[1].dst)
-    #     helpers.print_success("Successfully applied vectorization.")
+        entry, state = find_map_by_param(state.parent, "__i0")
+        # state.parent.apply_transformations_repeated(Vectorization, dict(vector_len=vector_length, preamble=False, postamble=False))
+        Vectorization.apply_to(state.parent,
+                        dict(vector_len=vector_length, preamble=False, postamble=False),
+                        _map_entry=entry,
+                        _tasklet=state.out_edges(entry)[0].dst,
+                        _map_exit=state.out_edges(entry)[0].dst)
+        # Vectorization.apply_to(state.parent,
+        #                 dict(vector_len=vector_length, preamble=False, postamble=False),
+        #                 _map_entry=entry,
+        #                 _tasklet=state.out_edges(entry)[1].dst,
+        #                 _map_exit=state.out_edges(entry)[1].dst)
+        helpers.print_success("Successfully applied vectorization.")
    
     # #####################################################################
     # ### Double Buffering (on shared memory)
@@ -646,6 +647,7 @@ capability_version = 7.0""")
     C_correct = matmul(A=A, B=B, C=C, alpha=dace.float64(1), beta=dace.float64(1), M=np.int32(640), N=np.int32(640), K=np.int32(640))
     C_test = csdfg(A=A, B=B, C=C, alpha=dace.float64(1), beta=dace.float64(1), M=np.int32(640), N=np.int32(640), K=np.int32(640))
 
+    # Can replace this with np.allclose(A, B)
     def areSame(A,B):
         for i in range(M):
             for j in range(N):
