@@ -31,7 +31,6 @@ K = dace.symbol('K')
 alpha = dace.symbol('alpha')
 beta = dace.symbol('beta')
 
-
 @dace.program
 def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
     return alpha * (A @ B) + beta * C
@@ -676,7 +675,7 @@ capability_version = 7.0""")
         C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
     elif args.version == 'cublas':
         dace.libraries.blas.default_implementation = 'cuBLAS'
-        C_test = matmul(A, B, C, )
+        C_test = matmul(A, B, C, alpha, beta)
 
     C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
 
