@@ -215,7 +215,6 @@ def create_sdfg(schedule) -> None:
     entry, state = find_map_by_param(state.parent, "__i0")
     # Reorder internal map to "k, i, j"
     xfutil.permute_map(entry, [2, 0, 1])
-    sdfg.save("reordered.sdfg")
     # expand the three dimensions of the thread_tile...
     MapExpansion.apply_to(state.parent, map_entry=entry)
     # ...then collapse the inner two dimensions again...
@@ -489,7 +488,8 @@ def create_sdfg(schedule) -> None:
     sdfg.save('sdfg_pre_vectorization.sdfg')
     if schedule.load_k > 1:
         # 128 bits maximum
-        helpers.print_info('Applying Vectorization....')
+        if not args.quiet:
+            helpers.print_info('Applying Vectorization....')
         if schedule.load_k == 2:
             vector_length = 2
         elif schedule.load_k >= 4:
@@ -508,28 +508,34 @@ def create_sdfg(schedule) -> None:
         #                 _map_entry=entry,
         #                 _tasklet=state.out_edges(entry)[1].dst,
         #                 _map_exit=state.exit_node(entry))
-        helpers.print_success("Successfully applied vectorization.")
+        if not args.quiet:
+            helpers.print_success("Successfully applied vectorization.")
    
     # #####################################################################
     # ### Double Buffering (on shared memory)
     sdfg.save('sdfg_pre_double_buffering.sdfg')
     if schedule.double_buffering == True:
-        helpers.print_info('Applying Double Buffering....')
+        if not args.quiet:
+            helpers.print_info('Applying Double Buffering....')
         entry, state = find_map_by_param(state, "tile___i2")
         DoubleBuffering.apply_to(state.parent, _map_entry=entry, _transient=shared_memory_A)
-        helpers.print_success("Successfully applied double buffering.")
+        if not args.quiet:
+            helpers.print_success("Successfully applied double buffering.")
 
     sdfg.save('sdfg_final.sdfg')
-    helpers.print_info('Compiling sdfg.')
+    if not args.quiet:
+        helpers.print_info('Compiling sdfg.')
     csdfg = sdfg.compile()
-    helpers.print_success("Successfully compiled SDFG.")
+    if not args.quiet:
+        helpers.print_success("Successfully compiled SDFG.")
     return csdfg
 
 #####################################################################
 # Query functions
 
 def queryNVIDIA():
-    helpers.print_info("Querying NVIDIA device info...", args.colorless)
+    if not args.quiet:
+        helpers.print_info("Querying NVIDIA device info...", args.colorless)
     if args.verbose:
         getDeviceInfo_NVIDIA = subprocess.run(["./getDeviceInfo_NVIDIA"])
     else:
@@ -545,30 +551,35 @@ def queryNVIDIA():
         return False
 
 def queryAMD():
-    helpers.print_info("Querying AMD device info...", args.colorless)
+    if not args.quiet:
+        helpers.print_info("Querying AMD device info...", args.colorless)
     if args.verbose:
         getDeviceInfo_AMD = subprocess.run(["./getDeviceInfo_AMD"])
     else:
         getDeviceInfo_AMD = subprocess.run(
             ["./getDeviceInfo_AMD"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     if getDeviceInfo_AMD.returncode == 0:
-        helpers.print_success(
-            "Successfully read AMD device Info", args.colorless)
+        if not args.quiet:
+            helpers.print_success("Successfully read AMD device Info", args.colorless)
         return True
     else:
-        helpers.print_warning("No AMD GPU found", args.colorless)
+        if not args.quiet:
+            helpers.print_warning("No AMD GPU found", args.colorless)
         return False
 
 #####################################################################
 # Main function
 
 if __name__ == "__main__":
-    helpers.print_info("Using this dace: " + str(dace.__file__))
-
     parser = ArgumentParser()
     parser.add_argument("-v", "--verbose",
                         dest='verbose',
-                        help="explain what is being done. Default: False",
+                        help="Explain what is being done. Default: False",
+                        action="store_true",
+                        default=False)
+    parser.add_argument("-q", "--quiet",
+                        dest='quiet',
+                        help="Only print errors.",
                         action="store_true",
                         default=False)
     parser.add_argument("-c", "--colorless",
@@ -598,14 +609,16 @@ cublas: Run `matmul` with the CUBLAS library node implementation.''')
                         help="Specify bit precision (16, 32, 64 or 128) - currently unsupported.")
     args = parser.parse_args()
     if args.verbose:
-        helpers.print_info("Program launched with the following arguments: " + str(args))
+        helpers.print_info("Program launched with the following arguments: " + str(args), args.colorless)
 
     if args.precision == '64':
         np_dtype = np.float64
     else:
-        helpers.print_error("Bit precisions different from 64 are currently unsupported")
+        helpers.print_error("Bit precisions different from 64 are currently unsupported", args.colorless)
         raise NotImplementedError
 
+    if not args.quiet:
+        helpers.print_info("Using this dace: " + str(dace.__file__))
 
     # Define set of possible values for schedule generator
     load_k_possible = [1, 2, 4, 8, 16, 32, 64, 128, 256]
@@ -625,7 +638,8 @@ total_compute_cores = 5120
 capability_version = 7.0""")
     default_device_data.close()
 
-    helpers.print_info("Phase 1/3: Querying device info...", args.colorless)
+    if not args.quiet:
+        helpers.print_info("Phase 1/3: Querying device info...", args.colorless)
     if args.gpu_type == "NVIDIA":
         queryNVIDIA()
     elif args.gpu_type == "AMD":
@@ -638,9 +652,10 @@ capability_version = 7.0""")
 
     import device_data as device
 
-    helpers.print_info(
-        "Using the following GPU for the schedule generator: ", args.colorless)
-    helpers.print_device_info(device, args.colorless)
+    if not args.quiet:
+        helpers.print_info(
+            "Using the following GPU for the schedule generator: ", args.colorless)
+        helpers.print_device_info(device, args.colorless)
 
     device.registers_per_thread_block = int(device.registers_per_thread_block /
                                             (sys.getsizeof(dace.float64()) / 4))
@@ -659,17 +674,20 @@ capability_version = 7.0""")
     if args.version == 'optimize_gpu':
         ########################################################
         # 2. Find best schedule
-        helpers.print_info("Phase 2/3: Finding best schedule...", args.colorless)
+        if not args.quiet:
+            helpers.print_info("Phase 2/3: Finding best schedule...", args.colorless)
         # schedule = find_best_schedule(load_k_possible, threadtiles_possible, device.registers_per_warp, device.registers_per_thread_block, device.threads_per_warp, device.warps_per_SM, device.SMs, device.total_compute_cores)
         # best_schedule = find_best_schedule(load_k_possible, threadtiles_possible)
         best_schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32,
                                 thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640, SWIZZLE_thread_block=2, splice_k = 2, split_k=2, double_buffering=True)
-        helpers.print_success("Found best schedule!", args.colorless)
-        print(best_schedule)
+        if not args.quiet:
+            helpers.print_success("Found best schedule!", args.colorless)
+            print(best_schedule)
 
         ########################################################
         # 3. Create sdfg
-        helpers.print_info("Phase 3/3: Creating SDFG...", args.colorless)
+        if not args.quiet:
+            helpers.print_info("Phase 3/3: Creating SDFG...", args.colorless)
         csdfg = create_sdfg(best_schedule)
         helpers.print_success("Created SDFG.", args.colorless)
         C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
@@ -698,7 +716,8 @@ capability_version = 7.0""")
     ########################################################
     # Convert to HIP code (if needed)
     if args.gpu_type == "AMD":
-        helpers.print_info("Converting CUDA code to HIP...", args.colorless)
+        if not args.quiet:
+            helpers.print_info("Converting CUDA code to HIP...", args.colorless)
         if args.verbose:
             convert_CUDA_to_HIP = subprocess.run(["ls"])
         else:
