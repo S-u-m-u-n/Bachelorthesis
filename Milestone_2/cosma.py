@@ -36,13 +36,6 @@ beta = dace.symbol('beta')
 def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
     return alpha * (A @ B) + beta * C
 
-M = 640
-N = 640
-K = 640
-beta = 1
-alpha = 1
-
-
 # Finds and returns the best schedule
 def find_best_schedule(load_k_possible, threadtiles_possible):
     best_schedule = Schedule()
