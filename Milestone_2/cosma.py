@@ -31,17 +31,6 @@ K = dace.symbol('K')
 alpha = dace.symbol('alpha')
 beta = dace.symbol('beta')
 
-parser = ArgumentParser()
-parser.add_argument("-v", "--verbose", dest='verbose', help="explain what is being done. Default: False",
-                    action="store_true", default=False)
-parser.add_argument("-c", "--colorless", dest='colorless',
-                    help="does not print colors, useful when writing to a file. Default: False", action="store_true", default=False)
-parser.add_argument("-g", "--gpu_type", dest='gpu_type',
-                    help="use this to specify the gpu type (\"NVIDIA\" or \"AMD\"). Default: NVIDIA", action="store", default="NVIDIA")
-args = parser.parse_args()
-if args.verbose:
-    print(args)
-
 
 @dace.program
 def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
@@ -505,7 +494,6 @@ def create_sdfg(schedule) -> None:
 
     # #####################################################################
     # ### Vectorization
-    # Todo: this probably depends on hardware as well as datatype size... how to query the maximum vector instruction size?
     sdfg.save('sdfg_pre_vectorization.sdfg')
     if schedule.load_k > 1:
         # 128 bits maximum
@@ -515,18 +503,19 @@ def create_sdfg(schedule) -> None:
         elif schedule.load_k >= 4:
             vector_length = 2
 
-        entry, state = find_map_by_param(state.parent, "__i0")
         # state.parent.apply_transformations_repeated(Vectorization, dict(vector_len=vector_length, preamble=False, postamble=False))
+        entry, state = find_map_by_param(state.parent, "__i0")
         Vectorization.apply_to(state.parent,
                         dict(vector_len=vector_length, preamble=False, postamble=False),
                         _map_entry=entry,
                         _tasklet=state.out_edges(entry)[0].dst,
-                        _map_exit=state.out_edges(entry)[0].dst)
+                        _map_exit=state.exit_node(entry))
+                        
         # Vectorization.apply_to(state.parent,
         #                 dict(vector_len=vector_length, preamble=False, postamble=False),
         #                 _map_entry=entry,
         #                 _tasklet=state.out_edges(entry)[1].dst,
-        #                 _map_exit=state.out_edges(entry)[1].dst)
+        #                 _map_exit=state.exit_node(entry))
         helpers.print_success("Successfully applied vectorization.")
    
     # #####################################################################
@@ -582,7 +571,50 @@ def queryAMD():
 # Main function
 
 if __name__ == "__main__":
-    print(dace.__file__)
+    helpers.print_info("Using this dace: " + str(dace.__file__))
+
+    parser = ArgumentParser()
+    parser.add_argument("-v", "--verbose",
+                        dest='verbose',
+                        help="explain what is being done. Default: False",
+                        action="store_true",
+                        default=False)
+    parser.add_argument("-c", "--colorless",
+                        dest='colorless',
+                        help="Does not print colors, useful when writing to a file.",
+                        action="store_true",
+                        default=False)
+    parser.add_argument("-g", "--gpu_type",
+                        dest='gpu_type',
+                        help="use this to specify the gpu type (\"NVIDIA\" or \"AMD\"). Default: NVIDIA",
+                        action="store",
+                        default="NVIDIA")
+    parser.add_argument("-M", type=int, dest='M', nargs="?", default=640)
+    parser.add_argument("-K", type=int, dest='K', nargs="?", default=640)
+    parser.add_argument("-N", type=int, dest='N', nargs="?", default=640)
+    parser.add_argument('--version',
+                        choices=['unoptimized', 'optimize_gpu', 'cublas'],
+                        default='optimize_gpu',
+                        help='''Different available versions:
+unoptimized: Run `matmul` without optimizations;
+optimize_gpu: Transform `matmul` to a reasonably-optimized version for GPU;
+cublas: Run `matmul` with the CUBLAS library node implementation.''')
+    parser.add_argument('-p', '--precision',
+                        dest='precision',
+                        choices=['16', '32', '64', '128'],
+                        default='64',
+                        help="Specify bit precision (16, 32, 64 or 128) - currently unsupported.")
+    args = parser.parse_args()
+    if args.verbose:
+        helpers.print_info("Program launched with the following arguments: " + str(args))
+
+    if args.precision == '64':
+        np_dtype = np.float64
+    else:
+        helpers.print_error("Bit precisions different from 64 are currently unsupported")
+        raise NotImplementedError
+
+
     # Define set of possible values for schedule generator
     load_k_possible = [1, 2, 4, 8, 16, 32, 64, 128, 256]
     threadtiles_possible = [1, 2, 4, 8]
@@ -623,29 +655,37 @@ capability_version = 7.0""")
     device.registers_per_warp = int(device.registers_per_warp /
                                     (sys.getsizeof(dace.float64()) / 4))
 
-    ########################################################
-    # 2. Find best schedule
-    helpers.print_info("Phase 2/3: Finding best schedule...", args.colorless)
-    # schedule = find_best_schedule(load_k_possible, threadtiles_possible, device.registers_per_warp, device.registers_per_thread_block, device.threads_per_warp, device.warps_per_SM, device.SMs, device.total_compute_cores)
-    # best_schedule = find_best_schedule(load_k_possible, threadtiles_possible)
-    best_schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32,
-                             thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640, SWIZZLE_thread_block=2, splice_k = 2, split_k=2, double_buffering=True)
-    helpers.print_success("Found best schedule!", args.colorless)
-    print(best_schedule)
+    M=np.int32(args.M)
+    N=np.int32(args.N)
+    K=np.int32(args.K)
+    A = np.random.rand(M, K).astype(np_dtype)
+    B = np.random.rand(K, N).astype(np_dtype)
+    C = np.zeros((M, N)).astype(np_dtype)
+    alpha = dace.float64(1)
+    beta = dace.float64(1)
 
-    ########################################################
-    # 3. Create sdfg
-    helpers.print_info("Phase 3/3: Creating SDFG...", args.colorless)
-    csdfg = create_sdfg(best_schedule)
-    helpers.print_success("Created SDFG.", args.colorless)
-    # 4096 x 4096
-    # (1024 x 8192) x (8192 x 1024)
-    # 1024 x 1024
-    A = np.random.rand(640, 640)
-    B = np.random.rand(640, 640)
-    C = np.zeros((640, 640))
-    C_correct = matmul(A=A, B=B, C=C, alpha=dace.float64(1), beta=dace.float64(1), M=np.int32(640), N=np.int32(640), K=np.int32(640))
-    C_test = csdfg(A=A, B=B, C=C, alpha=dace.float64(1), beta=dace.float64(1), M=np.int32(640), N=np.int32(640), K=np.int32(640))
+    if args.version == 'optimize_gpu':
+        ########################################################
+        # 2. Find best schedule
+        helpers.print_info("Phase 2/3: Finding best schedule...", args.colorless)
+        # schedule = find_best_schedule(load_k_possible, threadtiles_possible, device.registers_per_warp, device.registers_per_thread_block, device.threads_per_warp, device.warps_per_SM, device.SMs, device.total_compute_cores)
+        # best_schedule = find_best_schedule(load_k_possible, threadtiles_possible)
+        best_schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32,
+                                thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640, SWIZZLE_thread_block=2, splice_k = 2, split_k=2, double_buffering=True)
+        helpers.print_success("Found best schedule!", args.colorless)
+        print(best_schedule)
+
+        ########################################################
+        # 3. Create sdfg
+        helpers.print_info("Phase 3/3: Creating SDFG...", args.colorless)
+        csdfg = create_sdfg(best_schedule)
+        helpers.print_success("Created SDFG.", args.colorless)
+        C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
+    elif args.version == 'cublas':
+        dace.libraries.blas.default_implementation = 'cuBLAS'
+        C_test = matmul(A, B, C, )
+
+    C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
 
     # Can replace this with np.allclose(A, B)
     def areSame(A,B):
@@ -660,6 +700,8 @@ capability_version = 7.0""")
     
     if areSame(C_correct, C_test):
         helpers.print_success("The SDFG is correct")
+
+
 
     ########################################################
     # Convert to HIP code (if needed)
