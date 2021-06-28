@@ -407,6 +407,13 @@ def create_sdfg(schedule) -> None:
                     warp_tile_height - 1
                     )
 
+        def SWIZZLE_x_int(idx): # LaneIdx
+            return ((idx & (warp_tile_height * warp_tile_width // 2)) >> (warp_tile_width - 1)) | (idx & 1)
+        
+        def SWIZZLE_y_int(idx): # LaneIdy
+            return (idx >> 1) & (warp_tile_height - 1)
+
+
         # ... apply SWIZZLE_thread_block transformations
         current_mapping_x = state.out_edges(entry)[0].data.subset
         current_mapping_y = state.out_edges(entry)[1].data.subset
@@ -414,34 +421,34 @@ def create_sdfg(schedule) -> None:
         print(current_mapping_y)
         print()
         # Quote from Neville's thesis, p. 11: "threads are only launched in the x dimension (threadIdx.y and threadIdx.z are always 1)
-        # print("Thread tiles in a warp before swizzling:")
-        # for x in range (0, warp_tile_height):
-        #     print("-" * 3 * warp_tile_height + "-")
-        #     for y in range (0, warp_tile_width):
-        #         print("| " + str(warp_tile_width * x + y) + " ", end="")
-        #     print("|")
-        # print("-" * 3 * warp_tile_height + "-")
+        print("Thread tiles in a warp before swizzling:")
+        for x in range (0, warp_tile_height):
+            print("-" * 3 * warp_tile_height + "-")
+            for y in range (0, warp_tile_width):
+                print("| " + str(warp_tile_width * x + y) + " ", end="")
+            print("|")
+        print("-" * 3 * warp_tile_height + "-")
 
-        # swizzled_idx = np.empty(warp_tile_height * warp_tile_width)
-        # for x in range (0, warp_tile_height):
-        #     for y in range (0, warp_tile_width):
-        #         idx = warp_tile_width * x + y
-        #         # print(str(idx) + " -> " + str(SWIZZLE_x(idx)) + ", " +  str(SWIZZLE_y(idx)) + " = " + str(warp_tile_width * SWIZZLE_y(idx) + SWIZZLE_x(idx)))
-        #         # print(idx)
-        #         # print(type(idx))
-        #         print(SWIZZLE_x(idx))
-        #         print(SWIZZLE_y(idx))
-        #         # print(warp_tile_width * SWIZZLE_y(idx) + SWIZZLE_x(idx))
-        #         swizzled_idx[idx] = warp_tile_width * SWIZZLE_y(idx) + SWIZZLE_x(idx)
+        swizzled_idx = np.empty(warp_tile_height * warp_tile_width)
+        for x in range (0, warp_tile_height):
+            for y in range (0, warp_tile_width):
+                idx = warp_tile_width * x + y
+                # print(str(idx) + " -> " + str(SWIZZLE_x(idx)) + ", " +  str(SWIZZLE_y(idx)) + " = " + str(warp_tile_width * SWIZZLE_y(idx) + SWIZZLE_x(idx)))
+                # print(idx)
+                # print(type(idx))
+                # print(SWIZZLE_x_int(idx))
+                # print(SWIZZLE_y_int(idx))
+                # print(warp_tile_width * SWIZZLE_y(idx) + SWIZZLE_x(idx))
+                swizzled_idx[idx] = warp_tile_width * SWIZZLE_y_int(idx) + SWIZZLE_x_int(idx)
 
-        # print("Thread tiles in a warp after swizzling:")
-        # for x in range (0, warp_tile_height):
-        #     print("-" * 3 * warp_tile_height + "-")
-        #     for y in range (0, warp_tile_width):
-        #         idx = warp_tile_width * x + y
-        #         print("| " + str(np.where(swizzled_idx == idx)[0][0]) + " ", end="")
-        #     print("|")
-        # print("-" * 3 * warp_tile_height + "-")
+        print("Thread tiles in a warp after swizzling:")
+        for x in range (0, warp_tile_height):
+            print("-" * 3 * warp_tile_height + "-")
+            for y in range (0, warp_tile_width):
+                idx = warp_tile_width * x + y
+                print("| " + str(np.where(swizzled_idx == idx)[0][0]) + " ", end="")
+            print("|")
+        print("-" * 3 * warp_tile_height + "-")
 
         entry_warp, state = find_map_by_param(state.parent, "tile1___i0")
         warp_x = state.out_edges(entry_warp)[0].data.subset[0][0] # = tile1___i0
@@ -705,8 +712,9 @@ capability_version = 7.0""")
         for i in range(M):
             for j in range(N):
                 diff = A[i][j] - B[i][j]
+                helpers.print_info("(" + str(i) + ", " + str(j) + ")", args.colorless)
+                helpers.print_info("Comparing " + str(A[i][j]) + " to " + str(B[i][j]))
                 if (diff > 0.000001):
-                    helpers.print_error("(" + str(i) + ", " + str(j) + ")", args.colorless)
                     helpers.print_error("Error: matrices are not equal! Difference is: " + str(diff), args.colorless)
                     helpers.print_error(str(B[i][j]) + " should be " + str(A[i][j]), args.colorless)
                     print()
