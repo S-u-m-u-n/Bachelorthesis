@@ -722,14 +722,14 @@ capability_version = 7.0""")
     print()
     for i in range(16):
         for j in range(16):
-            print(str(A[i][j]), end=" ")
+            print(str(C_correct[i][j]), end=" ")
         print()
 
     print()
     print()
     for i in range(16):
         for j in range(16):
-            print(str(B[i][j]), end=" ")
+            print(str(C_test[i][j]), end=" ")
         print()
 
     if areSame(C_correct, C_test):
