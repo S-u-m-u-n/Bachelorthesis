@@ -719,13 +719,18 @@ capability_version = 7.0""")
                     return False
         return True
     
+    print()
     for i in range(16):
         for j in range(16):
-            print(str(A[i][j]) + " ")
+            print(str(A[i][j]), end=" ")
+        print()
 
+    print()
+    print()
     for i in range(16):
         for j in range(16):
-            print(str(B[i][j]) + " ")
+            print(str(B[i][j]), end=" ")
+        print()
 
     if areSame(C_correct, C_test):
         if not args.quiet:
