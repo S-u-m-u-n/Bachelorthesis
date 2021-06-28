@@ -709,6 +709,13 @@ capability_version = 7.0""")
                     helpers.print_error("(" + str(i) + ", " + str(j) + ")", args.colorless)
                     helpers.print_error("Error: matrices are not equal! Difference is: " + str(diff), args.colorless)
                     helpers.print_error(str(B[i][j]) + " should be " + str(A[i][j]), args.colorless)
+                    print()
+                    print(B)
+                    print()
+                    print(" should be ")
+                    print()
+                    print(A)
+                    print()
                     return False
         return True
     
