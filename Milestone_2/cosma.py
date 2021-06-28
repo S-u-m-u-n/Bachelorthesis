@@ -719,27 +719,16 @@ capability_version = 7.0""")
                     return False
         return True
     
+    for i in range(16):
+        for j in range(16):
+            print(str(A[i][j]) + " ")
+
+    for i in range(16):
+        for j in range(16):
+            print(str(B[i][j]) + " ")
+
     if areSame(C_correct, C_test):
         if not args.quiet:
             helpers.print_success("The SDFG is correct!", args.colorless)
     else:
         helpers.print_error("The SDFG is incorrect!", args.colorless)
-
-
-
-    ########################################################
-    # Convert to HIP code (if needed)
-    if args.gpu_type == "AMD":
-        if not args.quiet:
-            helpers.print_info("Converting CUDA code to HIP...", args.colorless)
-        if args.verbose:
-            convert_CUDA_to_HIP = subprocess.run(["ls"])
-        else:
-            getDeviceInfo_AMD = subprocess.run(
-                ["ls"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-
-        if convert_CUDA_to_HIP.returncode == 0:
-            if not args.quiet:
-                helpers.print_success("Converted CUDA code to HIP.", args.colorless)
-        else:
-            helpers.print_error("Error: Could not convert CUDA code to HIP.", args.colorless)
