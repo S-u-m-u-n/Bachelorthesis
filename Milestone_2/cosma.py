@@ -683,7 +683,7 @@ capability_version = 7.0""")
     A = np.random.rand(M, K).astype(np_dtype)
     B = np.random.rand(K, N).astype(np_dtype)
     C = np.zeros((M, N)).astype(np_dtype)
-    alpha = dace.float64(1)
+    alpha = dace.float64(0.5)
     beta = dace.float64(1)
 
     if args.version == 'unoptimized':
