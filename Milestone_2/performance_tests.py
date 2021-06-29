@@ -1,5 +1,8 @@
 import subprocess
 import helpers
+import warnings
+
+warnings.filterwarnings('ignore', category=UserWarning)
 
 helpers.print_info("Running performance tests...", False)
 
