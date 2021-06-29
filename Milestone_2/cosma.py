@@ -728,10 +728,10 @@ capability_version = 7.0""")
         def areSame(A,B):
             for i in range(M):
                 for j in range(N):
-                    diff = A[i][j] - B[i][j]
-                    helpers.print_info("(" + str(i) + ", " + str(j) + ")", args.colorless)
-                    helpers.print_info("Comparing " + str(B[i][j]) + " to " + str(A[i][j]))
-                    helpers.print_info("Difference = " + str(diff))
+                    diff = math.abs(A[i][j] - B[i][j])
+                    # helpers.print_info("(" + str(i) + ", " + str(j) + ")", args.colorless)
+                    # helpers.print_info("Comparing " + str(B[i][j]) + " to " + str(A[i][j]))
+                    # helpers.print_info("Difference = " + str(diff))
                     if (diff > 0.000001):
                         helpers.print_error("Error: matrices are not equal! Difference is: " + str(diff), args.colorless)
                         helpers.print_error(str(B[i][j]) + " should be " + str(A[i][j]), args.colorless)
@@ -755,6 +755,5 @@ capability_version = 7.0""")
         if areSame(C_correct, C_test):
             if not args.quiet:
                 helpers.print_success("The SDFG is correct!", args.colorless)
-                print("%.2f" % C_test[0][0] + " = " + "%.2f" % C_correct[0][0])
         else:
             helpers.print_error("The SDFG is incorrect!", args.colorless)
