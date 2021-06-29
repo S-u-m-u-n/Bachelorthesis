@@ -683,14 +683,14 @@ capability_version = 7.0""")
     A = np.random.rand(M, K).astype(np_dtype)
     B = np.random.rand(K, N).astype(np_dtype)
     C = np.zeros((M, N)).astype(np_dtype)
-    alpha = dace.float64(0.5)
-    beta = dace.float64(1)
+    a = dace.float64(0.5)
+    b = dace.float64(1)
 
     if args.version == 'unoptimized':
         simple_schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32,
                                 thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640, SWIZZLE_thread_block=1, SWIZZLE_thread_tile=False, splice_k=1, split_k=1, double_buffering=False)
         csdfg = create_sdfg(simple_schedule)
-        C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
+        C_test = csdfg(A=A, B=B, C=C, alpha=a, beta=b, M=M, N=N, K=K)
     elif args.version == 'optimize_gpu':
         ########################################################
         # 2. Find best schedule
@@ -711,18 +711,18 @@ capability_version = 7.0""")
         
         csdfg = create_sdfg(best_schedule)
         
-        C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
+        C_test = csdfg(A=A, B=B, C=C, alpha=a, beta=b, M=M, N=N, K=K)
 
     elif args.version == 'cublas':
         dace.libraries.blas.default_implementation = 'cuBLAS'
-        C_test = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
+        C_test = matmul(A=A, B=B, C=C, alpha=a, beta=b)
     else:
         helpers.print_error("Invalid usage of --version parameter!", args.colorless)
         exit(-1)
 
     if args.verification:
         helpers.print_info("Verifying results...", args.colorless)
-        C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
+        C_correct = matmul(A=A, B=B, C=C, alpha=a, beta=b)
 
         # Can replace this with np.allclose(A, B)
         def areSame(A,B):
