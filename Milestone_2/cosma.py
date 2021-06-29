@@ -685,7 +685,7 @@ capability_version = 7.0""")
         simple_schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32,
                                 thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640, SWIZZLE_thread_block=1, SWIZZLE_thread_tile=False, splice_k=1, split_k=1, double_buffering=False)
         csdfg = create_sdfg(simple_schedule)
-        C_test = matmul(A, B, C, alpha, beta)
+        C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
     elif args.version == 'optimize_gpu':
         ########################################################
         # 2. Find best schedule
@@ -703,9 +703,13 @@ capability_version = 7.0""")
         # 3. Create sdfg
         if not args.quiet:
             helpers.print_info("Phase 3/3: Creating SDFG...", args.colorless)
+        
         csdfg = create_sdfg(best_schedule)
-        helpers.print_success("Created SDFG.", args.colorless)
+        if not args.quiet:
+            helpers.print_success("Created SDFG.", args.colorless)
+        
         C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
+
     elif args.version == 'cublas':
         dace.libraries.blas.default_implementation = 'cuBLAS'
         C_test = matmul(A, B, C, alpha, beta)
