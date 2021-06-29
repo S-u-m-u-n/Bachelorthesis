@@ -14,6 +14,9 @@ from dace.sdfg.graph import Edge
 from dace.memlet import Memlet
 from dace.subsets import Range
 import helpers
+import warnings
+
+
 
 def find_map_by_param(sdfg: dace.SDFG, pname: str) -> dace.nodes.MapEntry:
     """ Finds the first map entry node by the given parameter name. """
@@ -629,6 +632,8 @@ cublas: Run `matmul` with the CUBLAS library node implementation.''')
 
     if not args.quiet:
         helpers.print_info("Using this dace: " + str(dace.__file__))
+    else:
+        warnings.filterwarnings('ignore', category=UserWarning)
 
     # Define set of possible values for schedule generator
     load_k_possible = [1, 2, 4, 8, 16, 32, 64, 128, 256]
