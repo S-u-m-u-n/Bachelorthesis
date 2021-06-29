@@ -683,8 +683,8 @@ capability_version = 7.0""")
     A = np.random.rand(M, K).astype(np_dtype)
     B = np.random.rand(K, N).astype(np_dtype)
     C = np.zeros((M, N)).astype(np_dtype)
-    alpha = 0.5
-    beta = 0.5
+    alpha = dace.float64(1.5)
+    beta = dace.float64(1)
 
     if args.version == 'unoptimized':
         simple_schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32,
