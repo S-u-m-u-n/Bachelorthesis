@@ -513,8 +513,8 @@ def create_sdfg(schedule) -> None:
         #                 _map_entry=entry,
         #                 _tasklet=state.out_edges(entry)[1].dst,
         #                 _map_exit=state.exit_node(entry))
-        if not args.quiet:
-            helpers.print_success("Successfully applied vectorization.", args.colorless)
+        # if not args.quiet:
+        #     helpers.print_success("Successfully applied vectorization.", args.colorless)
    
     # # #####################################################################
     # # ### Double Buffering (on shared memory)
