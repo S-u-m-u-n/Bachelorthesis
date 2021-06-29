@@ -728,7 +728,7 @@ capability_version = 7.0""")
         def areSame(A,B):
             for i in range(M):
                 for j in range(N):
-                    diff = math.abs(A[i][j] - B[i][j])
+                    diff = math.fabs(A[i][j] - B[i][j])
                     # helpers.print_info("(" + str(i) + ", " + str(j) + ")", args.colorless)
                     # helpers.print_info("Comparing " + str(B[i][j]) + " to " + str(A[i][j]))
                     # helpers.print_info("Difference = " + str(diff))
