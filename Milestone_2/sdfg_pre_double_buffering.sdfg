@@ -229,33 +229,6 @@
           "debuginfo": null
         }
       },
-      "gpu_B": {
-        "type": "Array",
-        "attributes": {
-          "allow_conflicts": false,
-          "strides": [
-            "N",
-            "1"
-          ],
-          "total_size": "K*N",
-          "offset": [
-            "0",
-            "0"
-          ],
-          "may_alias": false,
-          "alignment": 0,
-          "dtype": "float64",
-          "shape": [
-            "K",
-            "N"
-          ],
-          "transient": true,
-          "storage": "GPU_Global",
-          "lifetime": "Scope",
-          "location": {},
-          "debuginfo": null
-        }
-      },
       "gpu_C": {
         "type": "Array",
         "attributes": {
@@ -274,6 +247,33 @@
           "dtype": "float64",
           "shape": [
             "M",
+            "N"
+          ],
+          "transient": true,
+          "storage": "GPU_Global",
+          "lifetime": "Scope",
+          "location": {},
+          "debuginfo": null
+        }
+      },
+      "gpu_B": {
+        "type": "Array",
+        "attributes": {
+          "allow_conflicts": false,
+          "strides": [
+            "N",
+            "1"
+          ],
+          "total_size": "K*N",
+          "offset": [
+            "0",
+            "0"
+          ],
+          "may_alias": false,
+          "alignment": 0,
+          "dtype": "float64",
+          "shape": [
+            "K",
             "N"
           ],
           "transient": true,
@@ -2461,6 +2461,57 @@
       },
       {
         "type": "Transformation",
+        "transformation": "MapCollapse",
+        "sdfg_id": 1,
+        "state_id": 1,
+        "_subgraph": {
+          "0": 8,
+          "1": 6
+        },
+        "expr_index": 0
+      },
+      {
+        "type": "Transformation",
+        "transformation": "StripMining",
+        "dim_idx": 2,
+        "new_dim_prefix": "SPLIT_K",
+        "tile_size": "320.000000000000",
+        "tile_stride": "0",
+        "tile_offset": "0",
+        "divides_evenly": true,
+        "strided": true,
+        "tiling_type": "Normal",
+        "skew": false,
+        "sdfg_id": 1,
+        "state_id": 1,
+        "_subgraph": {
+          "0": 17
+        },
+        "expr_index": 0
+      },
+      {
+        "type": "Transformation",
+        "transformation": "MapExpansion",
+        "sdfg_id": 1,
+        "state_id": 1,
+        "_subgraph": {
+          "0": 17
+        },
+        "expr_index": 0
+      },
+      {
+        "type": "Transformation",
+        "transformation": "MapCollapse",
+        "sdfg_id": 1,
+        "state_id": 1,
+        "_subgraph": {
+          "0": 17,
+          "1": 21
+        },
+        "expr_index": 0
+      },
+      {
+        "type": "Transformation",
         "transformation": "Vectorization",
         "vector_len": 2,
         "propagate_parent": false,
@@ -2470,16 +2521,16 @@
         "sdfg_id": 1,
         "state_id": 1,
         "_subgraph": {
-          "0": 16,
+          "0": 12,
           "1": 1,
-          "2": 17
+          "2": 13
         },
         "expr_index": 0
       }
     ],
     "openmp_sections": true,
     "name": "matmul",
-    "hash": "83e39f5bf060f62ff85ad8d52cceff182969bd84e376358302caa0e6a545e578"
+    "hash": "cd494724cc50e1a2a60f2cea2519c95a70c2582e8486abd618aedbd45337be46"
   },
   "nodes": [
     {
@@ -3590,36 +3641,40 @@
                       3,
                       4,
                       5,
-                      8
+                      17
                     ],
                     "0": [
                       2,
-                      16,
-                      18,
-                      19
-                    ],
-                    "6": [
-                      7,
-                      10,
-                      11,
-                      12
+                      12,
+                      14,
+                      15
                     ],
                     "8": [
-                      6,
-                      9
+                      9,
+                      10
+                    ],
+                    "10": [
+                      0,
+                      11,
+                      16
                     ],
                     "12": [
-                      13,
-                      14
+                      1,
+                      13
                     ],
-                    "14": [
-                      0,
-                      15,
+                    "17": [
+                      18,
+                      21
+                    ],
+                    "19": [
+                      6,
+                      7,
+                      8,
                       20
                     ],
-                    "16": [
-                      1,
-                      17
+                    "21": [
+                      19,
+                      22
                     ]
                   },
                   "nodes": [
@@ -3665,7 +3720,7 @@
                         }
                       },
                       "id": 0,
-                      "scope_entry": "14",
+                      "scope_entry": "10",
                       "scope_exit": "2"
                     },
                     {
@@ -3718,8 +3773,8 @@
                         }
                       },
                       "id": 1,
-                      "scope_entry": "16",
-                      "scope_exit": "17"
+                      "scope_entry": "12",
+                      "scope_exit": "13"
                     },
                     {
                       "type": "MapExit",
@@ -3803,119 +3858,6 @@
                       "scope_exit": null
                     },
                     {
-                      "type": "MapEntry",
-                      "label": "gemm_map[tile___i2=0:K:8]",
-                      "attributes": {
-                        "label": "gemm_map",
-                        "params": [
-                          "tile___i2"
-                        ],
-                        "range": {
-                          "type": "Range",
-                          "ranges": [
-                            {
-                              "start": "0",
-                              "end": "K - 1",
-                              "step": "8",
-                              "tile": "1"
-                            }
-                          ]
-                        },
-                        "schedule": "Sequential",
-                        "unroll": false,
-                        "collapse": 1,
-                        "debuginfo": null,
-                        "is_collapsed": false,
-                        "instrument": "No_Instrumentation",
-                        "in_connectors": {
-                          "IN__a": null,
-                          "IN__b": null
-                        },
-                        "out_connectors": {
-                          "OUT__a": null,
-                          "OUT__b": null
-                        }
-                      },
-                      "id": 6,
-                      "scope_entry": "8",
-                      "scope_exit": "7"
-                    },
-                    {
-                      "type": "MapExit",
-                      "label": "gemm_map[tile___i2=0:K:8]",
-                      "attributes": {
-                        "in_connectors": {
-                          "IN__c": null
-                        },
-                        "out_connectors": {
-                          "OUT__c": null
-                        }
-                      },
-                      "id": 7,
-                      "scope_entry": "6",
-                      "scope_exit": "7"
-                    },
-                    {
-                      "type": "MapEntry",
-                      "label": "gemm_map[tile___i0=0:M:128, tile___i1=0:N:128]",
-                      "attributes": {
-                        "label": "gemm_map",
-                        "params": [
-                          "tile___i0",
-                          "tile___i1"
-                        ],
-                        "range": {
-                          "type": "Range",
-                          "ranges": [
-                            {
-                              "start": "0",
-                              "end": "M - 1",
-                              "step": "128",
-                              "tile": "1"
-                            },
-                            {
-                              "start": "0",
-                              "end": "N - 1",
-                              "step": "128",
-                              "tile": "1"
-                            }
-                          ]
-                        },
-                        "schedule": "Default",
-                        "unroll": false,
-                        "collapse": 1,
-                        "debuginfo": null,
-                        "is_collapsed": false,
-                        "instrument": "No_Instrumentation",
-                        "in_connectors": {
-                          "IN__a": null,
-                          "IN__b": null
-                        },
-                        "out_connectors": {
-                          "OUT__a": null,
-                          "OUT__b": null
-                        }
-                      },
-                      "id": 8,
-                      "scope_entry": null,
-                      "scope_exit": "9"
-                    },
-                    {
-                      "type": "MapExit",
-                      "label": "gemm_map[tile___i0=0:M:128, tile___i1=0:N:128]",
-                      "attributes": {
-                        "in_connectors": {
-                          "IN__c": null
-                        },
-                        "out_connectors": {
-                          "OUT__c": null
-                        }
-                      },
-                      "id": 9,
-                      "scope_entry": "8",
-                      "scope_exit": "9"
-                    },
-                    {
                       "type": "AccessNode",
                       "label": "trans__a",
                       "attributes": {
@@ -3926,9 +3868,9 @@
                         "in_connectors": {},
                         "out_connectors": {}
                       },
-                      "id": 10,
-                      "scope_entry": "6",
-                      "scope_exit": "7"
+                      "id": 6,
+                      "scope_entry": "19",
+                      "scope_exit": "20"
                     },
                     {
                       "type": "AccessNode",
@@ -3941,9 +3883,9 @@
                         "in_connectors": {},
                         "out_connectors": {}
                       },
-                      "id": 11,
-                      "scope_entry": "6",
-                      "scope_exit": "7"
+                      "id": 7,
+                      "scope_entry": "19",
+                      "scope_exit": "20"
                     },
                     {
                       "type": "MapEntry",
@@ -3986,9 +3928,9 @@
                           "OUT__b": null
                         }
                       },
-                      "id": 12,
-                      "scope_entry": "6",
-                      "scope_exit": "13"
+                      "id": 8,
+                      "scope_entry": "19",
+                      "scope_exit": "9"
                     },
                     {
                       "type": "MapExit",
@@ -4001,9 +3943,9 @@
                           "OUT__c": null
                         }
                       },
-                      "id": 13,
-                      "scope_entry": "12",
-                      "scope_exit": "13"
+                      "id": 9,
+                      "scope_entry": "8",
+                      "scope_exit": "9"
                     },
                     {
                       "type": "MapEntry",
@@ -4046,9 +3988,9 @@
                           "OUT__b": null
                         }
                       },
-                      "id": 14,
-                      "scope_entry": "12",
-                      "scope_exit": "15"
+                      "id": 10,
+                      "scope_entry": "8",
+                      "scope_exit": "11"
                     },
                     {
                       "type": "MapExit",
@@ -4061,9 +4003,9 @@
                           "OUT__c": null
                         }
                       },
-                      "id": 15,
-                      "scope_entry": "14",
-                      "scope_exit": "15"
+                      "id": 11,
+                      "scope_entry": "10",
+                      "scope_exit": "11"
                     },
                     {
                       "type": "MapEntry",
@@ -4106,9 +4048,9 @@
                           "OUT_trans__b": null
                         }
                       },
-                      "id": 16,
+                      "id": 12,
                       "scope_entry": "0",
-                      "scope_exit": "17"
+                      "scope_exit": "13"
                     },
                     {
                       "type": "MapExit",
@@ -4121,9 +4063,9 @@
                           "OUT__c": null
                         }
                       },
-                      "id": 17,
-                      "scope_entry": "16",
-                      "scope_exit": "17"
+                      "id": 13,
+                      "scope_entry": "12",
+                      "scope_exit": "13"
                     },
                     {
                       "type": "AccessNode",
@@ -4136,7 +4078,7 @@
                         "in_connectors": {},
                         "out_connectors": {}
                       },
-                      "id": 18,
+                      "id": 14,
                       "scope_entry": "0",
                       "scope_exit": "2"
                     },
@@ -4151,7 +4093,7 @@
                         "in_connectors": {},
                         "out_connectors": {}
                       },
-                      "id": 19,
+                      "id": 15,
                       "scope_entry": "0",
                       "scope_exit": "2"
                     },
@@ -4166,70 +4108,178 @@
                         "in_connectors": {},
                         "out_connectors": {}
                       },
+                      "id": 16,
+                      "scope_entry": "10",
+                      "scope_exit": "11"
+                    },
+                    {
+                      "type": "MapEntry",
+                      "label": "gemm_map[SPLIT_K_tile___i2=0:K:320]",
+                      "attributes": {
+                        "label": "gemm_map",
+                        "params": [
+                          "SPLIT_K_tile___i2"
+                        ],
+                        "range": {
+                          "type": "Range",
+                          "ranges": [
+                            {
+                              "start": "0",
+                              "end": "K - 1",
+                              "step": "320.000000000000",
+                              "tile": "1"
+                            }
+                          ]
+                        },
+                        "schedule": "Default",
+                        "unroll": false,
+                        "collapse": 1,
+                        "debuginfo": null,
+                        "is_collapsed": false,
+                        "instrument": "No_Instrumentation",
+                        "in_connectors": {
+                          "IN__a": null,
+                          "IN__b": null
+                        },
+                        "out_connectors": {
+                          "OUT__a": null,
+                          "OUT__b": null
+                        }
+                      },
+                      "id": 17,
+                      "scope_entry": null,
+                      "scope_exit": "18"
+                    },
+                    {
+                      "type": "MapExit",
+                      "label": "gemm_map[SPLIT_K_tile___i2=0:K:320]",
+                      "attributes": {
+                        "in_connectors": {
+                          "IN__c": null
+                        },
+                        "out_connectors": {
+                          "OUT__c": null
+                        }
+                      },
+                      "id": 18,
+                      "scope_entry": "17",
+                      "scope_exit": "18"
+                    },
+                    {
+                      "type": "MapEntry",
+                      "label": "gemm_map_tile___i2[tile___i2=SPLIT_K_tile___i2:SPLIT_K_tile___i2 + 320.0:8]",
+                      "attributes": {
+                        "label": "gemm_map_tile___i2",
+                        "params": [
+                          "tile___i2"
+                        ],
+                        "range": {
+                          "type": "Range",
+                          "ranges": [
+                            {
+                              "start": "SPLIT_K_tile___i2",
+                              "end": "SPLIT_K_tile___i2 + 319.0",
+                              "step": "8",
+                              "tile": "1"
+                            }
+                          ]
+                        },
+                        "schedule": "Sequential",
+                        "unroll": false,
+                        "collapse": 1,
+                        "debuginfo": null,
+                        "is_collapsed": false,
+                        "instrument": "No_Instrumentation",
+                        "in_connectors": {
+                          "IN__a": null,
+                          "IN__b": null
+                        },
+                        "out_connectors": {
+                          "OUT__a": null,
+                          "OUT__b": null
+                        }
+                      },
+                      "id": 19,
+                      "scope_entry": "21",
+                      "scope_exit": "20"
+                    },
+                    {
+                      "type": "MapExit",
+                      "label": "gemm_map_tile___i2[tile___i2=SPLIT_K_tile___i2:SPLIT_K_tile___i2 + 320.0:8]",
+                      "attributes": {
+                        "in_connectors": {
+                          "IN__c": null
+                        },
+                        "out_connectors": {
+                          "OUT__c": null
+                        }
+                      },
                       "id": 20,
-                      "scope_entry": "14",
-                      "scope_exit": "15"
+                      "scope_entry": "19",
+                      "scope_exit": "20"
+                    },
+                    {
+                      "type": "MapEntry",
+                      "label": "gemm_map[tile___i0=0:M:128, tile___i1=0:N:128]",
+                      "attributes": {
+                        "label": "gemm_map",
+                        "params": [
+                          "tile___i0",
+                          "tile___i1"
+                        ],
+                        "range": {
+                          "type": "Range",
+                          "ranges": [
+                            {
+                              "start": "0",
+                              "end": "M - 1",
+                              "step": "128",
+                              "tile": "1"
+                            },
+                            {
+                              "start": "0",
+                              "end": "N - 1",
+                              "step": "128",
+                              "tile": "1"
+                            }
+                          ]
+                        },
+                        "schedule": "Sequential",
+                        "unroll": false,
+                        "collapse": 1,
+                        "debuginfo": null,
+                        "is_collapsed": false,
+                        "instrument": "No_Instrumentation",
+                        "in_connectors": {
+                          "IN__a": null,
+                          "IN__b": null
+                        },
+                        "out_connectors": {
+                          "OUT__a": null,
+                          "OUT__b": null
+                        }
+                      },
+                      "id": 21,
+                      "scope_entry": "17",
+                      "scope_exit": "22"
+                    },
+                    {
+                      "type": "MapExit",
+                      "label": "gemm_map[tile___i0=0:M:128, tile___i1=0:N:128]",
+                      "attributes": {
+                        "in_connectors": {
+                          "IN__c": null
+                        },
+                        "out_connectors": {
+                          "OUT__c": null
+                        }
+                      },
+                      "id": 22,
+                      "scope_entry": "21",
+                      "scope_exit": "22"
                     }
                   ],
                   "edges": [
-                    {
-                      "type": "MultiConnectorEdge",
-                      "attributes": {
-                        "data": {
-                          "type": "Memlet",
-                          "attributes": {
-                            "volume": "131072*ceiling(K/8)*ceiling(M/128)*ceiling(N/128)",
-                            "dynamic": false,
-                            "subset": {
-                              "type": "Range",
-                              "ranges": [
-                                {
-                                  "start": "0",
-                                  "end": "M - 1",
-                                  "step": "1",
-                                  "tile": "1"
-                                },
-                                {
-                                  "start": "0",
-                                  "end": "K - 1",
-                                  "step": "1",
-                                  "tile": "1"
-                                }
-                              ]
-                            },
-                            "other_subset": null,
-                            "data": "_a",
-                            "wcr": null,
-                            "debuginfo": null,
-                            "wcr_nonatomic": false,
-                            "allow_oob": false,
-                            "src_subset": {
-                              "type": "Range",
-                              "ranges": [
-                                {
-                                  "start": "0",
-                                  "end": "M - 1",
-                                  "step": "1",
-                                  "tile": "1"
-                                },
-                                {
-                                  "start": "0",
-                                  "end": "K - 1",
-                                  "step": "1",
-                                  "tile": "1"
-                                }
-                              ]
-                            },
-                            "dst_subset": null,
-                            "num_accesses": "131072*ceiling(K/8)*ceiling(M/128)*ceiling(N/128)"
-                          }
-                        }
-                      },
-                      "src": "3",
-                      "dst": "8",
-                      "dst_connector": "IN__a",
-                      "src_connector": null
-                    },
                     {
                       "type": "MultiConnectorEdge",
                       "attributes": {
@@ -4283,8 +4333,8 @@
                           }
                         }
                       },
-                      "src": "10",
-                      "dst": "12",
+                      "src": "6",
+                      "dst": "8",
                       "dst_connector": "IN__a",
                       "src_connector": null
                     },
@@ -4294,27 +4344,27 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072*ceiling(K/8)*ceiling(M/128)*ceiling(N/128)",
+                            "volume": "5242880*ceiling(0.003125*K)*ceiling(M/128)*ceiling(N/128)",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "K - 1",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "N - 1",
+                                  "end": "K - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "other_subset": null,
-                            "data": "_b",
+                            "data": "_a",
                             "wcr": null,
                             "debuginfo": null,
                             "wcr_nonatomic": false,
@@ -4324,26 +4374,26 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "K - 1",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "N - 1",
+                                  "end": "K - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "131072*ceiling(K/8)*ceiling(M/128)*ceiling(N/128)"
+                            "num_accesses": "5242880*ceiling(0.003125*K)*ceiling(M/128)*ceiling(N/128)"
                           }
                         }
                       },
-                      "src": "4",
-                      "dst": "8",
-                      "dst_connector": "IN__b",
+                      "src": "3",
+                      "dst": "17",
+                      "dst_connector": "IN__a",
                       "src_connector": null
                     },
                     {
@@ -4399,8 +4449,66 @@
                           }
                         }
                       },
-                      "src": "11",
-                      "dst": "12",
+                      "src": "7",
+                      "dst": "8",
+                      "dst_connector": "IN__b",
+                      "src_connector": null
+                    },
+                    {
+                      "type": "MultiConnectorEdge",
+                      "attributes": {
+                        "data": {
+                          "type": "Memlet",
+                          "attributes": {
+                            "volume": "5242880*ceiling(0.003125*K)*ceiling(M/128)*ceiling(N/128)",
+                            "dynamic": false,
+                            "subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "0",
+                                  "end": "K - 1",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "0",
+                                  "end": "N - 1",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "other_subset": null,
+                            "data": "_b",
+                            "wcr": null,
+                            "debuginfo": null,
+                            "wcr_nonatomic": false,
+                            "allow_oob": false,
+                            "src_subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "0",
+                                  "end": "K - 1",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "0",
+                                  "end": "N - 1",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "dst_subset": null,
+                            "num_accesses": "5242880*ceiling(0.003125*K)*ceiling(M/128)*ceiling(N/128)"
+                          }
+                        }
+                      },
+                      "src": "4",
+                      "dst": "17",
                       "dst_connector": "IN__b",
                       "src_connector": null
                     },
@@ -4457,8 +4565,8 @@
                           }
                         }
                       },
-                      "src": "20",
-                      "dst": "15",
+                      "src": "16",
+                      "dst": "11",
                       "dst_connector": "IN__c",
                       "src_connector": null
                     },
@@ -4515,8 +4623,8 @@
                           }
                         }
                       },
-                      "src": "18",
-                      "dst": "16",
+                      "src": "14",
+                      "dst": "12",
                       "dst_connector": "IN_trans__a",
                       "src_connector": null
                     },
@@ -4573,8 +4681,8 @@
                           }
                         }
                       },
-                      "src": "19",
-                      "dst": "16",
+                      "src": "15",
+                      "dst": "12",
                       "dst_connector": "IN_trans__b",
                       "src_connector": null
                     },
@@ -4584,6 +4692,64 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
+                            "volume": "64",
+                            "dynamic": false,
+                            "subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
+                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "__i2",
+                                  "end": "__i2",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "other_subset": null,
+                            "data": "trans__a",
+                            "wcr": null,
+                            "debuginfo": null,
+                            "wcr_nonatomic": false,
+                            "allow_oob": false,
+                            "src_subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
+                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "__i2",
+                                  "end": "__i2",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "dst_subset": null,
+                            "num_accesses": "64"
+                          }
+                        }
+                      },
+                      "src": "0",
+                      "dst": "14",
+                      "dst_connector": null,
+                      "src_connector": "OUT__a"
+                    },
+                    {
+                      "type": "MultiConnectorEdge",
+                      "attributes": {
+                        "data": {
+                          "type": "Memlet",
+                          "attributes": {
                             "volume": "131072",
                             "dynamic": false,
                             "subset": {
@@ -4631,9 +4797,125 @@
                           }
                         }
                       },
-                      "src": "6",
+                      "src": "19",
+                      "dst": "6",
+                      "dst_connector": null,
+                      "src_connector": "OUT__a"
+                    },
+                    {
+                      "type": "MultiConnectorEdge",
+                      "attributes": {
+                        "data": {
+                          "type": "Memlet",
+                          "attributes": {
+                            "volume": "512",
+                            "dynamic": false,
+                            "subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
+                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "0",
+                                  "end": "7",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "other_subset": null,
+                            "data": "trans__a",
+                            "wcr": null,
+                            "debuginfo": null,
+                            "wcr_nonatomic": false,
+                            "allow_oob": false,
+                            "src_subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
+                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "0",
+                                  "end": "7",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "dst_subset": null,
+                            "num_accesses": "512"
+                          }
+                        }
+                      },
+                      "src": "10",
+                      "dst": "0",
+                      "dst_connector": "IN__a",
+                      "src_connector": "OUT__a"
+                    },
+                    {
+                      "type": "MultiConnectorEdge",
+                      "attributes": {
+                        "data": {
+                          "type": "Memlet",
+                          "attributes": {
+                            "volume": "16384",
+                            "dynamic": false,
+                            "subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(0, 16), 3), bitwise_and(0, 1))",
+                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(int_floor(31, 8) + 8*int_floor(63, 8), 16), 3), bitwise_and(int_floor(31, 8) + 8*int_floor(63, 8), 1)) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "0",
+                                  "end": "7",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "other_subset": null,
+                            "data": "trans__a",
+                            "wcr": null,
+                            "debuginfo": null,
+                            "wcr_nonatomic": false,
+                            "allow_oob": false,
+                            "src_subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(0, 16), 3), bitwise_and(0, 1))",
+                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(int_floor(31, 8) + 8*int_floor(63, 8), 16), 3), bitwise_and(int_floor(31, 8) + 8*int_floor(63, 8), 1)) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "0",
+                                  "end": "7",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "dst_subset": null,
+                            "num_accesses": "16384"
+                          }
+                        }
+                      },
+                      "src": "8",
                       "dst": "10",
-                      "dst_connector": null,
+                      "dst_connector": "IN__a",
                       "src_connector": "OUT__a"
                     },
                     {
@@ -4642,65 +4924,7 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "64",
-                            "dynamic": false,
-                            "subset": {
-                              "type": "Range",
-                              "ranges": [
-                                {
-                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
-                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
-                                  "step": "1",
-                                  "tile": "1"
-                                },
-                                {
-                                  "start": "__i2",
-                                  "end": "__i2",
-                                  "step": "1",
-                                  "tile": "1"
-                                }
-                              ]
-                            },
-                            "other_subset": null,
-                            "data": "trans__a",
-                            "wcr": null,
-                            "debuginfo": null,
-                            "wcr_nonatomic": false,
-                            "allow_oob": false,
-                            "src_subset": {
-                              "type": "Range",
-                              "ranges": [
-                                {
-                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
-                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
-                                  "step": "1",
-                                  "tile": "1"
-                                },
-                                {
-                                  "start": "__i2",
-                                  "end": "__i2",
-                                  "step": "1",
-                                  "tile": "1"
-                                }
-                              ]
-                            },
-                            "dst_subset": null,
-                            "num_accesses": "64"
-                          }
-                        }
-                      },
-                      "src": "0",
-                      "dst": "18",
-                      "dst_connector": null,
-                      "src_connector": "OUT__a"
-                    },
-                    {
-                      "type": "MultiConnectorEdge",
-                      "attributes": {
-                        "data": {
-                          "type": "Memlet",
-                          "attributes": {
-                            "volume": "131072*ceiling(K/8)",
+                            "volume": "5242880",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
@@ -4712,8 +4936,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "0",
-                                  "end": "K - 1",
+                                  "start": "SPLIT_K_tile___i2",
+                                  "end": "SPLIT_K_tile___i2 + 319.0",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4735,20 +4959,20 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "0",
-                                  "end": "K - 1",
+                                  "start": "SPLIT_K_tile___i2",
+                                  "end": "SPLIT_K_tile___i2 + 319.0",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "131072*ceiling(K/8)"
+                            "num_accesses": "5242880"
                           }
                         }
                       },
-                      "src": "8",
-                      "dst": "6",
+                      "src": "21",
+                      "dst": "19",
                       "dst_connector": "IN__a",
                       "src_connector": "OUT__a"
                     },
@@ -4758,27 +4982,27 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "512",
+                            "volume": "5242880*ceiling(M/128)*ceiling(N/128)",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
-                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "0",
-                                  "end": "7",
+                                  "start": "SPLIT_K_tile___i2",
+                                  "end": "SPLIT_K_tile___i2 + 319.0",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "other_subset": null,
-                            "data": "trans__a",
+                            "data": "_a",
                             "wcr": null,
                             "debuginfo": null,
                             "wcr_nonatomic": false,
@@ -4787,26 +5011,26 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
-                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "0",
-                                  "end": "7",
+                                  "start": "SPLIT_K_tile___i2",
+                                  "end": "SPLIT_K_tile___i2 + 319.0",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "512"
+                            "num_accesses": "5242880*ceiling(M/128)*ceiling(N/128)"
                           }
                         }
                       },
-                      "src": "14",
-                      "dst": "0",
+                      "src": "17",
+                      "dst": "21",
                       "dst_connector": "IN__a",
                       "src_connector": "OUT__a"
                     },
@@ -4816,27 +5040,27 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "16384",
+                            "volume": "64",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(0, 16), 3), bitwise_and(0, 1))",
-                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(int_floor(31, 8) + 8*int_floor(63, 8), 16), 3), bitwise_and(int_floor(31, 8) + 8*int_floor(63, 8), 1)) + 7",
+                                  "start": "__i2",
+                                  "end": "__i2",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "0",
-                                  "end": "7",
+                                  "start": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7)",
+                                  "end": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "other_subset": null,
-                            "data": "trans__a",
+                            "data": "trans__b",
                             "wcr": null,
                             "debuginfo": null,
                             "wcr_nonatomic": false,
@@ -4845,28 +5069,28 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(0, 16), 3), bitwise_and(0, 1))",
-                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(int_floor(31, 8) + 8*int_floor(63, 8), 16), 3), bitwise_and(int_floor(31, 8) + 8*int_floor(63, 8), 1)) + 7",
+                                  "start": "__i2",
+                                  "end": "__i2",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "0",
-                                  "end": "7",
+                                  "start": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7)",
+                                  "end": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "16384"
+                            "num_accesses": "64"
                           }
                         }
                       },
-                      "src": "12",
-                      "dst": "14",
-                      "dst_connector": "IN__a",
-                      "src_connector": "OUT__a"
+                      "src": "0",
+                      "dst": "15",
+                      "dst_connector": null,
+                      "src_connector": "OUT__b"
                     },
                     {
                       "type": "MultiConnectorEdge",
@@ -4921,125 +5145,9 @@
                           }
                         }
                       },
-                      "src": "6",
-                      "dst": "11",
+                      "src": "19",
+                      "dst": "7",
                       "dst_connector": null,
-                      "src_connector": "OUT__b"
-                    },
-                    {
-                      "type": "MultiConnectorEdge",
-                      "attributes": {
-                        "data": {
-                          "type": "Memlet",
-                          "attributes": {
-                            "volume": "64",
-                            "dynamic": false,
-                            "subset": {
-                              "type": "Range",
-                              "ranges": [
-                                {
-                                  "start": "__i2",
-                                  "end": "__i2",
-                                  "step": "1",
-                                  "tile": "1"
-                                },
-                                {
-                                  "start": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7)",
-                                  "end": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7) + 7",
-                                  "step": "1",
-                                  "tile": "1"
-                                }
-                              ]
-                            },
-                            "other_subset": null,
-                            "data": "trans__b",
-                            "wcr": null,
-                            "debuginfo": null,
-                            "wcr_nonatomic": false,
-                            "allow_oob": false,
-                            "src_subset": {
-                              "type": "Range",
-                              "ranges": [
-                                {
-                                  "start": "__i2",
-                                  "end": "__i2",
-                                  "step": "1",
-                                  "tile": "1"
-                                },
-                                {
-                                  "start": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7)",
-                                  "end": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7) + 7",
-                                  "step": "1",
-                                  "tile": "1"
-                                }
-                              ]
-                            },
-                            "dst_subset": null,
-                            "num_accesses": "64"
-                          }
-                        }
-                      },
-                      "src": "0",
-                      "dst": "19",
-                      "dst_connector": null,
-                      "src_connector": "OUT__b"
-                    },
-                    {
-                      "type": "MultiConnectorEdge",
-                      "attributes": {
-                        "data": {
-                          "type": "Memlet",
-                          "attributes": {
-                            "volume": "131072*ceiling(K/8)",
-                            "dynamic": false,
-                            "subset": {
-                              "type": "Range",
-                              "ranges": [
-                                {
-                                  "start": "0",
-                                  "end": "K - 1",
-                                  "step": "1",
-                                  "tile": "1"
-                                },
-                                {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 127",
-                                  "step": "1",
-                                  "tile": "1"
-                                }
-                              ]
-                            },
-                            "other_subset": null,
-                            "data": "_b",
-                            "wcr": null,
-                            "debuginfo": null,
-                            "wcr_nonatomic": false,
-                            "allow_oob": false,
-                            "src_subset": {
-                              "type": "Range",
-                              "ranges": [
-                                {
-                                  "start": "0",
-                                  "end": "K - 1",
-                                  "step": "1",
-                                  "tile": "1"
-                                },
-                                {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 127",
-                                  "step": "1",
-                                  "tile": "1"
-                                }
-                              ]
-                            },
-                            "dst_subset": null,
-                            "num_accesses": "131072*ceiling(K/8)"
-                          }
-                        }
-                      },
-                      "src": "8",
-                      "dst": "6",
-                      "dst_connector": "IN__b",
                       "src_connector": "OUT__b"
                     },
                     {
@@ -5095,7 +5203,7 @@
                           }
                         }
                       },
-                      "src": "14",
+                      "src": "10",
                       "dst": "0",
                       "dst_connector": "IN__b",
                       "src_connector": "OUT__b"
@@ -5153,8 +5261,8 @@
                           }
                         }
                       },
-                      "src": "12",
-                      "dst": "14",
+                      "src": "8",
+                      "dst": "10",
                       "dst_connector": "IN__b",
                       "src_connector": "OUT__b"
                     },
@@ -5164,14 +5272,72 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072*ceiling(K/8)*ceiling(M/128)*ceiling(N/128)",
+                            "volume": "5242880",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "0",
-                                  "end": "M - 1",
+                                  "start": "SPLIT_K_tile___i2",
+                                  "end": "SPLIT_K_tile___i2 + 319.0",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 127",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "other_subset": null,
+                            "data": "_b",
+                            "wcr": null,
+                            "debuginfo": null,
+                            "wcr_nonatomic": false,
+                            "allow_oob": false,
+                            "src_subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "SPLIT_K_tile___i2",
+                                  "end": "SPLIT_K_tile___i2 + 319.0",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 127",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "dst_subset": null,
+                            "num_accesses": "5242880"
+                          }
+                        }
+                      },
+                      "src": "21",
+                      "dst": "19",
+                      "dst_connector": "IN__b",
+                      "src_connector": "OUT__b"
+                    },
+                    {
+                      "type": "MultiConnectorEdge",
+                      "attributes": {
+                        "data": {
+                          "type": "Memlet",
+                          "attributes": {
+                            "volume": "5242880*ceiling(M/128)*ceiling(N/128)",
+                            "dynamic": false,
+                            "subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "SPLIT_K_tile___i2",
+                                  "end": "SPLIT_K_tile___i2 + 319.0",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -5184,18 +5350,17 @@
                               ]
                             },
                             "other_subset": null,
-                            "data": "_c",
-                            "wcr": "(lambda x, y: (x + y))",
+                            "data": "_b",
+                            "wcr": null,
                             "debuginfo": null,
                             "wcr_nonatomic": false,
                             "allow_oob": false,
-                            "src_subset": null,
-                            "dst_subset": {
+                            "src_subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "0",
-                                  "end": "M - 1",
+                                  "start": "SPLIT_K_tile___i2",
+                                  "end": "SPLIT_K_tile___i2 + 319.0",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -5207,14 +5372,15 @@
                                 }
                               ]
                             },
-                            "num_accesses": "131072*ceiling(K/8)*ceiling(M/128)*ceiling(N/128)"
+                            "dst_subset": null,
+                            "num_accesses": "5242880*ceiling(M/128)*ceiling(N/128)"
                           }
                         }
                       },
-                      "src": "9",
-                      "dst": "5",
-                      "dst_connector": null,
-                      "src_connector": "OUT__c"
+                      "src": "17",
+                      "dst": "21",
+                      "dst_connector": "IN__b",
+                      "src_connector": "OUT__b"
                     },
                     {
                       "type": "MultiConnectorEdge",
@@ -5270,7 +5436,7 @@
                         }
                       },
                       "src": "2",
-                      "dst": "20",
+                      "dst": "16",
                       "dst_connector": null,
                       "src_connector": "OUT__c"
                     },
@@ -5280,20 +5446,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072*ceiling(K/8)",
+                            "volume": "5242880*ceiling(0.003125*K)*ceiling(M/128)*ceiling(N/128)",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
+                                  "start": "0",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5310,84 +5476,26 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
+                                  "start": "0",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
-                            "num_accesses": "131072*ceiling(K/8)"
+                            "num_accesses": "5242880*ceiling(0.003125*K)*ceiling(M/128)*ceiling(N/128)"
                           }
                         }
                       },
-                      "src": "7",
-                      "dst": "9",
-                      "dst_connector": "IN__c",
-                      "src_connector": "OUT__c"
-                    },
-                    {
-                      "type": "MultiConnectorEdge",
-                      "attributes": {
-                        "data": {
-                          "type": "Memlet",
-                          "attributes": {
-                            "volume": "131072",
-                            "dynamic": false,
-                            "subset": {
-                              "type": "Range",
-                              "ranges": [
-                                {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
-                                  "step": "1",
-                                  "tile": "1"
-                                },
-                                {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
-                                  "step": "1",
-                                  "tile": "1"
-                                }
-                              ]
-                            },
-                            "other_subset": null,
-                            "data": "_c",
-                            "wcr": "(lambda x, y: (x + y))",
-                            "debuginfo": null,
-                            "wcr_nonatomic": false,
-                            "allow_oob": false,
-                            "src_subset": null,
-                            "dst_subset": {
-                              "type": "Range",
-                              "ranges": [
-                                {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
-                                  "step": "1",
-                                  "tile": "1"
-                                },
-                                {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
-                                  "step": "1",
-                                  "tile": "1"
-                                }
-                              ]
-                            },
-                            "num_accesses": "131072"
-                          }
-                        }
-                      },
-                      "src": "13",
-                      "dst": "7",
-                      "dst_connector": "IN__c",
+                      "src": "18",
+                      "dst": "5",
+                      "dst_connector": null,
                       "src_connector": "OUT__c"
                     },
                     {
@@ -5443,8 +5551,8 @@
                           }
                         }
                       },
-                      "src": "15",
-                      "dst": "13",
+                      "src": "11",
+                      "dst": "9",
                       "dst_connector": "IN__c",
                       "src_connector": "OUT__c"
                     },
@@ -5501,8 +5609,182 @@
                           }
                         }
                       },
-                      "src": "17",
+                      "src": "13",
                       "dst": "2",
+                      "dst_connector": "IN__c",
+                      "src_connector": "OUT__c"
+                    },
+                    {
+                      "type": "MultiConnectorEdge",
+                      "attributes": {
+                        "data": {
+                          "type": "Memlet",
+                          "attributes": {
+                            "volume": "131072",
+                            "dynamic": false,
+                            "subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "tile___i0",
+                                  "end": "tile___i0 + 8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "other_subset": null,
+                            "data": "_c",
+                            "wcr": "(lambda x, y: (x + y))",
+                            "debuginfo": null,
+                            "wcr_nonatomic": false,
+                            "allow_oob": false,
+                            "src_subset": null,
+                            "dst_subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "tile___i0",
+                                  "end": "tile___i0 + 8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "num_accesses": "131072"
+                          }
+                        }
+                      },
+                      "src": "9",
+                      "dst": "20",
+                      "dst_connector": "IN__c",
+                      "src_connector": "OUT__c"
+                    },
+                    {
+                      "type": "MultiConnectorEdge",
+                      "attributes": {
+                        "data": {
+                          "type": "Memlet",
+                          "attributes": {
+                            "volume": "5242880",
+                            "dynamic": false,
+                            "subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "tile___i0",
+                                  "end": "tile___i0 + 8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "other_subset": null,
+                            "data": "_c",
+                            "wcr": "(lambda x, y: (x + y))",
+                            "debuginfo": null,
+                            "wcr_nonatomic": false,
+                            "allow_oob": false,
+                            "src_subset": null,
+                            "dst_subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "tile___i0",
+                                  "end": "tile___i0 + 8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "num_accesses": "5242880"
+                          }
+                        }
+                      },
+                      "src": "20",
+                      "dst": "22",
+                      "dst_connector": "IN__c",
+                      "src_connector": "OUT__c"
+                    },
+                    {
+                      "type": "MultiConnectorEdge",
+                      "attributes": {
+                        "data": {
+                          "type": "Memlet",
+                          "attributes": {
+                            "volume": "5242880*ceiling(M/128)*ceiling(N/128)",
+                            "dynamic": false,
+                            "subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "0",
+                                  "end": "M - 1",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "0",
+                                  "end": "N - 1",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "other_subset": null,
+                            "data": "_c",
+                            "wcr": "(lambda x, y: (x + y))",
+                            "debuginfo": null,
+                            "wcr_nonatomic": false,
+                            "allow_oob": false,
+                            "src_subset": null,
+                            "dst_subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "0",
+                                  "end": "M - 1",
+                                  "step": "1",
+                                  "tile": "1"
+                                },
+                                {
+                                  "start": "0",
+                                  "end": "N - 1",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "num_accesses": "5242880*ceiling(M/128)*ceiling(N/128)"
+                          }
+                        }
+                      },
+                      "src": "22",
+                      "dst": "18",
                       "dst_connector": "IN__c",
                       "src_connector": "OUT__c"
                     },
@@ -5559,7 +5841,7 @@
                           }
                         }
                       },
-                      "src": "16",
+                      "src": "12",
                       "dst": "1",
                       "dst_connector": "__a",
                       "src_connector": "OUT_trans__a"
@@ -5617,7 +5899,7 @@
                           }
                         }
                       },
-                      "src": "16",
+                      "src": "12",
                       "dst": "1",
                       "dst_connector": "__b",
                       "src_connector": "OUT_trans__b"
@@ -5676,7 +5958,7 @@
                         }
                       },
                       "src": "1",
-                      "dst": "17",
+                      "dst": "13",
                       "dst_connector": "IN__c",
                       "src_connector": "__out"
                     }
