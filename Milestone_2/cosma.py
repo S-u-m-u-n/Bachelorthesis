@@ -597,7 +597,7 @@ if __name__ == "__main__":
                         default=False)
     parser.add_argument("-g", "--gpu_type",
                         dest='gpu_type',
-                        help="use this to specify the gpu type (\"NVIDIA\" or \"AMD\"). Default: NVIDIA",
+                        help="use this to specify the gpu type (\"NVIDIA\" or \"AMD\" or \"default\" (skips query)). Default: NVIDIA",
                         action="store",
                         default="NVIDIA")
     parser.add_argument("-M", type=int, dest='M', nargs="?", default=640)
@@ -655,13 +655,14 @@ capability_version = 7.0""")
 
     if not args.quiet:
         helpers.print_info("Phase 1/3: Querying device info...", args.colorless)
+
     if args.gpu_type == "NVIDIA":
         queryNVIDIA()
     elif args.gpu_type == "AMD":
         # os.environ['DACE_compiler_cuda_backend'] = 'hip'
         dace.Config.set('DACE_compiler_cuda_backend', value='hip')
         queryAMD()
-    else:
+    elif args.gpu_type != "default":
         helpers.print_error("Invalid usage of -g parameter!")
         exit(-1)
 
