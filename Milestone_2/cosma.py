@@ -755,5 +755,6 @@ capability_version = 7.0""")
         if areSame(C_correct, C_test):
             if not args.quiet:
                 helpers.print_success("The SDFG is correct!", args.colorless)
+                print("%.2f" % C_test[0][0] + " = " + "%.2f" % C_correct[0][0])
         else:
             helpers.print_error("The SDFG is incorrect!", args.colorless)
