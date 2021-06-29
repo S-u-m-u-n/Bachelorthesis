@@ -519,8 +519,8 @@ def create_sdfg(schedule) -> None:
         # if not args.quiet:
         #     helpers.print_success("Successfully applied vectorization.", args.colorless)
    
-    # # #####################################################################
-    # # ### Double Buffering (on shared memory)
+    #####################################################################
+    ### Double Buffering (on shared memory)
     sdfg.save('sdfg_pre_double_buffering.sdfg')
     if schedule.double_buffering == True:
         if not args.quiet:
@@ -532,7 +532,7 @@ def create_sdfg(schedule) -> None:
 
     sdfg.save('sdfg_final.sdfg')
     if not args.quiet:
-        helpers.print_info('Compiling sdfg.', args.colorless)
+        helpers.print_info('Compiling sdfg...', args.colorless)
     csdfg = sdfg.compile()
     if not args.quiet:
         helpers.print_success("Successfully compiled SDFG.", args.colorless)
@@ -683,8 +683,8 @@ capability_version = 7.0""")
     A = np.random.rand(M, K).astype(np_dtype)
     B = np.random.rand(K, N).astype(np_dtype)
     C = np.zeros((M, N)).astype(np_dtype)
-    alpha = dace.float64(0.66)
-    beta = dace.float64(0.33)
+    alpha = dace.float64(1)
+    beta = dace.float64(1)
 
     if args.version == 'unoptimized':
         simple_schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32,
@@ -710,20 +710,19 @@ capability_version = 7.0""")
             helpers.print_info("Phase 3/3: Creating SDFG...", args.colorless)
         
         csdfg = create_sdfg(best_schedule)
-        if not args.quiet:
-            helpers.print_success("Created SDFG.", args.colorless)
         
         C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
 
     elif args.version == 'cublas':
         dace.libraries.blas.default_implementation = 'cuBLAS'
-        C_test = matmul(A, B, C, alpha, beta)
+        C_test = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
     else:
         helpers.print_error("Invalid usage of --version parameter!", args.colorless)
         exit(-1)
 
     if args.verification:
-        C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
+        helpers.print_info("Verifying results...", args.colorless)
+        C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
 
         # Can replace this with np.allclose(A, B)
         def areSame(A,B):
