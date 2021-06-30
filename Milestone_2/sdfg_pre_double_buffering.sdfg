@@ -256,33 +256,6 @@
           "debuginfo": null
         }
       },
-      "gpu_A": {
-        "type": "Array",
-        "attributes": {
-          "allow_conflicts": false,
-          "strides": [
-            "K",
-            "1"
-          ],
-          "total_size": "K*M",
-          "offset": [
-            "0",
-            "0"
-          ],
-          "may_alias": false,
-          "alignment": 0,
-          "dtype": "float64",
-          "shape": [
-            "M",
-            "K"
-          ],
-          "transient": true,
-          "storage": "GPU_Global",
-          "lifetime": "Scope",
-          "location": {},
-          "debuginfo": null
-        }
-      },
       "gpu_C": {
         "type": "Array",
         "attributes": {
@@ -302,6 +275,33 @@
           "shape": [
             "M",
             "N"
+          ],
+          "transient": true,
+          "storage": "GPU_Global",
+          "lifetime": "Scope",
+          "location": {},
+          "debuginfo": null
+        }
+      },
+      "gpu_A": {
+        "type": "Array",
+        "attributes": {
+          "allow_conflicts": false,
+          "strides": [
+            "K",
+            "1"
+          ],
+          "total_size": "K*M",
+          "offset": [
+            "0",
+            "0"
+          ],
+          "may_alias": false,
+          "alignment": 0,
+          "dtype": "float64",
+          "shape": [
+            "M",
+            "K"
           ],
           "transient": true,
           "storage": "GPU_Global",
@@ -2462,7 +2462,7 @@
     ],
     "openmp_sections": true,
     "name": "matmul",
-    "hash": "8b71bda23e83063ef2de95417e5e8353a34c6088f5f4a1f892775434772b1c1c"
+    "hash": "386fadd19cef4061a468fe026a7cde73fa35b4e8b1f94b01ea888b39bf3b942b"
   },
   "nodes": [
     {
@@ -4067,7 +4067,7 @@
                           ]
                         },
                         "schedule": "Sequential",
-                        "unroll": false,
+                        "unroll": true,
                         "collapse": 1,
                         "debuginfo": null,
                         "is_collapsed": false,
@@ -4565,8 +4565,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 127",
+                                  "start": "128*floor(tile___i0/256)",
+                                  "end": "128*floor(tile___i0/256) + 127",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -4588,8 +4588,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 127",
+                                  "start": "128*floor(tile___i0/256)",
+                                  "end": "128*floor(tile___i0/256) + 127",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -4623,8 +4623,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile2___i0",
-                                  "end": "tile1___i0 + tile2___i0 + 7",
+                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
+                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -4646,8 +4646,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile2___i0",
-                                  "end": "tile1___i0 + tile2___i0 + 7",
+                                  "start": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1))",
+                                  "end": "tile1___i0 + bitwise_or(right_shift(bitwise_and(tile2___i0 + tile2___i1/8, 16), 3), bitwise_and(tile2___i0 + tile2___i1/8, 1)) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -4861,8 +4861,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 127",
+                                  "start": "2*tile___i1 + 128*Mod(tile___i0/128, 2)",
+                                  "end": "2*tile___i1 + 128*Mod(tile___i0/128, 2) + 127",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4884,8 +4884,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 127",
+                                  "start": "2*tile___i1 + 128*Mod(tile___i0/128, 2)",
+                                  "end": "2*tile___i1 + 128*Mod(tile___i0/128, 2) + 127",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4919,8 +4919,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile2___i1",
-                                  "end": "tile1___i1 + tile2___i1 + 7",
+                                  "start": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7)",
+                                  "end": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4942,8 +4942,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile2___i1",
-                                  "end": "tile1___i1 + tile2___i1 + 7",
+                                  "start": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7)",
+                                  "end": "tile1___i1 + bitwise_and(floor(tile2___i0/2 + tile2___i1/16), 7) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
