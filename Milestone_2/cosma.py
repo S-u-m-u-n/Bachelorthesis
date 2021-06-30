@@ -240,6 +240,10 @@ def create_sdfg(schedule) -> None:
     c_access = next(n for n in state.data_nodes() if n.data == 'trans__c')
     c_access.setzero = True
 
+    # Unroll microkernel maps
+    entry, state = find_map_by_param(state.parent, "__i0")
+    entry.map.unroll = True
+
     #####################################################################
     ### Split K
     # sdfg.save('sdfg_pre_split_k.sdfg')
@@ -603,7 +607,8 @@ if __name__ == "__main__":
     parser.add_argument("-M", type=int, dest='M', nargs="?", default=640)
     parser.add_argument("-K", type=int, dest='K', nargs="?", default=640)
     parser.add_argument("-N", type=int, dest='N', nargs="?", default=640)
-    parser.add_argument('--version',
+    parser.add_argument("-r", "--repetitions", type=int, dest='repetitions', nargs="?", default=1)
+    parser.add_argument("--version",
                         choices=['unoptimized', 'optimize_gpu', 'cublas'],
                         default='optimize_gpu',
                         help='''Different available versions:
@@ -681,9 +686,9 @@ capability_version = 7.0""")
     M=np.int32(args.M)
     N=np.int32(args.N)
     K=np.int32(args.K)
-    A = np.random.rand(M, K).astype(np_dtype)
-    B = np.random.rand(K, N).astype(np_dtype)
-    C = np.zeros((M, N)).astype(np_dtype)
+    # A = np.random.rand(M, K).astype(np_dtype)
+    # B = np.random.rand(K, N).astype(np_dtype)
+    # C = np.zeros((M, N)).astype(np_dtype)
     alpha = dace.float64(1)
     beta = dace.float64(1)
 
@@ -691,7 +696,6 @@ capability_version = 7.0""")
         simple_schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32,
                                 thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640, SWIZZLE_thread_block=1, SWIZZLE_thread_tile=False, splice_k=1, split_k=1, double_buffering=False)
         csdfg = create_sdfg(simple_schedule)
-        C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
     elif args.version == 'optimize_gpu':
         ########################################################
         # 2. Find best schedule
@@ -711,50 +715,56 @@ capability_version = 7.0""")
             helpers.print_info("Phase 3/3: Creating SDFG...", args.colorless)
         
         csdfg = create_sdfg(best_schedule)
-        
-        C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
 
     elif args.version == 'cublas':
         dace.libraries.blas.default_implementation = 'cuBLAS'
-        C_test = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
     else:
         helpers.print_error("Invalid usage of --version parameter!", args.colorless)
         exit(-1)
 
-    if args.verification:
-        helpers.print_info("Verifying results...", args.colorless)
-        C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
-
-        # Can replace this with np.allclose(A, B)
-        def areSame(A,B):
-            for i in range(M):
-                for j in range(N):
-                    diff = math.fabs(A[i][j] - B[i][j])
-                    # helpers.print_info("(" + str(i) + ", " + str(j) + ")", args.colorless)
-                    # helpers.print_info("Comparing " + str(B[i][j]) + " to " + str(A[i][j]))
-                    # helpers.print_info("Difference = " + str(diff))
-                    if (diff > 0.000001):
-                        helpers.print_error("Error: matrices are not equal! Difference is: " + str(diff), args.colorless)
-                        helpers.print_error(str(B[i][j]) + " should be " + str(A[i][j]), args.colorless)
-                        print()
-                        return False
-            return True
-        
-        print()
-        for i in range(16):
-            for j in range(16):
-                print("%.2f" % C_test[i][j], end=" ")
-            print()
-
-        print()
-        print()
-        for i in range(16):
-            for j in range(16):
-                print("%.2f" % C_correct[i][j], end=" ")
-            print()
-
-        if areSame(C_correct, C_test):
-            if not args.quiet:
-                helpers.print_success("The SDFG is correct!", args.colorless)
+    for i in range(args.repetitions):
+        A = np.random.rand(M, K).astype(np_dtype)
+        B = np.random.rand(K, N).astype(np_dtype)
+        C = np.zeros((M, N)).astype(np_dtype)
+        if args.version == 'cublas':
+            C_test = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
         else:
-            helpers.print_error("The SDFG is incorrect!", args.colorless)
+            C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M, N=N, K=K)
+
+        if args.verification:
+            helpers.print_info("Verifying results...", args.colorless)
+            C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
+
+            # Can replace this with np.allclose(A, B)
+            def areSame(A,B):
+                for i in range(M):
+                    for j in range(N):
+                        diff = math.fabs(A[i][j] - B[i][j])
+                        # helpers.print_info("(" + str(i) + ", " + str(j) + ")", args.colorless)
+                        # helpers.print_info("Comparing " + str(B[i][j]) + " to " + str(A[i][j]))
+                        # helpers.print_info("Difference = " + str(diff))
+                        if (diff > 0.000001):
+                            helpers.print_error("Error: matrices are not equal! Difference is: " + str(diff), args.colorless)
+                            helpers.print_error(str(B[i][j]) + " should be " + str(A[i][j]), args.colorless)
+                            print()
+                            return False
+                return True
+            
+            print()
+            for i in range(16):
+                for j in range(16):
+                    print("%.2f" % C_test[i][j], end=" ")
+                print()
+
+            print()
+            print()
+            for i in range(16):
+                for j in range(16):
+                    print("%.2f" % C_correct[i][j], end=" ")
+                print()
+
+            if areSame(C_correct, C_test):
+                if not args.quiet:
+                    helpers.print_success("The SDFG is correct!", args.colorless)
+            else:
+                helpers.print_error("The SDFG is incorrect!", args.colorless)
