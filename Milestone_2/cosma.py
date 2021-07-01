@@ -641,12 +641,12 @@ cublas: Run `matmul` with the CUBLAS library node implementation.''')
                         help="Use Split K",
                         action="store_true",
                         default=False)
-    parser.add_argument('--swizzle-thread-block',
-                        dest='swizzle_thread_block',
+    parser.add_argument('--swizzle-thread-blocks',
+                        dest='swizzle_thread_blocks',
                         help="Use swizzle on the thread blocks",
                         action="store_true",
                         default=False)
-    parser.add_argument('--swizzle-thread',
+    parser.add_argument('--swizzle-threads',
                         dest='swizzle_threads',
                         help="Use swizzle on the threads",
                         action="store_true",
@@ -668,7 +668,7 @@ cublas: Run `matmul` with the CUBLAS library node implementation.''')
 
     if args.all_optimizations:
         args.split_k = True
-        args.swizzle_thread_block = True
+        args.swizzle_thread_blocks = True
         args.swizzle_threads = True
         args.vectorization = True
         args.double_buffering = True
