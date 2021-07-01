@@ -805,7 +805,6 @@ capability_version = 7.0""")
                 print()
 
             if areSame(C_correct, C_test):
-                if not args.quiet:
-                    helpers.print_success("The SDFG is correct!", args.colorless)
+                helpers.print_success("The SDFG is correct!", args.colorless)
             else:
                 helpers.print_error("The SDFG is incorrect!", args.colorless)
