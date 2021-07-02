@@ -16,8 +16,6 @@ from dace.subsets import Range
 import helpers
 import warnings
 
-
-
 def find_map_by_param(sdfg: dace.SDFG, pname: str) -> dace.nodes.MapEntry:
     """ Finds the first map entry node by the given parameter name. """
     return next((n, state) for n, state in sdfg.all_nodes_recursive()
@@ -31,146 +29,27 @@ def find_map_by_name(sdfg: dace.SDFG, name: str) -> dace.nodes.MapEntry:
 M = dace.symbol('M')
 N = dace.symbol('N')
 K = dace.symbol('K')
-# alpha = dace.symbol('alpha')
-# beta = dace.symbol('beta')
+alpha = dace.symbol('alpha')
+beta = dace.symbol('beta')
+
+A = np.matrix([
+[0, 1, 2, 3],
+[4, 5, 6, 7],
+[8, 9, 10, 11],
+[12, 13, 14, 15],
+[16, 17, 18, 19],
+[20, 21, 22, 23],
+[24, 25, 26, 27],
+[28, 29, 30, 31]
+])
 
 @dace.program
-def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
-    return alpha * (A @ B) + beta * C
+def print_matrix(A: dace.int[32, 32]):
+    for r in A:
+        for c in r:
+            print(c, end = " ")
+        print()
 
-# Finds and returns the best schedule
-def find_best_schedule(load_k_possible, threadtiles_possible):
-    best_schedule = Schedule()
-
-    for load_k in tqdm(load_k_possible, desc="load_k", position=0, leave=False, ncols=80):
-        for thread_tile_m in tqdm(threadtiles_possible, desc="thread_tile_m", position=1, leave=False, ncols=80):
-            for thread_tile_n in tqdm(threadtiles_possible, desc="thread_tile_n", position=2, leave=False, ncols=80):
-                for thread_tile_k in tqdm(threadtiles_possible, desc="thread_tile_k", position=3, leave=False, ncols=80):
-                    for warp_tile_m in tqdm(range(thread_tile_m, device.registers_per_warp, thread_tile_m), desc="warp_tile_m", position=4, leave=False, ncols=80):
-                        for warp_tile_n in tqdm(range(thread_tile_n, device.registers_per_warp, thread_tile_n), desc="warp_tile_n", position=5, leave=False, ncols=80):
-                            for thread_block_tile_m in tqdm(range(warp_tile_m, device.registers_per_thread_block, warp_tile_m), desc="thread_block_tile_m", position=6, leave=False, ncols=80):
-                                for thread_block_tile_n in tqdm(range(warp_tile_n, device.registers_per_thread_block, warp_tile_n), desc="thread_block_tile_n", position=7, leave=False, ncols=80):
-                                    for split_k in tqdm(range(1, device.SMs * device.warps_per_SM * 2), desc="split_k", position=8, leave=False, ncols=80):
-                                        schedule = Schedule(load_k, thread_tile_m, thread_tile_n, warp_tile_m, warp_tile_n,
-                                                            thread_block_tile_m, thread_block_tile_n, split_k)
-                                        # print(schedule)
-                                        if not fulfills_constraints(schedule):
-                                            continue
-
-                                        if schedule > best_schedule:
-                                            best_schedule = schedule
-    return best_schedule
-
-
-class Schedule:
-    def __init__(self, load_k=1, thread_tile_m=1, thread_tile_n=1, thread_tile_k=1, warp_tile_m=1, warp_tile_n=1, thread_block_tile_m=1, thread_block_tile_n=1, thread_block_tile_k=1, splice_k = 1, split_k=1, double_buffering=False, SWIZZLE_thread_block=1, SWIZZLE_thread_tile=False):
-        self.load_k = load_k
-        self.thread_tile_m = thread_tile_m
-        self.thread_tile_n = thread_tile_n
-        self.thread_tile_k = thread_tile_k
-        self.warp_tile_m = warp_tile_m
-        self.warp_tile_n = warp_tile_n
-        self.warp_tile_k = thread_tile_k / split_k
-        self.thread_block_tile_m = thread_block_tile_m
-        self.thread_block_tile_n = thread_block_tile_n
-        self.thread_block_tile_k = thread_block_tile_k
-        self.split_k = split_k
-        self.splice_k = splice_k
-        self.double_buffering = double_buffering
-        self.SWIZZLE_thread_block = SWIZZLE_thread_block
-        self.SWIZZLE_thread_tile = SWIZZLE_thread_tile
-
-    def __gt__(self, schedule2):
-        # 1. Compare number of compute (CUDA) cores used (larger is better)
-        # For now, we calculate the number of threads used instead
-        if self.num_threads_used() > schedule2.num_threads_used():
-            return True
-        elif self.num_threads_used() < schedule2.num_threads_used():
-            return False
-        # 2. Compare communication volume (smaller is better)
-        if self.global_communication_volume() < schedule2.global_communication_volume():
-            return True
-        elif self.global_communication_volume() > schedule2.global_communication_volume():
-            return False
-        if self.shared_communication_volume() < schedule2.shared_communication_volume():
-            return True
-        elif self.shared_communication_volume() > schedule2.shared_communication_volume():
-            return False
-        # 3. Compare split_k (smaller is better)
-        if(self.split_k < schedule2.split_k):
-            return True
-        elif(self.split_k > schedule2.split_k):
-            return False
-        # 4. Compare thread_tile_n (larger is better)
-        if self.thread_tile_n > schedule2.thread_tile_n:
-            return True
-        elif self.thread_tile_n < schedule2.thread_tile_n:
-            return False
-
-    def __str__(self):
-        return """Scheduler with the following parameters:
-        load_k: %d
-        thread_tile_m: %d
-        thread_tile_n: %d
-        warp_tile_m: %d
-        warp_tile_n: %d
-        thread_block_tile_m: %d
-        thread_block_tile_n: %d
-        thread_block_tile_k: %d
-        split_k: %d
-        double_buffering: %d
-        SWIZZLE_thread_block: %d
-        """ % (self.load_k, self.thread_tile_m, self.thread_tile_n, self.warp_tile_m, self.warp_tile_n, self.thread_block_tile_m, self.thread_block_tile_n, self.thread_block_tile_k, self.split_k, self.double_buffering, self.SWIZZLE_thread_block)
-
-    def num_threads_used(self):
-        numTilesM = math.ceil(M / dace.float64(self.thread_tile_m))
-        numTilesN = math.ceil(N / dace.float64(self.thread_tile_n))
-        numTilesK = math.ceil(K / dace.float64(self.thread_tile_k))
-        threads_used_full = (numTilesM - 1) * (numTilesN - 1) * (numTilesK - 1) * min(
-            device.warps_per_SM, numTilesM * numTilesN * numTilesK) * device.threads_per_warp  # What is total_P??
-
-        M_Overflow = self.thread_block_tile_m * numTilesM - M
-        N_Overflow = self.thread_block_tile_n * numTilesN - N
-
-        M_Threads = math.ceil(
-            (self.thread_block_tile_m - M_Overflow) / dace.float64(self.thread_tile_m))
-        N_Threads = math.ceil(
-            (self.thread_block_tile_n - N_Overflow) / dace.float64(self.thread_tile_n))
-
-        M_Leftover = self.thread_block_tile_m / self.thread_tile_m - M_Threads
-        N_Leftover = self.thread_block_tile_n / self.thread_tile_n - N_Threads
-
-        threads_used_top = 1 * (numTilesN - 1) * numTilesK * min(device.warps_per_SM * device.threads_per_warp,
-                                                                 numTilesM * numTilesN * numTilesK * device.threads_per_warp - M_Leftover * (self.thread_block_tile_n / self.thread_tile_n))  # What is total_P??
-        threads_used_bottom = (numTilesM - 1) * 1 * numTilesK * min(device.warps_per_SM * device.threads_per_warp,
-                                                                    numTilesM * numTilesN * numTilesK * device.threads_per_warp - N_Leftover * (self.thread_block_tile_m / self.thread_tile_m))  # What is total_P??
-        threads_used_top_right = 1 * 1 * numTilesK * min(device.warps_per_SM * device.threads_per_warp,
-                                                         numTilesM * numTilesN * numTilesK * device.threads_per_warp - N_Leftover * (self.thread_block_tile_m / self.thread_tile_m) - M_Leftover * (self.thread_block_tile_n / self.thread_tile_n) + N_Leftover * M_Leftover)  # What is total_P??
-
-        total_threads_used = threads_used_full + threads_used_top + \
-            threads_used_bottom + threads_used_top_right
-
-        return min(total_threads_used, device.total_compute_cores)
-
-    def global_communication_volume(self):
-        volume_A_global = self.thread_block_tile_m * self.thread_block_tile_k
-        volume_B_global = self.thread_block_tile_n * self.thread_block_tile_k
-        volume_C_global = self.thread_block_tile_m * self.thread_block_tile_n
-        if beta != 0:
-            volume_C_global *= 2
-        total_num_thread_blocks = (
-            M * N * K) / (self.thread_block_tile_m * self.thread_block_tile_n * self.thread_block_tile_k)
-        return (volume_A_global + volume_B_global + volume_C_global) * total_num_thread_blocks
-
-    def shared_communication_volume(self):
-        volume_A_shared = self.warp_tile_m * self.thread_block_tile_k
-        volume_B_shared = self.warp_tile_n * self.thread_block_tile_k
-        return (volume_A_shared + volume_B_shared) * device.warps_per_SM * device.SMs
-
-
-def fulfills_constraints(schedule):
-    # check constraints
-    return True
 
 
 def create_sdfg(schedule) -> None:
@@ -732,8 +611,8 @@ capability_version = 7.0""")
     # A = np.random.rand(M, K).astype(np_dtype)
     # B = np.random.rand(K, N).astype(np_dtype)
     # C = np.zeros((M, N)).astype(np_dtype)
-    alpha = np.float64(args.alpha)
-    beta = np.float64(args.beta)
+    alpha = np.float64(args.alpha) # gives incorrect result when not set to 1...
+    beta = np.float64(args.beta) # gives incorrect result when not set to 1...
 
     if args.version == 'dace':
         ########################################################
