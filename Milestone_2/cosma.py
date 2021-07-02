@@ -17,7 +17,6 @@ import helpers
 import warnings
 
 
-
 def find_map_by_param(sdfg: dace.SDFG, pname: str) -> dace.nodes.MapEntry:
     """ Finds the first map entry node by the given parameter name. """
     return next((n, state) for n, state in sdfg.all_nodes_recursive()
@@ -31,8 +30,6 @@ def find_map_by_name(sdfg: dace.SDFG, name: str) -> dace.nodes.MapEntry:
 M = dace.symbol('M')
 N = dace.symbol('N')
 K = dace.symbol('K')
-# alpha = dace.symbol('alpha')
-# beta = dace.symbol('beta')
 
 @dace.program
 def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
@@ -182,16 +179,54 @@ def create_sdfg(schedule) -> None:
     #####################################################################
     ### Threadblock Tile
     gemm, state = find_map_by_name(sdfg, "gemm_map")
-    xfutil.tile(state.parent, gemm, True, True, __i0=schedule.thread_block_tile_m, __i1=schedule.thread_block_tile_n, __i2=schedule.load_k)
-    entry_outer, state = find_map_by_param(state.parent, "tile___i0")
-    entry_inner, state = find_map_by_param(state.parent, "tile___i1")
+    # xfutil.tile(state.parent, gemm, True, True, __i0=schedule.thread_block_tile_m, __i1=schedule.thread_block_tile_n, __i2=schedule.load_k)
+    divides_evenly = False
+    if M % schedule.thread_block_tile_m == 0:
+        divides_evenly = True
+    StripMining.apply_to(state.parent,
+            dict(new_dim_prefix="THREAD_BLOCK",
+            tiling_type=dace.TilingType.NumberOfTiles,
+            tile_size=M / schedule.thread_block_tile_m,
+            dim_idx=0,
+            divides_evenly=divides_evenly,
+            ),
+            _map_entry=gemm
+    )
+    sdfg.save('sdfg_tiled_1.sdfg')
+    divides_evenly = False
+    if N % schedule.thread_block_tile_n == 0:
+        divides_evenly = True
+    StripMining.apply_to(state.parent,
+            dict(new_dim_prefix="THREAD_BLOCK",
+            tiling_type=dace.TilingType.NumberOfTiles,
+            tile_size=N / schedule.thread_block_tile_n,
+            dim_idx=1,
+            divides_evenly=divides_evenly,
+            ),
+            _map_entry=gemm
+    )
+    sdfg.save('sdfg_tiled_2.sdfg')
+    if K % schedule.load_k == 0:
+        divides_evenly = True
+    StripMining.apply_to(state.parent,
+            dict(new_dim_prefix="LOAD_K",
+            tiling_type=dace.TilingType.NumberOfTiles,
+            tile_size=K / schedule.load_k,
+            dim_idx=2,
+            divides_evenly=divides_evenly,
+            ),
+            _map_entry=gemm
+    )
+    sdfg.save('sdfg_tiled_3.sdfg')
+    entry_outer, state = find_map_by_param(state.parent, "THREAD_BLOCK___i0")
+    entry_inner, state = find_map_by_param(state.parent, "THREAD_BLOCK___i1")
     MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
-    entry_outer, state = find_map_by_param(state, "tile___i2")
-    entry_inner, state = find_map_by_param(state, "__i0")
+    entry_inner, state = find_map_by_param(state.parent, "__i0")
     entry_inner._map.schedule = dace.ScheduleType.GPU_ThreadBlock
 
     #####################################################################
     ### local storage (shared memory) for loading threadblock_tiles of A and B
+    entry_outer, state = find_map_by_param(state.parent, "LOAD_K___i2")
     shared_memory_A = InLocalStorage.apply_to(state.parent, dict(array='_a'), node_a=entry_outer, node_b=entry_inner)
     shared_memory_B = InLocalStorage.apply_to(state.parent, dict(array='_b'), node_a=entry_outer, node_b=entry_inner)
     state.parent.arrays[shared_memory_A.data].storage = dace.StorageType.GPU_Shared
@@ -201,16 +236,16 @@ def create_sdfg(schedule) -> None:
     ### Warp Tile
     gemm, state = find_map_by_param(state.parent, "__i0")
     xfutil.tile(state.parent, gemm, True, True, __i0=schedule.warp_tile_m, __i1=schedule.warp_tile_n)
-    entry_outer, state = find_map_by_param(state.parent, "tile1___i0")
-    entry_inner, state = find_map_by_param(state.parent, "tile1___i1")
+    entry_outer, state = find_map_by_param(state.parent, "tile___i0")
+    entry_inner, state = find_map_by_param(state.parent, "tile___i1")
     MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
 
     #####################################################################
     ### Thread Tile
     gemm, state = find_map_by_param(state.parent, "__i0")
     xfutil.tile(state.parent, gemm, True, True, __i0=schedule.thread_tile_m, __i1=schedule.thread_tile_n)
-    entry_outer, state = find_map_by_param(state.parent, "tile2___i0")
-    entry_inner, state = find_map_by_param(state.parent, "tile2___i1")
+    entry_outer, state = find_map_by_param(state.parent, "tile1___i0")
+    entry_inner, state = find_map_by_param(state.parent, "tile1___i1")
     MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
 
     #####################################################################
@@ -233,7 +268,7 @@ def create_sdfg(schedule) -> None:
     #####################################################################
     ### local storage (registers) for loading thread_tiles of C
     map_exit = state.exit_node(entry_outer)
-    outer, state = find_map_by_param(state.parent, "tile2___i0")
+    outer, state = find_map_by_param(state.parent, "tile1___i0")
     outer_map_exit = state.exit_node(outer)
     AccumulateTransient.apply_to(state.parent, map_exit=map_exit, outer_map_exit=outer_map_exit)
     # Set C tile to zero on allocation
@@ -243,6 +278,8 @@ def create_sdfg(schedule) -> None:
     # Unroll microkernel maps
     entry, state = find_map_by_param(state.parent, "__i0")
     entry.map.unroll = True
+
+    sdfg.save('sdfg_tiled_4.sdfg')
 
     #####################################################################
     ### Split K
@@ -265,7 +302,6 @@ def create_sdfg(schedule) -> None:
                     tile_size= K / schedule.split_k, # Split K tiles
                     dim_idx=2, # K dimension
                     divides_evenly=divides_evenly,
-                    strided=True
                     ),
                     _map_entry=entry
         )

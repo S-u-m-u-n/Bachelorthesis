@@ -229,33 +229,6 @@
           "debuginfo": null
         }
       },
-      "gpu_B": {
-        "type": "Array",
-        "attributes": {
-          "allow_conflicts": false,
-          "strides": [
-            "N",
-            "1"
-          ],
-          "total_size": "K*N",
-          "offset": [
-            "0",
-            "0"
-          ],
-          "may_alias": false,
-          "alignment": 0,
-          "dtype": "float64",
-          "shape": [
-            "K",
-            "N"
-          ],
-          "transient": true,
-          "storage": "GPU_Global",
-          "lifetime": "Scope",
-          "location": {},
-          "debuginfo": null
-        }
-      },
       "gpu_C": {
         "type": "Array",
         "attributes": {
@@ -310,6 +283,33 @@
           "debuginfo": null
         }
       },
+      "gpu_B": {
+        "type": "Array",
+        "attributes": {
+          "allow_conflicts": false,
+          "strides": [
+            "N",
+            "1"
+          ],
+          "total_size": "K*N",
+          "offset": [
+            "0",
+            "0"
+          ],
+          "may_alias": false,
+          "alignment": 0,
+          "dtype": "float64",
+          "shape": [
+            "K",
+            "N"
+          ],
+          "transient": true,
+          "storage": "GPU_Global",
+          "lifetime": "Scope",
+          "location": {},
+          "debuginfo": null
+        }
+      },
       "gpu___return": {
         "type": "Array",
         "attributes": {
@@ -341,9 +341,7 @@
     "symbols": {
       "K": "int32",
       "M": "int32",
-      "N": "int32",
-      "alpha": "int32",
-      "beta": "int32"
+      "N": "int32"
     },
     "instrument": "No_Instrumentation",
     "global_code": {
@@ -599,9 +597,7 @@
         "symbols": {
           "K": "int32",
           "M": "int32",
-          "N": "int32",
-          "alpha": "int32",
-          "beta": "int32"
+          "N": "int32"
         },
         "instrument": "No_Instrumentation",
         "global_code": {
@@ -630,7 +626,7 @@
       "nodes": [
         {
           "type": "SDFGState",
-          "label": "BinOp_39",
+          "label": "BinOp_36",
           "id": 0,
           "collapsed": false,
           "scope_dict": {
@@ -642,22 +638,24 @@
               4,
               7,
               8,
-              11,
+              9,
               12,
               13,
-              16
+              14,
+              15,
+              18
             ],
             "4": [
               5,
               6
             ],
-            "8": [
-              9,
-              10
+            "9": [
+              10,
+              11
             ],
-            "13": [
-              14,
-              15
+            "15": [
+              16,
+              17
             ]
           },
           "nodes": [
@@ -669,8 +667,8 @@
                 "setzero": false,
                 "debuginfo": {
                   "type": "DebugInfo",
-                  "start_line": 39,
-                  "end_line": 39,
+                  "start_line": 36,
+                  "end_line": 36,
                   "start_column": 24,
                   "end_column": 24,
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -691,8 +689,8 @@
                 "setzero": false,
                 "debuginfo": {
                   "type": "DebugInfo",
-                  "start_line": 39,
-                  "end_line": 39,
+                  "start_line": 36,
+                  "end_line": 36,
                   "start_column": 24,
                   "end_column": 24,
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -713,8 +711,8 @@
                 "setzero": false,
                 "debuginfo": {
                   "type": "DebugInfo",
-                  "start_line": 39,
-                  "end_line": 39,
+                  "start_line": 36,
+                  "end_line": 36,
                   "start_column": 24,
                   "end_column": 24,
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -789,8 +787,8 @@
                 "collapse": 1,
                 "debuginfo": {
                   "type": "DebugInfo",
-                  "start_line": 39,
-                  "end_line": 39,
+                  "start_line": 36,
+                  "end_line": 36,
                   "start_column": 24,
                   "end_column": 24,
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -798,10 +796,12 @@
                 "is_collapsed": false,
                 "instrument": "No_Instrumentation",
                 "in_connectors": {
-                  "IN___tmp0": null
+                  "IN___tmp0": null,
+                  "IN_alpha": null
                 },
                 "out_connectors": {
-                  "OUT___tmp0": null
+                  "OUT___tmp0": null,
+                  "OUT_alpha": null
                 }
               },
               "id": 4,
@@ -813,7 +813,7 @@
               "label": "_Mult_",
               "attributes": {
                 "code": {
-                  "string_data": "__out = (dace.float64(alpha) * __in2)",
+                  "string_data": "__out = (__in1 * __in2)",
                   "language": "Python"
                 },
                 "state_fields": [],
@@ -831,8 +831,8 @@
                 },
                 "debuginfo": {
                   "type": "DebugInfo",
-                  "start_line": 39,
-                  "end_line": 39,
+                  "start_line": 36,
+                  "end_line": 36,
                   "start_column": 24,
                   "end_column": 24,
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -842,6 +842,7 @@
                 "location": {},
                 "environments": [],
                 "in_connectors": {
+                  "__in1": null,
                   "__in2": null
                 },
                 "out_connectors": {
@@ -869,14 +870,36 @@
             },
             {
               "type": "AccessNode",
+              "label": "alpha",
+              "attributes": {
+                "access": "ReadOnly",
+                "setzero": false,
+                "debuginfo": {
+                  "type": "DebugInfo",
+                  "start_line": 36,
+                  "end_line": 36,
+                  "start_column": 24,
+                  "end_column": 24,
+                  "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
+                },
+                "data": "alpha",
+                "in_connectors": {},
+                "out_connectors": {}
+              },
+              "id": 7,
+              "scope_entry": null,
+              "scope_exit": null
+            },
+            {
+              "type": "AccessNode",
               "label": "__tmp1",
               "attributes": {
                 "access": "ReadWrite",
                 "setzero": false,
                 "debuginfo": {
                   "type": "DebugInfo",
-                  "start_line": 39,
-                  "end_line": 39,
+                  "start_line": 36,
+                  "end_line": 36,
                   "start_column": 24,
                   "end_column": 24,
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -885,7 +908,7 @@
                 "in_connectors": {},
                 "out_connectors": {}
               },
-              "id": 7,
+              "id": 8,
               "scope_entry": null,
               "scope_exit": null
             },
@@ -920,8 +943,8 @@
                 "collapse": 1,
                 "debuginfo": {
                   "type": "DebugInfo",
-                  "start_line": 39,
-                  "end_line": 39,
+                  "start_line": 36,
+                  "end_line": 36,
                   "start_column": 36,
                   "end_column": 36,
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -929,22 +952,24 @@
                 "is_collapsed": false,
                 "instrument": "No_Instrumentation",
                 "in_connectors": {
-                  "IN_C": null
+                  "IN_C": null,
+                  "IN_beta": null
                 },
                 "out_connectors": {
-                  "OUT_C": null
+                  "OUT_C": null,
+                  "OUT_beta": null
                 }
               },
-              "id": 8,
+              "id": 9,
               "scope_entry": null,
-              "scope_exit": "10"
+              "scope_exit": "11"
             },
             {
               "type": "Tasklet",
               "label": "_Mult_",
               "attributes": {
                 "code": {
-                  "string_data": "__out = (dace.float64(beta) * __in2)",
+                  "string_data": "__out = (__in1 * __in2)",
                   "language": "Python"
                 },
                 "state_fields": [],
@@ -962,8 +987,8 @@
                 },
                 "debuginfo": {
                   "type": "DebugInfo",
-                  "start_line": 39,
-                  "end_line": 39,
+                  "start_line": 36,
+                  "end_line": 36,
                   "start_column": 36,
                   "end_column": 36,
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -973,15 +998,16 @@
                 "location": {},
                 "environments": [],
                 "in_connectors": {
+                  "__in1": null,
                   "__in2": null
                 },
                 "out_connectors": {
                   "__out": null
                 }
               },
-              "id": 9,
-              "scope_entry": "8",
-              "scope_exit": "10"
+              "id": 10,
+              "scope_entry": "9",
+              "scope_exit": "11"
             },
             {
               "type": "MapExit",
@@ -994,9 +1020,31 @@
                   "OUT___tmp2": null
                 }
               },
-              "id": 10,
-              "scope_entry": "8",
-              "scope_exit": "10"
+              "id": 11,
+              "scope_entry": "9",
+              "scope_exit": "11"
+            },
+            {
+              "type": "AccessNode",
+              "label": "beta",
+              "attributes": {
+                "access": "ReadOnly",
+                "setzero": false,
+                "debuginfo": {
+                  "type": "DebugInfo",
+                  "start_line": 36,
+                  "end_line": 36,
+                  "start_column": 36,
+                  "end_column": 36,
+                  "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
+                },
+                "data": "beta",
+                "in_connectors": {},
+                "out_connectors": {}
+              },
+              "id": 12,
+              "scope_entry": null,
+              "scope_exit": null
             },
             {
               "type": "AccessNode",
@@ -1006,8 +1054,8 @@
                 "setzero": false,
                 "debuginfo": {
                   "type": "DebugInfo",
-                  "start_line": 39,
-                  "end_line": 39,
+                  "start_line": 36,
+                  "end_line": 36,
                   "start_column": 36,
                   "end_column": 36,
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -1016,7 +1064,7 @@
                 "in_connectors": {},
                 "out_connectors": {}
               },
-              "id": 11,
+              "id": 13,
               "scope_entry": null,
               "scope_exit": null
             },
@@ -1028,8 +1076,8 @@
                 "setzero": false,
                 "debuginfo": {
                   "type": "DebugInfo",
-                  "start_line": 39,
-                  "end_line": 39,
+                  "start_line": 36,
+                  "end_line": 36,
                   "start_column": 36,
                   "end_column": 36,
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -1038,7 +1086,7 @@
                 "in_connectors": {},
                 "out_connectors": {}
               },
-              "id": 12,
+              "id": 14,
               "scope_entry": null,
               "scope_exit": null
             },
@@ -1073,8 +1121,8 @@
                 "collapse": 1,
                 "debuginfo": {
                   "type": "DebugInfo",
-                  "start_line": 39,
-                  "end_line": 39,
+                  "start_line": 36,
+                  "end_line": 36,
                   "start_column": 36,
                   "end_column": 36,
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -1090,9 +1138,9 @@
                   "OUT___tmp2": null
                 }
               },
-              "id": 13,
+              "id": 15,
               "scope_entry": null,
-              "scope_exit": "15"
+              "scope_exit": "17"
             },
             {
               "type": "Tasklet",
@@ -1117,8 +1165,8 @@
                 },
                 "debuginfo": {
                   "type": "DebugInfo",
-                  "start_line": 39,
-                  "end_line": 39,
+                  "start_line": 36,
+                  "end_line": 36,
                   "start_column": 36,
                   "end_column": 36,
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -1135,9 +1183,9 @@
                   "__out": null
                 }
               },
-              "id": 14,
-              "scope_entry": "13",
-              "scope_exit": "15"
+              "id": 16,
+              "scope_entry": "15",
+              "scope_exit": "17"
             },
             {
               "type": "MapExit",
@@ -1150,9 +1198,9 @@
                   "OUT___tmp3": null
                 }
               },
-              "id": 15,
-              "scope_entry": "13",
-              "scope_exit": "15"
+              "id": 17,
+              "scope_entry": "15",
+              "scope_exit": "17"
             },
             {
               "type": "AccessNode",
@@ -1162,8 +1210,8 @@
                 "setzero": false,
                 "debuginfo": {
                   "type": "DebugInfo",
-                  "start_line": 39,
-                  "end_line": 39,
+                  "start_line": 36,
+                  "end_line": 36,
                   "start_column": 36,
                   "end_column": 36,
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -1172,7 +1220,7 @@
                 "in_connectors": {},
                 "out_connectors": {}
               },
-              "id": 16,
+              "id": 18,
               "scope_entry": null,
               "scope_exit": null
             }
@@ -1231,8 +1279,8 @@
                   }
                 }
               },
-              "src": "11",
-              "dst": "8",
+              "src": "13",
+              "dst": "9",
               "dst_connector": "IN_C",
               "src_connector": null
             },
@@ -1347,8 +1395,8 @@
                   }
                 }
               },
-              "src": "7",
-              "dst": "13",
+              "src": "8",
+              "dst": "15",
               "dst_connector": "IN___tmp1",
               "src_connector": null
             },
@@ -1405,9 +1453,101 @@
                   }
                 }
               },
-              "src": "12",
-              "dst": "13",
+              "src": "14",
+              "dst": "15",
               "dst_connector": "IN___tmp2",
+              "src_connector": null
+            },
+            {
+              "type": "MultiConnectorEdge",
+              "attributes": {
+                "data": {
+                  "type": "Memlet",
+                  "attributes": {
+                    "volume": "M*N",
+                    "dynamic": false,
+                    "subset": {
+                      "type": "Range",
+                      "ranges": [
+                        {
+                          "start": "0",
+                          "end": "0",
+                          "step": "1",
+                          "tile": "1"
+                        }
+                      ]
+                    },
+                    "other_subset": null,
+                    "data": "alpha",
+                    "wcr": null,
+                    "debuginfo": null,
+                    "wcr_nonatomic": false,
+                    "allow_oob": false,
+                    "src_subset": {
+                      "type": "Range",
+                      "ranges": [
+                        {
+                          "start": "0",
+                          "end": "0",
+                          "step": "1",
+                          "tile": "1"
+                        }
+                      ]
+                    },
+                    "dst_subset": null,
+                    "num_accesses": "M*N"
+                  }
+                }
+              },
+              "src": "7",
+              "dst": "4",
+              "dst_connector": "IN_alpha",
+              "src_connector": null
+            },
+            {
+              "type": "MultiConnectorEdge",
+              "attributes": {
+                "data": {
+                  "type": "Memlet",
+                  "attributes": {
+                    "volume": "M*N",
+                    "dynamic": false,
+                    "subset": {
+                      "type": "Range",
+                      "ranges": [
+                        {
+                          "start": "0",
+                          "end": "0",
+                          "step": "1",
+                          "tile": "1"
+                        }
+                      ]
+                    },
+                    "other_subset": null,
+                    "data": "beta",
+                    "wcr": null,
+                    "debuginfo": null,
+                    "wcr_nonatomic": false,
+                    "allow_oob": false,
+                    "src_subset": {
+                      "type": "Range",
+                      "ranges": [
+                        {
+                          "start": "0",
+                          "end": "0",
+                          "step": "1",
+                          "tile": "1"
+                        }
+                      ]
+                    },
+                    "dst_subset": null,
+                    "num_accesses": "M*N"
+                  }
+                }
+              },
+              "src": "12",
+              "dst": "9",
+              "dst_connector": "IN_beta",
               "src_connector": null
             },
             {
@@ -1579,8 +1719,8 @@
                   }
                 }
               },
-              "src": "8",
-              "dst": "9",
+              "src": "9",
+              "dst": "10",
               "dst_connector": "__in2",
               "src_connector": "OUT_C"
             },
@@ -1696,7 +1836,7 @@
                 }
               },
               "src": "6",
-              "dst": "7",
+              "dst": "8",
               "dst_connector": null,
               "src_connector": "OUT___tmp1"
             },
@@ -1753,8 +1893,8 @@
                   }
                 }
               },
-              "src": "13",
-              "dst": "14",
+              "src": "15",
+              "dst": "16",
               "dst_connector": "__in1",
               "src_connector": "OUT___tmp1"
             },
@@ -1811,8 +1951,8 @@
                   }
                 }
               },
-              "src": "10",
-              "dst": "12",
+              "src": "11",
+              "dst": "14",
               "dst_connector": null,
               "src_connector": "OUT___tmp2"
             },
@@ -1869,8 +2009,8 @@
                   }
                 }
               },
-              "src": "13",
-              "dst": "14",
+              "src": "15",
+              "dst": "16",
               "dst_connector": "__in2",
               "src_connector": "OUT___tmp2"
             },
@@ -1927,10 +2067,102 @@
                   }
                 }
               },
-              "src": "15",
-              "dst": "16",
+              "src": "17",
+              "dst": "18",
               "dst_connector": null,
               "src_connector": "OUT___tmp3"
+            },
+            {
+              "type": "MultiConnectorEdge",
+              "attributes": {
+                "data": {
+                  "type": "Memlet",
+                  "attributes": {
+                    "volume": "1",
+                    "dynamic": false,
+                    "subset": {
+                      "type": "Range",
+                      "ranges": [
+                        {
+                          "start": "0",
+                          "end": "0",
+                          "step": "1",
+                          "tile": "1"
+                        }
+                      ]
+                    },
+                    "other_subset": null,
+                    "data": "alpha",
+                    "wcr": null,
+                    "debuginfo": null,
+                    "wcr_nonatomic": false,
+                    "allow_oob": false,
+                    "src_subset": {
+                      "type": "Range",
+                      "ranges": [
+                        {
+                          "start": "0",
+                          "end": "0",
+                          "step": "1",
+                          "tile": "1"
+                        }
+                      ]
+                    },
+                    "dst_subset": null,
+                    "num_accesses": "1"
+                  }
+                }
+              },
+              "src": "4",
+              "dst": "5",
+              "dst_connector": "__in1",
+              "src_connector": "OUT_alpha"
+            },
+            {
+              "type": "MultiConnectorEdge",
+              "attributes": {
+                "data": {
+                  "type": "Memlet",
+                  "attributes": {
+                    "volume": "1",
+                    "dynamic": false,
+                    "subset": {
+                      "type": "Range",
+                      "ranges": [
+                        {
+                          "start": "0",
+                          "end": "0",
+                          "step": "1",
+                          "tile": "1"
+                        }
+                      ]
+                    },
+                    "other_subset": null,
+                    "data": "beta",
+                    "wcr": null,
+                    "debuginfo": null,
+                    "wcr_nonatomic": false,
+                    "allow_oob": false,
+                    "src_subset": {
+                      "type": "Range",
+                      "ranges": [
+                        {
+                          "start": "0",
+                          "end": "0",
+                          "step": "1",
+                          "tile": "1"
+                        }
+                      ]
+                    },
+                    "dst_subset": null,
+                    "num_accesses": "1"
+                  }
+                }
+              },
+              "src": "9",
+              "dst": "10",
+              "dst_connector": "__in1",
+              "src_connector": "OUT_beta"
             },
             {
               "type": "MultiConnectorEdge",
@@ -2043,8 +2275,8 @@
                   }
                 }
               },
-              "src": "9",
-              "dst": "10",
+              "src": "10",
+              "dst": "11",
               "dst_connector": "IN___tmp2",
               "src_connector": "__out"
             },
@@ -2101,8 +2333,8 @@
                   }
                 }
               },
-              "src": "14",
-              "dst": "15",
+              "src": "16",
+              "dst": "17",
               "dst_connector": "IN___tmp3",
               "src_connector": "__out"
             },
@@ -2199,7 +2431,7 @@
         "sdfg_id": 0,
         "state_id": 0,
         "_subgraph": {
-          "0": 16
+          "0": 18
         },
         "expr_index": 0
       },
@@ -2207,14 +2439,14 @@
         "type": "Transformation",
         "transformation": "StripMining",
         "dim_idx": 0,
-        "new_dim_prefix": "tile",
-        "tile_size": "128",
+        "new_dim_prefix": "THREAD_BLOCK",
+        "tile_size": "5.00000000000000",
         "tile_stride": "0",
         "tile_offset": "0",
         "divides_evenly": true,
         "strided": false,
-        "tiling_type": "Normal",
-        "skew": true,
+        "tiling_type": "NumberOfTiles",
+        "skew": false,
         "sdfg_id": 1,
         "state_id": 1,
         "_subgraph": {
@@ -2226,14 +2458,14 @@
         "type": "Transformation",
         "transformation": "StripMining",
         "dim_idx": 1,
-        "new_dim_prefix": "tile",
-        "tile_size": "128",
+        "new_dim_prefix": "THREAD_BLOCK",
+        "tile_size": "5.00000000000000",
         "tile_stride": "0",
         "tile_offset": "0",
         "divides_evenly": true,
         "strided": false,
-        "tiling_type": "Normal",
-        "skew": true,
+        "tiling_type": "NumberOfTiles",
+        "skew": false,
         "sdfg_id": 1,
         "state_id": 1,
         "_subgraph": {
@@ -2245,14 +2477,14 @@
         "type": "Transformation",
         "transformation": "StripMining",
         "dim_idx": 2,
-        "new_dim_prefix": "tile",
-        "tile_size": "8",
+        "new_dim_prefix": "LOAD_K",
+        "tile_size": "80.0000000000000",
         "tile_stride": "0",
         "tile_offset": "0",
         "divides_evenly": true,
         "strided": false,
-        "tiling_type": "Normal",
-        "skew": true,
+        "tiling_type": "NumberOfTiles",
+        "skew": false,
         "sdfg_id": 1,
         "state_id": 1,
         "_subgraph": {
@@ -2462,7 +2694,7 @@
     ],
     "openmp_sections": true,
     "name": "matmul",
-    "hash": "893339f31554b877c8647da057301f5f749ea97d04440aa27d77f9c764c6741a"
+    "hash": "900ecfb892aa8f48c47e9574c2b08b809801d8838973c17cfb96fa18e8bd3de2"
   },
   "nodes": [
     {
@@ -2482,23 +2714,25 @@
           7,
           10,
           11,
-          14,
+          12,
           15,
-          18,
-          19,
-          20
+          16,
+          17,
+          20,
+          21,
+          22
         ],
         "7": [
           8,
           9
         ],
-        "11": [
-          12,
-          13
+        "12": [
+          13,
+          14
         ],
-        "15": [
-          16,
-          17
+        "17": [
+          18,
+          19
         ]
       },
       "nodes": [
@@ -2600,8 +2834,8 @@
             "setzero": false,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 39,
-              "end_line": 39,
+              "start_line": 36,
+              "end_line": 36,
               "start_column": 24,
               "end_column": 24,
               "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -2645,8 +2879,8 @@
             "collapse": 1,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 39,
-              "end_line": 39,
+              "start_line": 36,
+              "end_line": 36,
               "start_column": 24,
               "end_column": 24,
               "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -2654,10 +2888,12 @@
             "is_collapsed": false,
             "instrument": "No_Instrumentation",
             "in_connectors": {
-              "IN___tmp0": null
+              "IN___tmp0": null,
+              "IN_alpha": null
             },
             "out_connectors": {
-              "OUT___tmp0": null
+              "OUT___tmp0": null,
+              "OUT_alpha": null
             }
           },
           "id": 7,
@@ -2669,7 +2905,7 @@
           "label": "_Mult_",
           "attributes": {
             "code": {
-              "string_data": "__out = (dace.float64(alpha) * __in2)",
+              "string_data": "__out = (__in1 * __in2)",
               "language": "Python"
             },
             "state_fields": [],
@@ -2687,8 +2923,8 @@
             },
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 39,
-              "end_line": 39,
+              "start_line": 36,
+              "end_line": 36,
               "start_column": 24,
               "end_column": 24,
               "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -2698,6 +2934,7 @@
             "location": {},
             "environments": [],
             "in_connectors": {
+              "__in1": null,
               "__in2": null
             },
             "out_connectors": {
@@ -2725,14 +2962,36 @@
         },
         {
           "type": "AccessNode",
+          "label": "alpha",
+          "attributes": {
+            "access": "ReadOnly",
+            "setzero": false,
+            "debuginfo": {
+              "type": "DebugInfo",
+              "start_line": 36,
+              "end_line": 36,
+              "start_column": 24,
+              "end_column": 24,
+              "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
+            },
+            "data": "alpha",
+            "in_connectors": {},
+            "out_connectors": {}
+          },
+          "id": 10,
+          "scope_entry": null,
+          "scope_exit": null
+        },
+        {
+          "type": "AccessNode",
           "label": "__tmp1",
           "attributes": {
             "access": "ReadWrite",
             "setzero": false,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 39,
-              "end_line": 39,
+              "start_line": 36,
+              "end_line": 36,
               "start_column": 24,
               "end_column": 24,
               "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -2741,7 +3000,7 @@
             "in_connectors": {},
             "out_connectors": {}
           },
-          "id": 10,
+          "id": 11,
           "scope_entry": null,
           "scope_exit": null
         },
@@ -2776,8 +3035,8 @@
             "collapse": 1,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 39,
-              "end_line": 39,
+              "start_line": 36,
+              "end_line": 36,
               "start_column": 36,
               "end_column": 36,
               "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -2785,22 +3044,24 @@
             "is_collapsed": false,
             "instrument": "No_Instrumentation",
             "in_connectors": {
-              "IN_C": null
+              "IN_C": null,
+              "IN_beta": null
             },
             "out_connectors": {
-              "OUT_C": null
+              "OUT_C": null,
+              "OUT_beta": null
             }
           },
-          "id": 11,
+          "id": 12,
           "scope_entry": null,
-          "scope_exit": "13"
+          "scope_exit": "14"
         },
         {
           "type": "Tasklet",
           "label": "_Mult_",
           "attributes": {
             "code": {
-              "string_data": "__out = (dace.float64(beta) * __in2)",
+              "string_data": "__out = (__in1 * __in2)",
               "language": "Python"
             },
             "state_fields": [],
@@ -2818,8 +3079,8 @@
             },
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 39,
-              "end_line": 39,
+              "start_line": 36,
+              "end_line": 36,
               "start_column": 36,
               "end_column": 36,
               "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -2829,15 +3090,16 @@
             "location": {},
             "environments": [],
             "in_connectors": {
+              "__in1": null,
               "__in2": null
             },
             "out_connectors": {
               "__out": null
             }
           },
-          "id": 12,
-          "scope_entry": "11",
-          "scope_exit": "13"
+          "id": 13,
+          "scope_entry": "12",
+          "scope_exit": "14"
         },
         {
           "type": "MapExit",
@@ -2850,9 +3112,31 @@
               "OUT___tmp2": null
             }
           },
-          "id": 13,
-          "scope_entry": "11",
-          "scope_exit": "13"
+          "id": 14,
+          "scope_entry": "12",
+          "scope_exit": "14"
+        },
+        {
+          "type": "AccessNode",
+          "label": "beta",
+          "attributes": {
+            "access": "ReadOnly",
+            "setzero": false,
+            "debuginfo": {
+              "type": "DebugInfo",
+              "start_line": 36,
+              "end_line": 36,
+              "start_column": 36,
+              "end_column": 36,
+              "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
+            },
+            "data": "beta",
+            "in_connectors": {},
+            "out_connectors": {}
+          },
+          "id": 15,
+          "scope_entry": null,
+          "scope_exit": null
         },
         {
           "type": "AccessNode",
@@ -2862,8 +3146,8 @@
             "setzero": false,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 39,
-              "end_line": 39,
+              "start_line": 36,
+              "end_line": 36,
               "start_column": 36,
               "end_column": 36,
               "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -2872,7 +3156,7 @@
             "in_connectors": {},
             "out_connectors": {}
           },
-          "id": 14,
+          "id": 16,
           "scope_entry": null,
           "scope_exit": null
         },
@@ -2907,8 +3191,8 @@
             "collapse": 1,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 39,
-              "end_line": 39,
+              "start_line": 36,
+              "end_line": 36,
               "start_column": 36,
               "end_column": 36,
               "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -2924,9 +3208,9 @@
               "OUT___tmp2": null
             }
           },
-          "id": 15,
+          "id": 17,
           "scope_entry": null,
-          "scope_exit": "17"
+          "scope_exit": "19"
         },
         {
           "type": "Tasklet",
@@ -2951,8 +3235,8 @@
             },
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 39,
-              "end_line": 39,
+              "start_line": 36,
+              "end_line": 36,
               "start_column": 36,
               "end_column": 36,
               "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -2969,9 +3253,9 @@
               "__out": null
             }
           },
-          "id": 16,
-          "scope_entry": "15",
-          "scope_exit": "17"
+          "id": 18,
+          "scope_entry": "17",
+          "scope_exit": "19"
         },
         {
           "type": "MapExit",
@@ -2984,9 +3268,9 @@
               "OUT___tmp3": null
             }
           },
-          "id": 17,
-          "scope_entry": "15",
-          "scope_exit": "17"
+          "id": 19,
+          "scope_entry": "17",
+          "scope_exit": "19"
         },
         {
           "type": "AccessNode",
@@ -2996,8 +3280,8 @@
             "setzero": false,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 39,
-              "end_line": 39,
+              "start_line": 36,
+              "end_line": 36,
               "start_column": 36,
               "end_column": 36,
               "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
@@ -3006,7 +3290,7 @@
             "in_connectors": {},
             "out_connectors": {}
           },
-          "id": 18,
+          "id": 20,
           "scope_entry": null,
           "scope_exit": null
         },
@@ -3106,10 +3390,10 @@
                     "attributes": {
                       "allow_conflicts": false,
                       "strides": [
-                        "8",
+                        "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1))",
                         "1"
                       ],
-                      "total_size": "1024",
+                      "total_size": "(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*(-floor(0.2*M*THREAD_BLOCK___i0) + floor(0.2*M*(THREAD_BLOCK___i0 + 1)))",
                       "offset": [
                         "0",
                         "0"
@@ -3118,8 +3402,8 @@
                       "alignment": 0,
                       "dtype": "float64",
                       "shape": [
-                        "128",
-                        "8"
+                        "-floor(0.2*M*THREAD_BLOCK___i0) + floor(0.2*M*(THREAD_BLOCK___i0 + 1))",
+                        "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1))"
                       ],
                       "transient": true,
                       "storage": "GPU_Shared",
@@ -3133,10 +3417,10 @@
                     "attributes": {
                       "allow_conflicts": false,
                       "strides": [
-                        "128",
+                        "-floor(0.2*N*THREAD_BLOCK___i1) + floor(0.2*N*(THREAD_BLOCK___i1 + 1))",
                         "1"
                       ],
-                      "total_size": "1024",
+                      "total_size": "(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*(-floor(0.2*N*THREAD_BLOCK___i1) + floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
                       "offset": [
                         "0",
                         "0"
@@ -3145,8 +3429,8 @@
                       "alignment": 0,
                       "dtype": "float64",
                       "shape": [
-                        "8",
-                        "128"
+                        "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1))",
+                        "-floor(0.2*N*THREAD_BLOCK___i1) + floor(0.2*N*(THREAD_BLOCK___i1 + 1))"
                       ],
                       "transient": true,
                       "storage": "GPU_Shared",
@@ -3239,8 +3523,11 @@
                 },
                 "symbols": {
                   "K": "int32",
+                  "LOAD_K___i2": "int32",
                   "M": "int32",
-                  "N": "int32"
+                  "N": "int32",
+                  "THREAD_BLOCK___i0": "int32",
+                  "THREAD_BLOCK___i1": "int32"
                 },
                 "instrument": "No_Instrumentation",
                 "global_code": {
@@ -3608,7 +3895,7 @@
                   "nodes": [
                     {
                       "type": "MapEntry",
-                      "label": "gemm_map[__i2=0:8]",
+                      "label": "gemm_map[__i2=floor(0.0125*K*LOAD_K___i2):floor(0.0125*K*(LOAD_K___i2 + 1))]",
                       "attributes": {
                         "label": "gemm_map",
                         "params": [
@@ -3618,8 +3905,8 @@
                           "type": "Range",
                           "ranges": [
                             {
-                              "start": "0",
-                              "end": "7",
+                              "start": "floor(0.0125*K*LOAD_K___i2)",
+                              "end": "floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                               "step": "1",
                               "tile": "1"
                             }
@@ -3698,7 +3985,7 @@
                     },
                     {
                       "type": "MapExit",
-                      "label": "gemm_map[__i2=0:8]",
+                      "label": "gemm_map[__i2=floor(0.0125*K*LOAD_K___i2):floor(0.0125*K*(LOAD_K___i2 + 1))]",
                       "attributes": {
                         "in_connectors": {
                           "IN__c": null
@@ -3710,28 +3997,6 @@
                       "id": 2,
                       "scope_entry": "0",
                       "scope_exit": "2"
-                    },
-                    {
-                      "type": "AccessNode",
-                      "label": "_a",
-                      "attributes": {
-                        "access": "ReadOnly",
-                        "setzero": false,
-                        "debuginfo": {
-                          "type": "DebugInfo",
-                          "start_line": 1334,
-                          "end_line": 1334,
-                          "start_column": 0,
-                          "end_column": 0,
-                          "filename": "/home/sumun/.local/lib/python3.9/site-packages/dace/sdfg/state.py"
-                        },
-                        "data": "_a",
-                        "in_connectors": {},
-                        "out_connectors": {}
-                      },
-                      "id": 3,
-                      "scope_entry": null,
-                      "scope_exit": null
                     },
                     {
                       "type": "AccessNode",
@@ -3748,6 +4013,28 @@
                           "filename": "/home/sumun/.local/lib/python3.9/site-packages/dace/sdfg/state.py"
                         },
                         "data": "_b",
+                        "in_connectors": {},
+                        "out_connectors": {}
+                      },
+                      "id": 3,
+                      "scope_entry": null,
+                      "scope_exit": null
+                    },
+                    {
+                      "type": "AccessNode",
+                      "label": "_a",
+                      "attributes": {
+                        "access": "ReadOnly",
+                        "setzero": false,
+                        "debuginfo": {
+                          "type": "DebugInfo",
+                          "start_line": 1334,
+                          "end_line": 1334,
+                          "start_column": 0,
+                          "end_column": 0,
+                          "filename": "/home/sumun/.local/lib/python3.9/site-packages/dace/sdfg/state.py"
+                        },
+                        "data": "_a",
                         "in_connectors": {},
                         "out_connectors": {}
                       },
@@ -3779,19 +4066,19 @@
                     },
                     {
                       "type": "MapEntry",
-                      "label": "gemm_map[tile___i2=0:K:8]",
+                      "label": "gemm_map[LOAD_K___i2=0:80]",
                       "attributes": {
                         "label": "gemm_map",
                         "params": [
-                          "tile___i2"
+                          "LOAD_K___i2"
                         ],
                         "range": {
                           "type": "Range",
                           "ranges": [
                             {
                               "start": "0",
-                              "end": "K - 1",
-                              "step": "8",
+                              "end": "79.0000000000000",
+                              "step": "1",
                               "tile": "1"
                             }
                           ]
@@ -3817,7 +4104,7 @@
                     },
                     {
                       "type": "MapExit",
-                      "label": "gemm_map[tile___i2=0:K:8]",
+                      "label": "gemm_map[LOAD_K___i2=0:80]",
                       "attributes": {
                         "in_connectors": {
                           "IN__c": null
@@ -3832,26 +4119,26 @@
                     },
                     {
                       "type": "MapEntry",
-                      "label": "gemm_map[tile___i0=0:M:128, tile___i1=0:N:128]",
+                      "label": "gemm_map[THREAD_BLOCK___i0=0:5, THREAD_BLOCK___i1=0:5]",
                       "attributes": {
                         "label": "gemm_map",
                         "params": [
-                          "tile___i0",
-                          "tile___i1"
+                          "THREAD_BLOCK___i0",
+                          "THREAD_BLOCK___i1"
                         ],
                         "range": {
                           "type": "Range",
                           "ranges": [
                             {
                               "start": "0",
-                              "end": "M - 1",
-                              "step": "128",
+                              "end": "4.00000000000000",
+                              "step": "1",
                               "tile": "1"
                             },
                             {
                               "start": "0",
-                              "end": "N - 1",
-                              "step": "128",
+                              "end": "4.00000000000000",
+                              "step": "1",
                               "tile": "1"
                             }
                           ]
@@ -3877,7 +4164,7 @@
                     },
                     {
                       "type": "MapExit",
-                      "label": "gemm_map[tile___i0=0:M:128, tile___i1=0:N:128]",
+                      "label": "gemm_map[THREAD_BLOCK___i0=0:5, THREAD_BLOCK___i1=0:5]",
                       "attributes": {
                         "in_connectors": {
                           "IN__c": null
@@ -3922,25 +4209,25 @@
                     },
                     {
                       "type": "MapEntry",
-                      "label": "gemm_map[tile1___i0=0:128:64, tile1___i1=0:128:32]",
+                      "label": "gemm_map[tile___i0=floor(0.2*M*THREAD_BLOCK___i0):floor(0.2*M*(THREAD_BLOCK___i0 + 1)):64, tile___i1=floor(0.2*N*THREAD_BLOCK___i1):floor(0.2*N*(THREAD_BLOCK___i1 + 1)):32]",
                       "attributes": {
                         "label": "gemm_map",
                         "params": [
-                          "tile1___i0",
-                          "tile1___i1"
+                          "tile___i0",
+                          "tile___i1"
                         ],
                         "range": {
                           "type": "Range",
                           "ranges": [
                             {
-                              "start": "0",
-                              "end": "127",
+                              "start": "floor(0.2*M*THREAD_BLOCK___i0)",
+                              "end": "floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
                               "step": "64",
                               "tile": "1"
                             },
                             {
-                              "start": "0",
-                              "end": "127",
+                              "start": "floor(0.2*N*THREAD_BLOCK___i1)",
+                              "end": "floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
                               "step": "32",
                               "tile": "1"
                             }
@@ -3967,7 +4254,7 @@
                     },
                     {
                       "type": "MapExit",
-                      "label": "gemm_map[tile1___i0=0:128:64, tile1___i1=0:128:32]",
+                      "label": "gemm_map[tile___i0=floor(0.2*M*THREAD_BLOCK___i0):floor(0.2*M*(THREAD_BLOCK___i0 + 1)):64, tile___i1=floor(0.2*N*THREAD_BLOCK___i1):floor(0.2*N*(THREAD_BLOCK___i1 + 1)):32]",
                       "attributes": {
                         "in_connectors": {
                           "IN__c": null
@@ -3982,12 +4269,12 @@
                     },
                     {
                       "type": "MapEntry",
-                      "label": "gemm_map[tile2___i0=0:64:8, tile2___i1=0:32:8]",
+                      "label": "gemm_map[tile1___i0=0:64:8, tile1___i1=0:32:8]",
                       "attributes": {
                         "label": "gemm_map",
                         "params": [
-                          "tile2___i0",
-                          "tile2___i1"
+                          "tile1___i0",
+                          "tile1___i1"
                         ],
                         "range": {
                           "type": "Range",
@@ -4027,7 +4314,7 @@
                     },
                     {
                       "type": "MapExit",
-                      "label": "gemm_map[tile2___i0=0:64:8, tile2___i1=0:32:8]",
+                      "label": "gemm_map[tile1___i0=0:64:8, tile1___i1=0:32:8]",
                       "attributes": {
                         "in_connectors": {
                           "IN__c": null
@@ -4153,20 +4440,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072*ceiling(K/8)*ceiling(M/128)*ceiling(N/128)",
+                            "volume": "-2000*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "M - 1",
+                                  "end": "floor(1.0*M) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "K - 1",
+                                  "end": "floor(1.0*K) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4183,24 +4470,24 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "M - 1",
+                                  "end": "floor(1.0*M) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "K - 1",
+                                  "end": "floor(1.0*K) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "131072*ceiling(K/8)*ceiling(M/128)*ceiling(N/128)"
+                            "num_accesses": "-2000*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))"
                           }
                         }
                       },
-                      "src": "3",
+                      "src": "4",
                       "dst": "8",
                       "dst_connector": "IN__a",
                       "src_connector": null
@@ -4211,20 +4498,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072",
+                            "volume": "2048*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
+                                  "end": "-floor(0.2*M*THREAD_BLOCK___i0) + floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "7",
+                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4241,20 +4528,20 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
+                                  "end": "-floor(0.2*M*THREAD_BLOCK___i0) + floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "7",
+                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "131072"
+                            "num_accesses": "2048*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)"
                           }
                         }
                       },
@@ -4269,20 +4556,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072*ceiling(K/8)*ceiling(M/128)*ceiling(N/128)",
+                            "volume": "-2000*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "K - 1",
+                                  "end": "floor(1.0*K) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "N - 1",
+                                  "end": "floor(1.0*N) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4299,24 +4586,24 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "K - 1",
+                                  "end": "floor(1.0*K) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "N - 1",
+                                  "end": "floor(1.0*N) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "131072*ceiling(K/8)*ceiling(M/128)*ceiling(N/128)"
+                            "num_accesses": "-2000*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))"
                           }
                         }
                       },
-                      "src": "4",
+                      "src": "3",
                       "dst": "8",
                       "dst_connector": "IN__b",
                       "src_connector": null
@@ -4327,20 +4614,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072",
+                            "volume": "2048*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "7",
+                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
+                                  "end": "-floor(0.2*N*THREAD_BLOCK___i1) + floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4357,20 +4644,20 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "7",
+                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
+                                  "end": "-floor(0.2*N*THREAD_BLOCK___i1) + floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "131072"
+                            "num_accesses": "2048*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)"
                           }
                         }
                       },
@@ -4385,20 +4672,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "512",
+                            "volume": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile2___i0 + tile___i0",
-                                  "end": "tile1___i0 + tile2___i0 + tile___i0 + 7",
+                                  "start": "tile1___i0 + tile___i0",
+                                  "end": "tile1___i0 + tile___i0 + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile2___i1 + tile___i1",
-                                  "end": "tile1___i1 + tile2___i1 + tile___i1 + 7",
+                                  "start": "tile1___i1 + tile___i1",
+                                  "end": "tile1___i1 + tile___i1 + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4415,20 +4702,20 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile2___i0 + tile___i0",
-                                  "end": "tile1___i0 + tile2___i0 + tile___i0 + 7",
+                                  "start": "tile1___i0 + tile___i0",
+                                  "end": "tile1___i0 + tile___i0 + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile2___i1 + tile___i1",
-                                  "end": "tile1___i1 + tile2___i1 + tile___i1 + 7",
+                                  "start": "tile1___i1 + tile___i1",
+                                  "end": "tile1___i1 + tile___i1 + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
-                            "num_accesses": "512"
+                            "num_accesses": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))"
                           }
                         }
                       },
@@ -4559,20 +4846,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072",
+                            "volume": "-(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 127",
+                                  "start": "floor(0.2*M*THREAD_BLOCK___i0)",
+                                  "end": "floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i2",
-                                  "end": "tile___i2 + 7",
+                                  "start": "floor(0.0125*K*LOAD_K___i2)",
+                                  "end": "floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4588,21 +4875,21 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 127",
+                                  "start": "floor(0.2*M*THREAD_BLOCK___i0)",
+                                  "end": "floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i2",
-                                  "end": "tile___i2 + 7",
+                                  "start": "floor(0.0125*K*LOAD_K___i2)",
+                                  "end": "floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "131072"
+                            "num_accesses": "-(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))"
                           }
                         }
                       },
@@ -4623,14 +4910,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile2___i0",
-                                  "end": "tile1___i0 + tile2___i0 + 7",
+                                  "start": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0)",
+                                  "end": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "__i2",
-                                  "end": "__i2",
+                                  "start": "__i2 - floor(0.0125*K*LOAD_K___i2)",
+                                  "end": "__i2 - floor(0.0125*K*LOAD_K___i2)",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4646,14 +4933,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile2___i0",
-                                  "end": "tile1___i0 + tile2___i0 + 7",
+                                  "start": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0)",
+                                  "end": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "__i2",
-                                  "end": "__i2",
+                                  "start": "__i2 - floor(0.0125*K*LOAD_K___i2)",
+                                  "end": "__i2 - floor(0.0125*K*LOAD_K___i2)",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4675,20 +4962,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072*ceiling(K/8)",
+                            "volume": "-80*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 127",
+                                  "start": "floor(0.2*M*THREAD_BLOCK___i0)",
+                                  "end": "floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "K - 1",
+                                  "end": "floor(1.0*K) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4704,21 +4991,21 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 127",
+                                  "start": "floor(0.2*M*THREAD_BLOCK___i0)",
+                                  "end": "floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "K - 1",
+                                  "end": "floor(1.0*K) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "131072*ceiling(K/8)"
+                            "num_accesses": "-80*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))"
                           }
                         }
                       },
@@ -4733,20 +5020,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "512",
+                            "volume": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile2___i0",
-                                  "end": "tile1___i0 + tile2___i0 + 7",
+                                  "start": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0)",
+                                  "end": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "7",
+                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4762,21 +5049,21 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile2___i0",
-                                  "end": "tile1___i0 + tile2___i0 + 7",
+                                  "start": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0)",
+                                  "end": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "7",
+                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "512"
+                            "num_accesses": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))"
                           }
                         }
                       },
@@ -4791,20 +5078,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "16384",
+                            "volume": "-2048*floor(0.0125*K*LOAD_K___i2) + 2048*floor(0.0125*K*(LOAD_K___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0",
-                                  "end": "tile1___i0 + 8*int_floor(63, 8) + 7",
+                                  "start": "tile___i0 - floor(0.2*M*THREAD_BLOCK___i0)",
+                                  "end": "tile___i0 + 8*int_floor(63, 8) - floor(0.2*M*THREAD_BLOCK___i0) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "7",
+                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4820,21 +5107,21 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0",
-                                  "end": "tile1___i0 + 8*int_floor(63, 8) + 7",
+                                  "start": "tile___i0 - floor(0.2*M*THREAD_BLOCK___i0)",
+                                  "end": "tile___i0 + 8*int_floor(63, 8) - floor(0.2*M*THREAD_BLOCK___i0) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "7",
+                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "16384"
+                            "num_accesses": "-2048*floor(0.0125*K*LOAD_K___i2) + 2048*floor(0.0125*K*(LOAD_K___i2 + 1))"
                           }
                         }
                       },
@@ -4849,20 +5136,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072",
+                            "volume": "-(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i2",
-                                  "end": "tile___i2 + 7",
+                                  "start": "floor(0.0125*K*LOAD_K___i2)",
+                                  "end": "floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 127",
+                                  "start": "floor(0.2*N*THREAD_BLOCK___i1)",
+                                  "end": "floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4878,21 +5165,21 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i2",
-                                  "end": "tile___i2 + 7",
+                                  "start": "floor(0.0125*K*LOAD_K___i2)",
+                                  "end": "floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 127",
+                                  "start": "floor(0.2*N*THREAD_BLOCK___i1)",
+                                  "end": "floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "131072"
+                            "num_accesses": "-(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))"
                           }
                         }
                       },
@@ -4913,14 +5200,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "__i2",
-                                  "end": "__i2",
+                                  "start": "__i2 - floor(0.0125*K*LOAD_K___i2)",
+                                  "end": "__i2 - floor(0.0125*K*LOAD_K___i2)",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile2___i1",
-                                  "end": "tile1___i1 + tile2___i1 + 7",
+                                  "start": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1)",
+                                  "end": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4936,14 +5223,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "__i2",
-                                  "end": "__i2",
+                                  "start": "__i2 - floor(0.0125*K*LOAD_K___i2)",
+                                  "end": "__i2 - floor(0.0125*K*LOAD_K___i2)",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile2___i1",
-                                  "end": "tile1___i1 + tile2___i1 + 7",
+                                  "start": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1)",
+                                  "end": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4965,20 +5252,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072*ceiling(K/8)",
+                            "volume": "-80*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "K - 1",
+                                  "end": "floor(1.0*K) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 127",
+                                  "start": "floor(0.2*N*THREAD_BLOCK___i1)",
+                                  "end": "floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4995,20 +5282,20 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "K - 1",
+                                  "end": "floor(1.0*K) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 127",
+                                  "start": "floor(0.2*N*THREAD_BLOCK___i1)",
+                                  "end": "floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "131072*ceiling(K/8)"
+                            "num_accesses": "-80*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))"
                           }
                         }
                       },
@@ -5023,20 +5310,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "512",
+                            "volume": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "7",
+                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile2___i1",
-                                  "end": "tile1___i1 + tile2___i1 + 7",
+                                  "start": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1)",
+                                  "end": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5053,20 +5340,20 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "7",
+                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile2___i1",
-                                  "end": "tile1___i1 + tile2___i1 + 7",
+                                  "start": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1)",
+                                  "end": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "512"
+                            "num_accesses": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))"
                           }
                         }
                       },
@@ -5081,20 +5368,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "16384",
+                            "volume": "-2048*floor(0.0125*K*LOAD_K___i2) + 2048*floor(0.0125*K*(LOAD_K___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "7",
+                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1",
-                                  "end": "tile1___i1 + 8*int_floor(31, 8) + 7",
+                                  "start": "tile___i1 - floor(0.2*N*THREAD_BLOCK___i1)",
+                                  "end": "tile___i1 + 8*int_floor(31, 8) - floor(0.2*N*THREAD_BLOCK___i1) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5111,20 +5398,20 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "7",
+                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1",
-                                  "end": "tile1___i1 + 8*int_floor(31, 8) + 7",
+                                  "start": "tile___i1 - floor(0.2*N*THREAD_BLOCK___i1)",
+                                  "end": "tile___i1 + 8*int_floor(31, 8) - floor(0.2*N*THREAD_BLOCK___i1) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "16384"
+                            "num_accesses": "-2048*floor(0.0125*K*LOAD_K___i2) + 2048*floor(0.0125*K*(LOAD_K___i2 + 1))"
                           }
                         }
                       },
@@ -5139,7 +5426,7 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072*ceiling(K/8)*ceiling(M/128)*ceiling(N/128)",
+                            "volume": "4096000*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
@@ -5182,7 +5469,7 @@
                                 }
                               ]
                             },
-                            "num_accesses": "131072*ceiling(K/8)*ceiling(M/128)*ceiling(N/128)"
+                            "num_accesses": "4096000*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)"
                           }
                         }
                       },
@@ -5197,7 +5484,7 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "512",
+                            "volume": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
@@ -5240,7 +5527,7 @@
                                 }
                               ]
                             },
-                            "num_accesses": "512"
+                            "num_accesses": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))"
                           }
                         }
                       },
@@ -5255,20 +5542,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072*ceiling(K/8)",
+                            "volume": "163840*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
+                                  "start": "0",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5285,20 +5572,20 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
+                                  "start": "0",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
-                            "num_accesses": "131072*ceiling(K/8)"
+                            "num_accesses": "163840*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)"
                           }
                         }
                       },
@@ -5313,20 +5600,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "131072",
+                            "volume": "2048*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
+                                  "start": "0",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5343,20 +5630,20 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 8*int_floor(63, 8) + 64*int_floor(127, 64) + 7",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 8*int_floor(31, 8) + 32*int_floor(127, 32) + 7",
+                                  "start": "0",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
-                            "num_accesses": "131072"
+                            "num_accesses": "2048*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)"
                           }
                         }
                       },
@@ -5371,20 +5658,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "16384",
+                            "volume": "-2048*floor(0.0125*K*LOAD_K___i2) + 2048*floor(0.0125*K*(LOAD_K___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile___i0",
-                                  "end": "tile1___i0 + tile___i0 + 8*int_floor(63, 8) + 7",
+                                  "start": "tile___i0",
+                                  "end": "tile___i0 + 8*int_floor(63, 8) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile___i1",
-                                  "end": "tile1___i1 + tile___i1 + 8*int_floor(31, 8) + 7",
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 8*int_floor(31, 8) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5401,20 +5688,20 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile___i0",
-                                  "end": "tile1___i0 + tile___i0 + 8*int_floor(63, 8) + 7",
+                                  "start": "tile___i0",
+                                  "end": "tile___i0 + 8*int_floor(63, 8) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile___i1",
-                                  "end": "tile1___i1 + tile___i1 + 8*int_floor(31, 8) + 7",
+                                  "start": "tile___i1",
+                                  "end": "tile___i1 + 8*int_floor(31, 8) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
-                            "num_accesses": "16384"
+                            "num_accesses": "-2048*floor(0.0125*K*LOAD_K___i2) + 2048*floor(0.0125*K*(LOAD_K___i2 + 1))"
                           }
                         }
                       },
@@ -5719,7 +6006,7 @@
               "_c": null
             }
           },
-          "id": 19,
+          "id": 21,
           "scope_entry": null,
           "scope_exit": null
         },
@@ -5734,7 +6021,7 @@
             "in_connectors": {},
             "out_connectors": {}
           },
-          "id": 20,
+          "id": 22,
           "scope_entry": null,
           "scope_exit": null
         }
@@ -5967,8 +6254,8 @@
               }
             }
           },
-          "src": "18",
-          "dst": "20",
+          "src": "20",
+          "dst": "22",
           "dst_connector": null,
           "src_connector": null
         },
@@ -6026,7 +6313,7 @@
             }
           },
           "src": "5",
-          "dst": "11",
+          "dst": "12",
           "dst_connector": "IN_C",
           "src_connector": null
         },
@@ -6141,8 +6428,8 @@
               }
             }
           },
-          "src": "10",
-          "dst": "15",
+          "src": "11",
+          "dst": "17",
           "dst_connector": "IN___tmp1",
           "src_connector": null
         },
@@ -6199,9 +6486,101 @@
               }
             }
           },
-          "src": "14",
-          "dst": "15",
+          "src": "16",
+          "dst": "17",
           "dst_connector": "IN___tmp2",
+          "src_connector": null
+        },
+        {
+          "type": "MultiConnectorEdge",
+          "attributes": {
+            "data": {
+              "type": "Memlet",
+              "attributes": {
+                "volume": "M*N",
+                "dynamic": false,
+                "subset": {
+                  "type": "Range",
+                  "ranges": [
+                    {
+                      "start": "0",
+                      "end": "0",
+                      "step": "1",
+                      "tile": "1"
+                    }
+                  ]
+                },
+                "other_subset": null,
+                "data": "alpha",
+                "wcr": null,
+                "debuginfo": null,
+                "wcr_nonatomic": false,
+                "allow_oob": false,
+                "src_subset": {
+                  "type": "Range",
+                  "ranges": [
+                    {
+                      "start": "0",
+                      "end": "0",
+                      "step": "1",
+                      "tile": "1"
+                    }
+                  ]
+                },
+                "dst_subset": null,
+                "num_accesses": "M*N"
+              }
+            }
+          },
+          "src": "10",
+          "dst": "7",
+          "dst_connector": "IN_alpha",
+          "src_connector": null
+        },
+        {
+          "type": "MultiConnectorEdge",
+          "attributes": {
+            "data": {
+              "type": "Memlet",
+              "attributes": {
+                "volume": "M*N",
+                "dynamic": false,
+                "subset": {
+                  "type": "Range",
+                  "ranges": [
+                    {
+                      "start": "0",
+                      "end": "0",
+                      "step": "1",
+                      "tile": "1"
+                    }
+                  ]
+                },
+                "other_subset": null,
+                "data": "beta",
+                "wcr": null,
+                "debuginfo": null,
+                "wcr_nonatomic": false,
+                "allow_oob": false,
+                "src_subset": {
+                  "type": "Range",
+                  "ranges": [
+                    {
+                      "start": "0",
+                      "end": "0",
+                      "step": "1",
+                      "tile": "1"
+                    }
+                  ]
+                },
+                "dst_subset": null,
+                "num_accesses": "M*N"
+              }
+            }
+          },
+          "src": "15",
+          "dst": "12",
+          "dst_connector": "IN_beta",
           "src_connector": null
         },
         {
@@ -6258,7 +6637,7 @@
             }
           },
           "src": "1",
-          "dst": "19",
+          "dst": "21",
           "dst_connector": "_a",
           "src_connector": null
         },
@@ -6316,7 +6695,7 @@
             }
           },
           "src": "3",
-          "dst": "19",
+          "dst": "21",
           "dst_connector": "_b",
           "src_connector": null
         },
@@ -6373,8 +6752,8 @@
               }
             }
           },
-          "src": "11",
-          "dst": "12",
+          "src": "12",
+          "dst": "13",
           "dst_connector": "__in2",
           "src_connector": "OUT_C"
         },
@@ -6490,7 +6869,7 @@
             }
           },
           "src": "9",
-          "dst": "10",
+          "dst": "11",
           "dst_connector": null,
           "src_connector": "OUT___tmp1"
         },
@@ -6547,8 +6926,8 @@
               }
             }
           },
-          "src": "15",
-          "dst": "16",
+          "src": "17",
+          "dst": "18",
           "dst_connector": "__in1",
           "src_connector": "OUT___tmp1"
         },
@@ -6605,8 +6984,8 @@
               }
             }
           },
-          "src": "13",
-          "dst": "14",
+          "src": "14",
+          "dst": "16",
           "dst_connector": null,
           "src_connector": "OUT___tmp2"
         },
@@ -6663,8 +7042,8 @@
               }
             }
           },
-          "src": "15",
-          "dst": "16",
+          "src": "17",
+          "dst": "18",
           "dst_connector": "__in2",
           "src_connector": "OUT___tmp2"
         },
@@ -6721,10 +7100,102 @@
               }
             }
           },
-          "src": "17",
-          "dst": "18",
+          "src": "19",
+          "dst": "20",
           "dst_connector": null,
           "src_connector": "OUT___tmp3"
+        },
+        {
+          "type": "MultiConnectorEdge",
+          "attributes": {
+            "data": {
+              "type": "Memlet",
+              "attributes": {
+                "volume": "1",
+                "dynamic": false,
+                "subset": {
+                  "type": "Range",
+                  "ranges": [
+                    {
+                      "start": "0",
+                      "end": "0",
+                      "step": "1",
+                      "tile": "1"
+                    }
+                  ]
+                },
+                "other_subset": null,
+                "data": "alpha",
+                "wcr": null,
+                "debuginfo": null,
+                "wcr_nonatomic": false,
+                "allow_oob": false,
+                "src_subset": {
+                  "type": "Range",
+                  "ranges": [
+                    {
+                      "start": "0",
+                      "end": "0",
+                      "step": "1",
+                      "tile": "1"
+                    }
+                  ]
+                },
+                "dst_subset": null,
+                "num_accesses": "1"
+              }
+            }
+          },
+          "src": "7",
+          "dst": "8",
+          "dst_connector": "__in1",
+          "src_connector": "OUT_alpha"
+        },
+        {
+          "type": "MultiConnectorEdge",
+          "attributes": {
+            "data": {
+              "type": "Memlet",
+              "attributes": {
+                "volume": "1",
+                "dynamic": false,
+                "subset": {
+                  "type": "Range",
+                  "ranges": [
+                    {
+                      "start": "0",
+                      "end": "0",
+                      "step": "1",
+                      "tile": "1"
+                    }
+                  ]
+                },
+                "other_subset": null,
+                "data": "beta",
+                "wcr": null,
+                "debuginfo": null,
+                "wcr_nonatomic": false,
+                "allow_oob": false,
+                "src_subset": {
+                  "type": "Range",
+                  "ranges": [
+                    {
+                      "start": "0",
+                      "end": "0",
+                      "step": "1",
+                      "tile": "1"
+                    }
+                  ]
+                },
+                "dst_subset": null,
+                "num_accesses": "1"
+              }
+            }
+          },
+          "src": "12",
+          "dst": "13",
+          "dst_connector": "__in1",
+          "src_connector": "OUT_beta"
         },
         {
           "type": "MultiConnectorEdge",
@@ -6837,8 +7308,8 @@
               }
             }
           },
-          "src": "12",
-          "dst": "13",
+          "src": "13",
+          "dst": "14",
           "dst_connector": "IN___tmp2",
           "src_connector": "__out"
         },
@@ -6895,8 +7366,8 @@
               }
             }
           },
-          "src": "16",
-          "dst": "17",
+          "src": "18",
+          "dst": "19",
           "dst_connector": "IN___tmp3",
           "src_connector": "__out"
         },
@@ -6953,7 +7424,7 @@
               }
             }
           },
-          "src": "19",
+          "src": "21",
           "dst": "6",
           "dst_connector": null,
           "src_connector": "_c"
