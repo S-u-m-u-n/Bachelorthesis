@@ -56,7 +56,8 @@ sdfg.apply_transformations(GPUTransformSDFG)
 
 #####################################################################
 ### Threadblock Tile
-gemm, state = find_map_by_name(sdfg, "_Mult__map")
+sdfg.save('identity.sdfg')
+gemm, state = find_map_by_param(sdfg, "__i0")
 xfutil.tile(state.parent, gemm, True, True, __i0=8, __i1=4)
 
 entry_outer, state = find_map_by_param(state.parent, "tile___i0")
