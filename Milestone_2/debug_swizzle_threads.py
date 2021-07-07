@@ -95,7 +95,6 @@ sdfg.save('identity.sdfg')
 entry, state = find_map_by_param(state.parent, "__i0")
 entry.map.unroll = True
 
-sdfg.save('sdfg_pre_swizzle_thread_tile.sdfg')
 helpers.print_info('Applying SWIZZLE_thread_tile', False)
 entry, state = find_map_by_param(state.parent, "__i0")
 warp_tile_height = 8
