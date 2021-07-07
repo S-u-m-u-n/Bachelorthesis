@@ -223,16 +223,16 @@ def areSame(A,B):
     
 helpers.print_info("SDFG result: ", False)
 print()
-for i in range(16):
-    for j in range(16):
+for i in range(8):
+    for j in range(4):
         print("%.2f" % C_test[i][j], end=" ")
     print()
 
 print()
 print()
 helpers.print_info("Correct result: ", False)
-for i in range(16):
-    for j in range(16):
+for i in range(8):
+    for j in range(4):
         print("%.2f" % C_correct[i][j], end=" ")
     print()
 
