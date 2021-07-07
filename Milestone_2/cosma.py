@@ -711,7 +711,7 @@ cublas: Run `matmul` with the CUBLAS library node implementation.''')
         raise NotImplementedError
 
     if not args.quiet:
-        helpers.print_info("Using this dace: " + str(dace.__file__))
+        helpers.print_info("Using this dace: " + str(dace.__file__), args.colorless)
     else:
         warnings.filterwarnings('ignore', category=UserWarning)
 

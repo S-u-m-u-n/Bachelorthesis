@@ -24,6 +24,8 @@ def find_map_by_name(sdfg: dace.SDFG, name: str) -> dace.nodes.MapEntry:
     return next((n, state) for n, state in sdfg.all_nodes_recursive()
                 if isinstance(n, dace.nodes.MapEntry) and name == n.label)
 
+helpers.print_info("Using this dace: " + str(dace.__file__), False)
+
 A = np.array([
     [0, 1, 2, 3],
     [4, 5, 6, 7],
