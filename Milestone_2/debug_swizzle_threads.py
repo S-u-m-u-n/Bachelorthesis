@@ -48,7 +48,7 @@ B = np.array([
 
 @dace.program
 def identity(A: dace.int32[8, 4], B: dace.int32[8, 4]):
-    return A * B
+    return np.multiply(A, B)
 
 sdfg = identity.to_sdfg()
 sdfg.expand_library_nodes()
@@ -208,8 +208,8 @@ C_correct = identity(A=A, B=B)
 
 # Can replace this with np.allclose(A, B)
 def areSame(A,B):
-    for i in range(M):
-        for j in range(N):
+    for i in range(8):
+        for j in range(4):
             diff = math.fabs(A[i][j] - B[i][j])
             # helpers.print_info("(" + str(i) + ", " + str(j) + ")", False)
             # helpers.print_info("Comparing " + str(B[i][j]) + " to " + str(A[i][j]))
