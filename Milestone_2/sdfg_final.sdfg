@@ -229,33 +229,6 @@
           "debuginfo": null
         }
       },
-      "gpu_C": {
-        "type": "Array",
-        "attributes": {
-          "allow_conflicts": false,
-          "strides": [
-            "N",
-            "1"
-          ],
-          "total_size": "M*N",
-          "offset": [
-            "0",
-            "0"
-          ],
-          "may_alias": false,
-          "alignment": 0,
-          "dtype": "float64",
-          "shape": [
-            "M",
-            "N"
-          ],
-          "transient": true,
-          "storage": "GPU_Global",
-          "lifetime": "Scope",
-          "location": {},
-          "debuginfo": null
-        }
-      },
       "gpu_A": {
         "type": "Array",
         "attributes": {
@@ -275,6 +248,33 @@
           "shape": [
             "M",
             "K"
+          ],
+          "transient": true,
+          "storage": "GPU_Global",
+          "lifetime": "Scope",
+          "location": {},
+          "debuginfo": null
+        }
+      },
+      "gpu_C": {
+        "type": "Array",
+        "attributes": {
+          "allow_conflicts": false,
+          "strides": [
+            "N",
+            "1"
+          ],
+          "total_size": "M*N",
+          "offset": [
+            "0",
+            "0"
+          ],
+          "may_alias": false,
+          "alignment": 0,
+          "dtype": "float64",
+          "shape": [
+            "M",
+            "N"
           ],
           "transient": true,
           "storage": "GPU_Global",
@@ -1026,28 +1026,6 @@
             },
             {
               "type": "AccessNode",
-              "label": "beta",
-              "attributes": {
-                "access": "ReadOnly",
-                "setzero": false,
-                "debuginfo": {
-                  "type": "DebugInfo",
-                  "start_line": 36,
-                  "end_line": 36,
-                  "start_column": 36,
-                  "end_column": 36,
-                  "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
-                },
-                "data": "beta",
-                "in_connectors": {},
-                "out_connectors": {}
-              },
-              "id": 12,
-              "scope_entry": null,
-              "scope_exit": null
-            },
-            {
-              "type": "AccessNode",
               "label": "C",
               "attributes": {
                 "access": "ReadOnly",
@@ -1061,6 +1039,28 @@
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
                 },
                 "data": "C",
+                "in_connectors": {},
+                "out_connectors": {}
+              },
+              "id": 12,
+              "scope_entry": null,
+              "scope_exit": null
+            },
+            {
+              "type": "AccessNode",
+              "label": "beta",
+              "attributes": {
+                "access": "ReadOnly",
+                "setzero": false,
+                "debuginfo": {
+                  "type": "DebugInfo",
+                  "start_line": 36,
+                  "end_line": 36,
+                  "start_column": 36,
+                  "end_column": 36,
+                  "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
+                },
+                "data": "beta",
                 "in_connectors": {},
                 "out_connectors": {}
               },
@@ -1279,7 +1279,7 @@
                   }
                 }
               },
-              "src": "13",
+              "src": "12",
               "dst": "9",
               "dst_connector": "IN_C",
               "src_connector": null
@@ -1545,7 +1545,7 @@
                   }
                 }
               },
-              "src": "12",
+              "src": "13",
               "dst": "9",
               "dst_connector": "IN_beta",
               "src_connector": null
@@ -2439,7 +2439,7 @@
         "type": "Transformation",
         "transformation": "StripMining",
         "dim_idx": 0,
-        "new_dim_prefix": "THREAD_BLOCK",
+        "new_dim_prefix": "tile",
         "tile_size": "5.00000000000000",
         "tile_stride": "0",
         "tile_offset": "0",
@@ -2458,7 +2458,7 @@
         "type": "Transformation",
         "transformation": "StripMining",
         "dim_idx": 1,
-        "new_dim_prefix": "THREAD_BLOCK",
+        "new_dim_prefix": "tile",
         "tile_size": "5.00000000000000",
         "tile_stride": "0",
         "tile_offset": "0",
@@ -2477,7 +2477,7 @@
         "type": "Transformation",
         "transformation": "StripMining",
         "dim_idx": 2,
-        "new_dim_prefix": "LOAD_K",
+        "new_dim_prefix": "tile",
         "tile_size": "80.0000000000000",
         "tile_stride": "0",
         "tile_offset": "0",
@@ -2694,7 +2694,7 @@
     ],
     "openmp_sections": true,
     "name": "matmul",
-    "hash": "900ecfb892aa8f48c47e9574c2b08b809801d8838973c17cfb96fa18e8bd3de2"
+    "hash": "45a236edb5847448305f557588ab55d290e5a1adf4c5d524af3122ac9ca8df6f"
   },
   "nodes": [
     {
@@ -3390,10 +3390,10 @@
                     "attributes": {
                       "allow_conflicts": false,
                       "strides": [
-                        "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1))",
+                        "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1))",
                         "1"
                       ],
-                      "total_size": "(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*(-floor(0.2*M*THREAD_BLOCK___i0) + floor(0.2*M*(THREAD_BLOCK___i0 + 1)))",
+                      "total_size": "(-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)))*(-floor(0.2*M*tile___i0) + floor(0.2*M*(tile___i0 + 1)))",
                       "offset": [
                         "0",
                         "0"
@@ -3402,8 +3402,8 @@
                       "alignment": 0,
                       "dtype": "float64",
                       "shape": [
-                        "-floor(0.2*M*THREAD_BLOCK___i0) + floor(0.2*M*(THREAD_BLOCK___i0 + 1))",
-                        "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1))"
+                        "-floor(0.2*M*tile___i0) + floor(0.2*M*(tile___i0 + 1))",
+                        "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1))"
                       ],
                       "transient": true,
                       "storage": "GPU_Shared",
@@ -3417,10 +3417,10 @@
                     "attributes": {
                       "allow_conflicts": false,
                       "strides": [
-                        "-floor(0.2*N*THREAD_BLOCK___i1) + floor(0.2*N*(THREAD_BLOCK___i1 + 1))",
+                        "-floor(0.2*N*tile___i1) + floor(0.2*N*(tile___i1 + 1))",
                         "1"
                       ],
-                      "total_size": "(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*(-floor(0.2*N*THREAD_BLOCK___i1) + floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
+                      "total_size": "(-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)))*(-floor(0.2*N*tile___i1) + floor(0.2*N*(tile___i1 + 1)))",
                       "offset": [
                         "0",
                         "0"
@@ -3429,8 +3429,8 @@
                       "alignment": 0,
                       "dtype": "float64",
                       "shape": [
-                        "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1))",
-                        "-floor(0.2*N*THREAD_BLOCK___i1) + floor(0.2*N*(THREAD_BLOCK___i1 + 1))"
+                        "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1))",
+                        "-floor(0.2*N*tile___i1) + floor(0.2*N*(tile___i1 + 1))"
                       ],
                       "transient": true,
                       "storage": "GPU_Shared",
@@ -3523,11 +3523,11 @@
                 },
                 "symbols": {
                   "K": "int32",
-                  "LOAD_K___i2": "int32",
                   "M": "int32",
                   "N": "int32",
-                  "THREAD_BLOCK___i0": "int32",
-                  "THREAD_BLOCK___i1": "int32"
+                  "tile___i0": "int32",
+                  "tile___i1": "int32",
+                  "tile___i2": "int32"
                 },
                 "instrument": "No_Instrumentation",
                 "global_code": {
@@ -3895,7 +3895,7 @@
                   "nodes": [
                     {
                       "type": "MapEntry",
-                      "label": "gemm_map[__i2=floor(0.0125*K*LOAD_K___i2):floor(0.0125*K*(LOAD_K___i2 + 1))]",
+                      "label": "gemm_map[__i2=floor(0.0125*K*tile___i2):floor(0.0125*K*(tile___i2 + 1))]",
                       "attributes": {
                         "label": "gemm_map",
                         "params": [
@@ -3905,8 +3905,8 @@
                           "type": "Range",
                           "ranges": [
                             {
-                              "start": "floor(0.0125*K*LOAD_K___i2)",
-                              "end": "floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                              "start": "floor(0.0125*K*tile___i2)",
+                              "end": "floor(0.0125*K*(tile___i2 + 1)) - 1",
                               "step": "1",
                               "tile": "1"
                             }
@@ -3985,7 +3985,7 @@
                     },
                     {
                       "type": "MapExit",
-                      "label": "gemm_map[__i2=floor(0.0125*K*LOAD_K___i2):floor(0.0125*K*(LOAD_K___i2 + 1))]",
+                      "label": "gemm_map[__i2=floor(0.0125*K*tile___i2):floor(0.0125*K*(tile___i2 + 1))]",
                       "attributes": {
                         "in_connectors": {
                           "IN__c": null
@@ -4066,11 +4066,11 @@
                     },
                     {
                       "type": "MapEntry",
-                      "label": "gemm_map[LOAD_K___i2=0:80]",
+                      "label": "gemm_map[tile___i2=0:80]",
                       "attributes": {
                         "label": "gemm_map",
                         "params": [
-                          "LOAD_K___i2"
+                          "tile___i2"
                         ],
                         "range": {
                           "type": "Range",
@@ -4104,7 +4104,7 @@
                     },
                     {
                       "type": "MapExit",
-                      "label": "gemm_map[LOAD_K___i2=0:80]",
+                      "label": "gemm_map[tile___i2=0:80]",
                       "attributes": {
                         "in_connectors": {
                           "IN__c": null
@@ -4119,12 +4119,12 @@
                     },
                     {
                       "type": "MapEntry",
-                      "label": "gemm_map[THREAD_BLOCK___i0=0:5, THREAD_BLOCK___i1=0:5]",
+                      "label": "gemm_map[tile___i0=0:5, tile___i1=0:5]",
                       "attributes": {
                         "label": "gemm_map",
                         "params": [
-                          "THREAD_BLOCK___i0",
-                          "THREAD_BLOCK___i1"
+                          "tile___i0",
+                          "tile___i1"
                         ],
                         "range": {
                           "type": "Range",
@@ -4164,7 +4164,7 @@
                     },
                     {
                       "type": "MapExit",
-                      "label": "gemm_map[THREAD_BLOCK___i0=0:5, THREAD_BLOCK___i1=0:5]",
+                      "label": "gemm_map[tile___i0=0:5, tile___i1=0:5]",
                       "attributes": {
                         "in_connectors": {
                           "IN__c": null
@@ -4209,25 +4209,25 @@
                     },
                     {
                       "type": "MapEntry",
-                      "label": "gemm_map[tile___i0=floor(0.2*M*THREAD_BLOCK___i0):floor(0.2*M*(THREAD_BLOCK___i0 + 1)):64, tile___i1=floor(0.2*N*THREAD_BLOCK___i1):floor(0.2*N*(THREAD_BLOCK___i1 + 1)):32]",
+                      "label": "gemm_map[tile1___i0=floor(0.2*M*tile___i0):floor(0.2*M*(tile___i0 + 1)):64, tile1___i1=floor(0.2*N*tile___i1):floor(0.2*N*(tile___i1 + 1)):32]",
                       "attributes": {
                         "label": "gemm_map",
                         "params": [
-                          "tile___i0",
-                          "tile___i1"
+                          "tile1___i0",
+                          "tile1___i1"
                         ],
                         "range": {
                           "type": "Range",
                           "ranges": [
                             {
-                              "start": "floor(0.2*M*THREAD_BLOCK___i0)",
-                              "end": "floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
+                              "start": "floor(0.2*M*tile___i0)",
+                              "end": "floor(0.2*M*(tile___i0 + 1)) - 1",
                               "step": "64",
                               "tile": "1"
                             },
                             {
-                              "start": "floor(0.2*N*THREAD_BLOCK___i1)",
-                              "end": "floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
+                              "start": "floor(0.2*N*tile___i1)",
+                              "end": "floor(0.2*N*(tile___i1 + 1)) - 1",
                               "step": "32",
                               "tile": "1"
                             }
@@ -4254,7 +4254,7 @@
                     },
                     {
                       "type": "MapExit",
-                      "label": "gemm_map[tile___i0=floor(0.2*M*THREAD_BLOCK___i0):floor(0.2*M*(THREAD_BLOCK___i0 + 1)):64, tile___i1=floor(0.2*N*THREAD_BLOCK___i1):floor(0.2*N*(THREAD_BLOCK___i1 + 1)):32]",
+                      "label": "gemm_map[tile1___i0=floor(0.2*M*tile___i0):floor(0.2*M*(tile___i0 + 1)):64, tile1___i1=floor(0.2*N*tile___i1):floor(0.2*N*(tile___i1 + 1)):32]",
                       "attributes": {
                         "in_connectors": {
                           "IN__c": null
@@ -4269,12 +4269,12 @@
                     },
                     {
                       "type": "MapEntry",
-                      "label": "gemm_map[tile1___i0=0:64:8, tile1___i1=0:32:8]",
+                      "label": "gemm_map[tile2___i0=0:64:8, tile2___i1=0:32:8]",
                       "attributes": {
                         "label": "gemm_map",
                         "params": [
-                          "tile1___i0",
-                          "tile1___i1"
+                          "tile2___i0",
+                          "tile2___i1"
                         ],
                         "range": {
                           "type": "Range",
@@ -4314,7 +4314,7 @@
                     },
                     {
                       "type": "MapExit",
-                      "label": "gemm_map[tile1___i0=0:64:8, tile1___i1=0:32:8]",
+                      "label": "gemm_map[tile2___i0=0:64:8, tile2___i1=0:32:8]",
                       "attributes": {
                         "in_connectors": {
                           "IN__c": null
@@ -4440,7 +4440,7 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "-2000*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
+                            "volume": "-2000*(floor(0.0125*K*tile___i2) - floor(0.0125*K*(tile___i2 + 1)))*(floor(0.2*M*tile___i0) - floor(0.2*M*(tile___i0 + 1)))*(floor(0.2*N*tile___i1) - floor(0.2*N*(tile___i1 + 1)))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
@@ -4483,7 +4483,7 @@
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "-2000*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))"
+                            "num_accesses": "-2000*(floor(0.0125*K*tile___i2) - floor(0.0125*K*(tile___i2 + 1)))*(floor(0.2*M*tile___i0) - floor(0.2*M*(tile___i0 + 1)))*(floor(0.2*N*tile___i1) - floor(0.2*N*(tile___i1 + 1)))"
                           }
                         }
                       },
@@ -4498,20 +4498,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "2048*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)",
+                            "volume": "2048*(-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)))*ceiling(-floor(0.2*M*tile___i0)/64 + floor(0.2*M*(tile___i0 + 1))/64)*ceiling(-floor(0.2*N*tile___i1)/32 + floor(0.2*N*(tile___i1 + 1))/32)",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.2*M*THREAD_BLOCK___i0) + floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
+                                  "end": "-floor(0.2*M*tile___i0) + floor(0.2*M*(tile___i0 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "end": "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4528,20 +4528,20 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.2*M*THREAD_BLOCK___i0) + floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
+                                  "end": "-floor(0.2*M*tile___i0) + floor(0.2*M*(tile___i0 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "end": "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "2048*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)"
+                            "num_accesses": "2048*(-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)))*ceiling(-floor(0.2*M*tile___i0)/64 + floor(0.2*M*(tile___i0 + 1))/64)*ceiling(-floor(0.2*N*tile___i1)/32 + floor(0.2*N*(tile___i1 + 1))/32)"
                           }
                         }
                       },
@@ -4556,7 +4556,7 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "-2000*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
+                            "volume": "-2000*(floor(0.0125*K*tile___i2) - floor(0.0125*K*(tile___i2 + 1)))*(floor(0.2*M*tile___i0) - floor(0.2*M*(tile___i0 + 1)))*(floor(0.2*N*tile___i1) - floor(0.2*N*(tile___i1 + 1)))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
@@ -4599,7 +4599,7 @@
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "-2000*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))"
+                            "num_accesses": "-2000*(floor(0.0125*K*tile___i2) - floor(0.0125*K*(tile___i2 + 1)))*(floor(0.2*M*tile___i0) - floor(0.2*M*(tile___i0 + 1)))*(floor(0.2*N*tile___i1) - floor(0.2*N*(tile___i1 + 1)))"
                           }
                         }
                       },
@@ -4614,20 +4614,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "2048*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)",
+                            "volume": "2048*(-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)))*ceiling(-floor(0.2*M*tile___i0)/64 + floor(0.2*M*(tile___i0 + 1))/64)*ceiling(-floor(0.2*N*tile___i1)/32 + floor(0.2*N*(tile___i1 + 1))/32)",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "end": "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.2*N*THREAD_BLOCK___i1) + floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
+                                  "end": "-floor(0.2*N*tile___i1) + floor(0.2*N*(tile___i1 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4644,20 +4644,20 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "end": "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.2*N*THREAD_BLOCK___i1) + floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
+                                  "end": "-floor(0.2*N*tile___i1) + floor(0.2*N*(tile___i1 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "2048*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)"
+                            "num_accesses": "2048*(-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)))*ceiling(-floor(0.2*M*tile___i0)/64 + floor(0.2*M*(tile___i0 + 1))/64)*ceiling(-floor(0.2*N*tile___i1)/32 + floor(0.2*N*(tile___i1 + 1))/32)"
                           }
                         }
                       },
@@ -4672,20 +4672,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))",
+                            "volume": "-64*floor(0.0125*K*tile___i2) + 64*floor(0.0125*K*(tile___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile___i0",
-                                  "end": "tile1___i0 + tile___i0 + 7",
+                                  "start": "tile1___i0 + tile2___i0",
+                                  "end": "tile1___i0 + tile2___i0 + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile___i1",
-                                  "end": "tile1___i1 + tile___i1 + 7",
+                                  "start": "tile1___i1 + tile2___i1",
+                                  "end": "tile1___i1 + tile2___i1 + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4702,20 +4702,20 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile___i0",
-                                  "end": "tile1___i0 + tile___i0 + 7",
+                                  "start": "tile1___i0 + tile2___i0",
+                                  "end": "tile1___i0 + tile2___i0 + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile___i1",
-                                  "end": "tile1___i1 + tile___i1 + 7",
+                                  "start": "tile1___i1 + tile2___i1",
+                                  "end": "tile1___i1 + tile2___i1 + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
-                            "num_accesses": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))"
+                            "num_accesses": "-64*floor(0.0125*K*tile___i2) + 64*floor(0.0125*K*(tile___i2 + 1))"
                           }
                         }
                       },
@@ -4846,20 +4846,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "-(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
+                            "volume": "-(floor(0.0125*K*tile___i2) - floor(0.0125*K*(tile___i2 + 1)))*(floor(0.2*M*tile___i0) - floor(0.2*M*(tile___i0 + 1)))*(floor(0.2*N*tile___i1) - floor(0.2*N*(tile___i1 + 1)))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "floor(0.2*M*THREAD_BLOCK___i0)",
-                                  "end": "floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
+                                  "start": "floor(0.2*M*tile___i0)",
+                                  "end": "floor(0.2*M*(tile___i0 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "floor(0.0125*K*LOAD_K___i2)",
-                                  "end": "floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "start": "floor(0.0125*K*tile___i2)",
+                                  "end": "floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4875,21 +4875,21 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "floor(0.2*M*THREAD_BLOCK___i0)",
-                                  "end": "floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
+                                  "start": "floor(0.2*M*tile___i0)",
+                                  "end": "floor(0.2*M*(tile___i0 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "floor(0.0125*K*LOAD_K___i2)",
-                                  "end": "floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "start": "floor(0.0125*K*tile___i2)",
+                                  "end": "floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "-(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))"
+                            "num_accesses": "-(floor(0.0125*K*tile___i2) - floor(0.0125*K*(tile___i2 + 1)))*(floor(0.2*M*tile___i0) - floor(0.2*M*(tile___i0 + 1)))*(floor(0.2*N*tile___i1) - floor(0.2*N*(tile___i1 + 1)))"
                           }
                         }
                       },
@@ -4910,14 +4910,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0)",
-                                  "end": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0) + 7",
+                                  "start": "tile1___i0 + tile2___i0 - floor(0.2*M*tile___i0)",
+                                  "end": "tile1___i0 + tile2___i0 - floor(0.2*M*tile___i0) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "__i2 - floor(0.0125*K*LOAD_K___i2)",
-                                  "end": "__i2 - floor(0.0125*K*LOAD_K___i2)",
+                                  "start": "__i2 - floor(0.0125*K*tile___i2)",
+                                  "end": "__i2 - floor(0.0125*K*tile___i2)",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4933,14 +4933,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0)",
-                                  "end": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0) + 7",
+                                  "start": "tile1___i0 + tile2___i0 - floor(0.2*M*tile___i0)",
+                                  "end": "tile1___i0 + tile2___i0 - floor(0.2*M*tile___i0) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "__i2 - floor(0.0125*K*LOAD_K___i2)",
-                                  "end": "__i2 - floor(0.0125*K*LOAD_K___i2)",
+                                  "start": "__i2 - floor(0.0125*K*tile___i2)",
+                                  "end": "__i2 - floor(0.0125*K*tile___i2)",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -4962,14 +4962,14 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "-80*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
+                            "volume": "-80*(floor(0.0125*K*tile___i2) - floor(0.0125*K*(tile___i2 + 1)))*(floor(0.2*M*tile___i0) - floor(0.2*M*(tile___i0 + 1)))*(floor(0.2*N*tile___i1) - floor(0.2*N*(tile___i1 + 1)))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "floor(0.2*M*THREAD_BLOCK___i0)",
-                                  "end": "floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
+                                  "start": "floor(0.2*M*tile___i0)",
+                                  "end": "floor(0.2*M*(tile___i0 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -4991,8 +4991,8 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "floor(0.2*M*THREAD_BLOCK___i0)",
-                                  "end": "floor(0.2*M*(THREAD_BLOCK___i0 + 1)) - 1",
+                                  "start": "floor(0.2*M*tile___i0)",
+                                  "end": "floor(0.2*M*(tile___i0 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
@@ -5005,7 +5005,7 @@
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "-80*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))"
+                            "num_accesses": "-80*(floor(0.0125*K*tile___i2) - floor(0.0125*K*(tile___i2 + 1)))*(floor(0.2*M*tile___i0) - floor(0.2*M*(tile___i0 + 1)))*(floor(0.2*N*tile___i1) - floor(0.2*N*(tile___i1 + 1)))"
                           }
                         }
                       },
@@ -5020,20 +5020,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))",
+                            "volume": "-64*floor(0.0125*K*tile___i2) + 64*floor(0.0125*K*(tile___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0)",
-                                  "end": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0) + 7",
+                                  "start": "tile1___i0 + tile2___i0 - floor(0.2*M*tile___i0)",
+                                  "end": "tile1___i0 + tile2___i0 - floor(0.2*M*tile___i0) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "end": "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5049,21 +5049,21 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0)",
-                                  "end": "tile1___i0 + tile___i0 - floor(0.2*M*THREAD_BLOCK___i0) + 7",
+                                  "start": "tile1___i0 + tile2___i0 - floor(0.2*M*tile___i0)",
+                                  "end": "tile1___i0 + tile2___i0 - floor(0.2*M*tile___i0) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "end": "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))"
+                            "num_accesses": "-64*floor(0.0125*K*tile___i2) + 64*floor(0.0125*K*(tile___i2 + 1))"
                           }
                         }
                       },
@@ -5078,20 +5078,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "-2048*floor(0.0125*K*LOAD_K___i2) + 2048*floor(0.0125*K*(LOAD_K___i2 + 1))",
+                            "volume": "-2048*floor(0.0125*K*tile___i2) + 2048*floor(0.0125*K*(tile___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0 - floor(0.2*M*THREAD_BLOCK___i0)",
-                                  "end": "tile___i0 + 8*int_floor(63, 8) - floor(0.2*M*THREAD_BLOCK___i0) + 7",
+                                  "start": "tile1___i0 - floor(0.2*M*tile___i0)",
+                                  "end": "tile1___i0 + 8*int_floor(63, 8) - floor(0.2*M*tile___i0) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "end": "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5107,21 +5107,21 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0 - floor(0.2*M*THREAD_BLOCK___i0)",
-                                  "end": "tile___i0 + 8*int_floor(63, 8) - floor(0.2*M*THREAD_BLOCK___i0) + 7",
+                                  "start": "tile1___i0 - floor(0.2*M*tile___i0)",
+                                  "end": "tile1___i0 + 8*int_floor(63, 8) - floor(0.2*M*tile___i0) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "end": "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "-2048*floor(0.0125*K*LOAD_K___i2) + 2048*floor(0.0125*K*(LOAD_K___i2 + 1))"
+                            "num_accesses": "-2048*floor(0.0125*K*tile___i2) + 2048*floor(0.0125*K*(tile___i2 + 1))"
                           }
                         }
                       },
@@ -5136,20 +5136,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "-(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
+                            "volume": "-(floor(0.0125*K*tile___i2) - floor(0.0125*K*(tile___i2 + 1)))*(floor(0.2*M*tile___i0) - floor(0.2*M*(tile___i0 + 1)))*(floor(0.2*N*tile___i1) - floor(0.2*N*(tile___i1 + 1)))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "floor(0.0125*K*LOAD_K___i2)",
-                                  "end": "floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "start": "floor(0.0125*K*tile___i2)",
+                                  "end": "floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "floor(0.2*N*THREAD_BLOCK___i1)",
-                                  "end": "floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
+                                  "start": "floor(0.2*N*tile___i1)",
+                                  "end": "floor(0.2*N*(tile___i1 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5165,21 +5165,21 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "floor(0.0125*K*LOAD_K___i2)",
-                                  "end": "floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "start": "floor(0.0125*K*tile___i2)",
+                                  "end": "floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "floor(0.2*N*THREAD_BLOCK___i1)",
-                                  "end": "floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
+                                  "start": "floor(0.2*N*tile___i1)",
+                                  "end": "floor(0.2*N*(tile___i1 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "-(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))"
+                            "num_accesses": "-(floor(0.0125*K*tile___i2) - floor(0.0125*K*(tile___i2 + 1)))*(floor(0.2*M*tile___i0) - floor(0.2*M*(tile___i0 + 1)))*(floor(0.2*N*tile___i1) - floor(0.2*N*(tile___i1 + 1)))"
                           }
                         }
                       },
@@ -5200,14 +5200,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "__i2 - floor(0.0125*K*LOAD_K___i2)",
-                                  "end": "__i2 - floor(0.0125*K*LOAD_K___i2)",
+                                  "start": "__i2 - floor(0.0125*K*tile___i2)",
+                                  "end": "__i2 - floor(0.0125*K*tile___i2)",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1)",
-                                  "end": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1) + 7",
+                                  "start": "tile1___i1 + tile2___i1 - floor(0.2*N*tile___i1)",
+                                  "end": "tile1___i1 + tile2___i1 - floor(0.2*N*tile___i1) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5223,14 +5223,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "__i2 - floor(0.0125*K*LOAD_K___i2)",
-                                  "end": "__i2 - floor(0.0125*K*LOAD_K___i2)",
+                                  "start": "__i2 - floor(0.0125*K*tile___i2)",
+                                  "end": "__i2 - floor(0.0125*K*tile___i2)",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1)",
-                                  "end": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1) + 7",
+                                  "start": "tile1___i1 + tile2___i1 - floor(0.2*N*tile___i1)",
+                                  "end": "tile1___i1 + tile2___i1 - floor(0.2*N*tile___i1) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5252,7 +5252,7 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "-80*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))",
+                            "volume": "-80*(floor(0.0125*K*tile___i2) - floor(0.0125*K*(tile___i2 + 1)))*(floor(0.2*M*tile___i0) - floor(0.2*M*(tile___i0 + 1)))*(floor(0.2*N*tile___i1) - floor(0.2*N*(tile___i1 + 1)))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
@@ -5264,8 +5264,8 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "floor(0.2*N*THREAD_BLOCK___i1)",
-                                  "end": "floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
+                                  "start": "floor(0.2*N*tile___i1)",
+                                  "end": "floor(0.2*N*(tile___i1 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5287,15 +5287,15 @@
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "floor(0.2*N*THREAD_BLOCK___i1)",
-                                  "end": "floor(0.2*N*(THREAD_BLOCK___i1 + 1)) - 1",
+                                  "start": "floor(0.2*N*tile___i1)",
+                                  "end": "floor(0.2*N*(tile___i1 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "-80*(floor(0.0125*K*LOAD_K___i2) - floor(0.0125*K*(LOAD_K___i2 + 1)))*(floor(0.2*M*THREAD_BLOCK___i0) - floor(0.2*M*(THREAD_BLOCK___i0 + 1)))*(floor(0.2*N*THREAD_BLOCK___i1) - floor(0.2*N*(THREAD_BLOCK___i1 + 1)))"
+                            "num_accesses": "-80*(floor(0.0125*K*tile___i2) - floor(0.0125*K*(tile___i2 + 1)))*(floor(0.2*M*tile___i0) - floor(0.2*M*(tile___i0 + 1)))*(floor(0.2*N*tile___i1) - floor(0.2*N*(tile___i1 + 1)))"
                           }
                         }
                       },
@@ -5310,20 +5310,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))",
+                            "volume": "-64*floor(0.0125*K*tile___i2) + 64*floor(0.0125*K*(tile___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "end": "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1)",
-                                  "end": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1) + 7",
+                                  "start": "tile1___i1 + tile2___i1 - floor(0.2*N*tile___i1)",
+                                  "end": "tile1___i1 + tile2___i1 - floor(0.2*N*tile___i1) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5340,20 +5340,20 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "end": "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1)",
-                                  "end": "tile1___i1 + tile___i1 - floor(0.2*N*THREAD_BLOCK___i1) + 7",
+                                  "start": "tile1___i1 + tile2___i1 - floor(0.2*N*tile___i1)",
+                                  "end": "tile1___i1 + tile2___i1 - floor(0.2*N*tile___i1) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))"
+                            "num_accesses": "-64*floor(0.0125*K*tile___i2) + 64*floor(0.0125*K*(tile___i2 + 1))"
                           }
                         }
                       },
@@ -5368,20 +5368,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "-2048*floor(0.0125*K*LOAD_K___i2) + 2048*floor(0.0125*K*(LOAD_K___i2 + 1))",
+                            "volume": "-2048*floor(0.0125*K*tile___i2) + 2048*floor(0.0125*K*(tile___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "end": "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1 - floor(0.2*N*THREAD_BLOCK___i1)",
-                                  "end": "tile___i1 + 8*int_floor(31, 8) - floor(0.2*N*THREAD_BLOCK___i1) + 7",
+                                  "start": "tile1___i1 - floor(0.2*N*tile___i1)",
+                                  "end": "tile1___i1 + 8*int_floor(31, 8) - floor(0.2*N*tile___i1) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5398,20 +5398,20 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)) - 1",
+                                  "end": "-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1 - floor(0.2*N*THREAD_BLOCK___i1)",
-                                  "end": "tile___i1 + 8*int_floor(31, 8) - floor(0.2*N*THREAD_BLOCK___i1) + 7",
+                                  "start": "tile1___i1 - floor(0.2*N*tile___i1)",
+                                  "end": "tile1___i1 + 8*int_floor(31, 8) - floor(0.2*N*tile___i1) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
                             "dst_subset": null,
-                            "num_accesses": "-2048*floor(0.0125*K*LOAD_K___i2) + 2048*floor(0.0125*K*(LOAD_K___i2 + 1))"
+                            "num_accesses": "-2048*floor(0.0125*K*tile___i2) + 2048*floor(0.0125*K*(tile___i2 + 1))"
                           }
                         }
                       },
@@ -5426,7 +5426,7 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "4096000*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)",
+                            "volume": "4096000*(-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)))*ceiling(-floor(0.2*M*tile___i0)/64 + floor(0.2*M*(tile___i0 + 1))/64)*ceiling(-floor(0.2*N*tile___i1)/32 + floor(0.2*N*(tile___i1 + 1))/32)",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
@@ -5469,7 +5469,7 @@
                                 }
                               ]
                             },
-                            "num_accesses": "4096000*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)"
+                            "num_accesses": "4096000*(-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)))*ceiling(-floor(0.2*M*tile___i0)/64 + floor(0.2*M*(tile___i0 + 1))/64)*ceiling(-floor(0.2*N*tile___i1)/32 + floor(0.2*N*(tile___i1 + 1))/32)"
                           }
                         }
                       },
@@ -5484,7 +5484,7 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))",
+                            "volume": "-64*floor(0.0125*K*tile___i2) + 64*floor(0.0125*K*(tile___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
@@ -5527,7 +5527,7 @@
                                 }
                               ]
                             },
-                            "num_accesses": "-64*floor(0.0125*K*LOAD_K___i2) + 64*floor(0.0125*K*(LOAD_K___i2 + 1))"
+                            "num_accesses": "-64*floor(0.0125*K*tile___i2) + 64*floor(0.0125*K*(tile___i2 + 1))"
                           }
                         }
                       },
@@ -5542,7 +5542,7 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "163840*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)",
+                            "volume": "163840*(-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)))*ceiling(-floor(0.2*M*tile___i0)/64 + floor(0.2*M*(tile___i0 + 1))/64)*ceiling(-floor(0.2*N*tile___i1)/32 + floor(0.2*N*(tile___i1 + 1))/32)",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
@@ -5585,7 +5585,7 @@
                                 }
                               ]
                             },
-                            "num_accesses": "163840*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)"
+                            "num_accesses": "163840*(-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)))*ceiling(-floor(0.2*M*tile___i0)/64 + floor(0.2*M*(tile___i0 + 1))/64)*ceiling(-floor(0.2*N*tile___i1)/32 + floor(0.2*N*(tile___i1 + 1))/32)"
                           }
                         }
                       },
@@ -5600,7 +5600,7 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "2048*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)",
+                            "volume": "2048*(-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)))*ceiling(-floor(0.2*M*tile___i0)/64 + floor(0.2*M*(tile___i0 + 1))/64)*ceiling(-floor(0.2*N*tile___i1)/32 + floor(0.2*N*(tile___i1 + 1))/32)",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
@@ -5643,7 +5643,7 @@
                                 }
                               ]
                             },
-                            "num_accesses": "2048*(-floor(0.0125*K*LOAD_K___i2) + floor(0.0125*K*(LOAD_K___i2 + 1)))*ceiling(-floor(0.2*M*THREAD_BLOCK___i0)/64 + floor(0.2*M*(THREAD_BLOCK___i0 + 1))/64)*ceiling(-floor(0.2*N*THREAD_BLOCK___i1)/32 + floor(0.2*N*(THREAD_BLOCK___i1 + 1))/32)"
+                            "num_accesses": "2048*(-floor(0.0125*K*tile___i2) + floor(0.0125*K*(tile___i2 + 1)))*ceiling(-floor(0.2*M*tile___i0)/64 + floor(0.2*M*(tile___i0 + 1))/64)*ceiling(-floor(0.2*N*tile___i1)/32 + floor(0.2*N*(tile___i1 + 1))/32)"
                           }
                         }
                       },
@@ -5658,20 +5658,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "-2048*floor(0.0125*K*LOAD_K___i2) + 2048*floor(0.0125*K*(LOAD_K___i2 + 1))",
+                            "volume": "-2048*floor(0.0125*K*tile___i2) + 2048*floor(0.0125*K*(tile___i2 + 1))",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 8*int_floor(63, 8) + 7",
+                                  "start": "tile1___i0",
+                                  "end": "tile1___i0 + 8*int_floor(63, 8) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 8*int_floor(31, 8) + 7",
+                                  "start": "tile1___i1",
+                                  "end": "tile1___i1 + 8*int_floor(31, 8) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -5688,20 +5688,20 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "tile___i0",
-                                  "end": "tile___i0 + 8*int_floor(63, 8) + 7",
+                                  "start": "tile1___i0",
+                                  "end": "tile1___i0 + 8*int_floor(63, 8) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "tile___i1",
-                                  "end": "tile___i1 + 8*int_floor(31, 8) + 7",
+                                  "start": "tile1___i1",
+                                  "end": "tile1___i1 + 8*int_floor(31, 8) + 7",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
-                            "num_accesses": "-2048*floor(0.0125*K*LOAD_K___i2) + 2048*floor(0.0125*K*(LOAD_K___i2 + 1))"
+                            "num_accesses": "-2048*floor(0.0125*K*tile___i2) + 2048*floor(0.0125*K*(tile___i2 + 1))"
                           }
                         }
                       },

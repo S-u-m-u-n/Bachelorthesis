@@ -229,33 +229,6 @@
           "debuginfo": null
         }
       },
-      "gpu_C": {
-        "type": "Array",
-        "attributes": {
-          "allow_conflicts": false,
-          "strides": [
-            "N",
-            "1"
-          ],
-          "total_size": "M*N",
-          "offset": [
-            "0",
-            "0"
-          ],
-          "may_alias": false,
-          "alignment": 0,
-          "dtype": "float64",
-          "shape": [
-            "M",
-            "N"
-          ],
-          "transient": true,
-          "storage": "GPU_Global",
-          "lifetime": "Scope",
-          "location": {},
-          "debuginfo": null
-        }
-      },
       "gpu_A": {
         "type": "Array",
         "attributes": {
@@ -275,6 +248,33 @@
           "shape": [
             "M",
             "K"
+          ],
+          "transient": true,
+          "storage": "GPU_Global",
+          "lifetime": "Scope",
+          "location": {},
+          "debuginfo": null
+        }
+      },
+      "gpu_C": {
+        "type": "Array",
+        "attributes": {
+          "allow_conflicts": false,
+          "strides": [
+            "N",
+            "1"
+          ],
+          "total_size": "M*N",
+          "offset": [
+            "0",
+            "0"
+          ],
+          "may_alias": false,
+          "alignment": 0,
+          "dtype": "float64",
+          "shape": [
+            "M",
+            "N"
           ],
           "transient": true,
           "storage": "GPU_Global",
@@ -1026,28 +1026,6 @@
             },
             {
               "type": "AccessNode",
-              "label": "beta",
-              "attributes": {
-                "access": "ReadOnly",
-                "setzero": false,
-                "debuginfo": {
-                  "type": "DebugInfo",
-                  "start_line": 36,
-                  "end_line": 36,
-                  "start_column": 36,
-                  "end_column": 36,
-                  "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
-                },
-                "data": "beta",
-                "in_connectors": {},
-                "out_connectors": {}
-              },
-              "id": 12,
-              "scope_entry": null,
-              "scope_exit": null
-            },
-            {
-              "type": "AccessNode",
               "label": "C",
               "attributes": {
                 "access": "ReadOnly",
@@ -1061,6 +1039,28 @@
                   "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
                 },
                 "data": "C",
+                "in_connectors": {},
+                "out_connectors": {}
+              },
+              "id": 12,
+              "scope_entry": null,
+              "scope_exit": null
+            },
+            {
+              "type": "AccessNode",
+              "label": "beta",
+              "attributes": {
+                "access": "ReadOnly",
+                "setzero": false,
+                "debuginfo": {
+                  "type": "DebugInfo",
+                  "start_line": 36,
+                  "end_line": 36,
+                  "start_column": 36,
+                  "end_column": 36,
+                  "filename": "/home/sumun/Desktop/ETH_Study/Bachelorthesis/Bachelorthesis/Milestone_2/cosma.py"
+                },
+                "data": "beta",
                 "in_connectors": {},
                 "out_connectors": {}
               },
@@ -1279,7 +1279,7 @@
                   }
                 }
               },
-              "src": "13",
+              "src": "12",
               "dst": "9",
               "dst_connector": "IN_C",
               "src_connector": null
@@ -1545,7 +1545,7 @@
                   }
                 }
               },
-              "src": "12",
+              "src": "13",
               "dst": "9",
               "dst_connector": "IN_beta",
               "src_connector": null
@@ -2438,7 +2438,7 @@
     ],
     "openmp_sections": true,
     "name": "matmul",
-    "hash": "a4ae8817ef54f6b64e2338ceeb92dfc648abc6f13c117e18404d84d0e62eda03"
+    "hash": "029dfe8a60730a0ea3cfdafe12b7b2ff60745f3cbc35b807aff3e36306896df5"
   },
   "nodes": [
     {

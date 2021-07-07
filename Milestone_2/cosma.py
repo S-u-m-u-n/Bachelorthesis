@@ -10,12 +10,9 @@ import dace
 from dace.transformation.interstate import GPUTransformSDFG
 from dace.transformation.dataflow import MapTiling, InLocalStorage, MapExpansion, MapCollapse, StripMining, DoubleBuffering, Vectorization, MapExpansion, AccumulateTransient
 from dace.transformation import helpers as xfutil
-from dace.sdfg.graph import Edge
-from dace.memlet import Memlet
 from dace.subsets import Range
 import helpers
 import warnings
-
 
 def find_map_by_param(sdfg: dace.SDFG, pname: str) -> dace.nodes.MapEntry:
     """ Finds the first map entry node by the given parameter name. """
@@ -184,8 +181,7 @@ def create_sdfg(schedule) -> None:
     if M % schedule.thread_block_tile_m == 0:
         divides_evenly = True
     StripMining.apply_to(state.parent,
-            dict(new_dim_prefix="THREAD_BLOCK",
-            tiling_type=dace.TilingType.NumberOfTiles,
+            dict(tiling_type=dace.TilingType.NumberOfTiles,
             tile_size=M / schedule.thread_block_tile_m,
             dim_idx=0,
             divides_evenly=divides_evenly,
@@ -197,8 +193,7 @@ def create_sdfg(schedule) -> None:
     if N % schedule.thread_block_tile_n == 0:
         divides_evenly = True
     StripMining.apply_to(state.parent,
-            dict(new_dim_prefix="THREAD_BLOCK",
-            tiling_type=dace.TilingType.NumberOfTiles,
+            dict(tiling_type=dace.TilingType.NumberOfTiles,
             tile_size=N / schedule.thread_block_tile_n,
             dim_idx=1,
             divides_evenly=divides_evenly,
@@ -209,24 +204,22 @@ def create_sdfg(schedule) -> None:
     if K % schedule.load_k == 0:
         divides_evenly = True
     StripMining.apply_to(state.parent,
-            dict(new_dim_prefix="LOAD_K",
-            tiling_type=dace.TilingType.NumberOfTiles,
+            dict(tiling_type=dace.TilingType.NumberOfTiles,
             tile_size=K / schedule.load_k,
             dim_idx=2,
             divides_evenly=divides_evenly,
             ),
             _map_entry=gemm
     )
-    sdfg.save('sdfg_tiled_3.sdfg')
-    entry_outer, state = find_map_by_param(state.parent, "THREAD_BLOCK___i0")
-    entry_inner, state = find_map_by_param(state.parent, "THREAD_BLOCK___i1")
+    entry_outer, state = find_map_by_param(state.parent, "tile___i0")
+    entry_inner, state = find_map_by_param(state.parent, "tile___i1")
     MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
     entry_inner, state = find_map_by_param(state.parent, "__i0")
     entry_inner._map.schedule = dace.ScheduleType.GPU_ThreadBlock
 
     #####################################################################
     ### local storage (shared memory) for loading threadblock_tiles of A and B
-    entry_outer, state = find_map_by_param(state.parent, "LOAD_K___i2")
+    entry_outer, state = find_map_by_param(state.parent, "tile___i2")
     shared_memory_A = InLocalStorage.apply_to(state.parent, dict(array='_a'), node_a=entry_outer, node_b=entry_inner)
     shared_memory_B = InLocalStorage.apply_to(state.parent, dict(array='_b'), node_a=entry_outer, node_b=entry_inner)
     state.parent.arrays[shared_memory_A.data].storage = dace.StorageType.GPU_Shared
@@ -236,16 +229,18 @@ def create_sdfg(schedule) -> None:
     ### Warp Tile
     gemm, state = find_map_by_param(state.parent, "__i0")
     xfutil.tile(state.parent, gemm, True, True, __i0=schedule.warp_tile_m, __i1=schedule.warp_tile_n)
-    entry_outer, state = find_map_by_param(state.parent, "tile___i0")
-    entry_inner, state = find_map_by_param(state.parent, "tile___i1")
+    entry_outer, state = find_map_by_param(state.parent, "tile1___i0")
+    entry_inner, state = find_map_by_param(state.parent, "tile1___i1")
+    sdfg.save('sdfg_tiled_3.sdfg')
     MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
+    sdfg.save('sdfg_tiled_4.sdfg')
 
     #####################################################################
     ### Thread Tile
     gemm, state = find_map_by_param(state.parent, "__i0")
     xfutil.tile(state.parent, gemm, True, True, __i0=schedule.thread_tile_m, __i1=schedule.thread_tile_n)
-    entry_outer, state = find_map_by_param(state.parent, "tile1___i0")
-    entry_inner, state = find_map_by_param(state.parent, "tile1___i1")
+    entry_outer, state = find_map_by_param(state.parent, "tile2___i0")
+    entry_inner, state = find_map_by_param(state.parent, "tile2___i1")
     MapCollapse.apply_to(state.parent, _outer_map_entry=entry_outer, _inner_map_entry=entry_inner)
 
     #####################################################################
@@ -268,7 +263,8 @@ def create_sdfg(schedule) -> None:
     #####################################################################
     ### local storage (registers) for loading thread_tiles of C
     map_exit = state.exit_node(entry_outer)
-    outer, state = find_map_by_param(state.parent, "tile1___i0")
+    sdfg.save('sdfg_tiled_5.sdfg')
+    outer, state = find_map_by_param(state.parent, "tile2___i0")
     outer_map_exit = state.exit_node(outer)
     AccumulateTransient.apply_to(state.parent, map_exit=map_exit, outer_map_exit=outer_map_exit)
     # Set C tile to zero on allocation
@@ -662,9 +658,9 @@ cublas: Run `matmul` with the CUBLAS library node implementation.''')
                         choices=['16', '32', '64', '128'],
                         default='64',
                         help="Specify bit precision (16, 32, 64 or 128) - currently unsupported.")
-    parser.add_argument('--skip-verification',
+    parser.add_argument('--verify',
                         dest='verification',
-                        help="Skip verification of results. Default: False",
+                        help="Verify results. Default: True",
                         action="store_false",
                         default=True)
     parser.add_argument('--all-optimizations',
