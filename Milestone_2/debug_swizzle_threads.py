@@ -47,7 +47,7 @@ B = np.array([
 ])
 
 @dace.program
-def identity(A: dace.int32[8, 4], B: dace.int32[8, 4]):
+def identity(A: dace.int64[8, 4], B: dace.int64[8, 4]):
     return A * B
 
 sdfg = identity.to_sdfg()
@@ -164,6 +164,8 @@ print("-" * 3 * warp_tile_height + "-")
 entry_warp, state = find_map_by_param(state.parent, "tile1___i0")
 warp_x = state.out_edges(entry_warp)[0].data.subset[0][0] # = tile1___i0
 warp_y = state.out_edges(entry_warp)[1].data.subset[1][0] # = tile1___i1
+print(warp_x)
+print(warp_y)
 
 # we want to remove the warp offset (tile1___i0 and tile1___i1 in this case), because the thread_tile swizzling should be independent of the warp
 old_id_x = (current_mapping_x.ndrange()[0][0] - warp_x) / 1
