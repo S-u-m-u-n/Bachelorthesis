@@ -70,11 +70,11 @@ entry_inner._map.schedule = dace.ScheduleType.GPU_ThreadBlock
 
 #####################################################################
 ### local storage (shared memory) for loading threadblock_tiles of A and B
-entry_outer, state = find_map_by_param(state.parent, "tile___i0")
-shared_memory_A = InLocalStorage.apply_to(state.parent, dict(array='_a'), node_a=entry_outer, node_b=entry_inner)
-shared_memory_B = InLocalStorage.apply_to(state.parent, dict(array='_b'), node_a=entry_outer, node_b=entry_inner)
-state.parent.arrays[shared_memory_A.data].storage = dace.StorageType.GPU_Shared
-state.parent.arrays[shared_memory_B.data].storage = dace.StorageType.GPU_Shared
+# entry_outer, state = find_map_by_param(state.parent, "tile___i0")
+# shared_memory_A = InLocalStorage.apply_to(state.parent, dict(array='_a'), node_a=entry_outer, node_b=entry_inner)
+# shared_memory_B = InLocalStorage.apply_to(state.parent, dict(array='_b'), node_a=entry_outer, node_b=entry_inner)
+# state.parent.arrays[shared_memory_A.data].storage = dace.StorageType.GPU_Shared
+# state.parent.arrays[shared_memory_B.data].storage = dace.StorageType.GPU_Shared
 
 #####################################################################
 ### Warp Tile

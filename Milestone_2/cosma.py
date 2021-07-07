@@ -224,6 +224,7 @@ def create_sdfg(schedule) -> None:
     shared_memory_B = InLocalStorage.apply_to(state.parent, dict(array='_b'), node_a=entry_outer, node_b=entry_inner)
     state.parent.arrays[shared_memory_A.data].storage = dace.StorageType.GPU_Shared
     state.parent.arrays[shared_memory_B.data].storage = dace.StorageType.GPU_Shared
+    # Todo: make size constant
 
     #####################################################################
     ### Warp Tile
