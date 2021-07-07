@@ -48,7 +48,7 @@ B = np.array([
 
 @dace.program
 def identity(A: dace.int32[8, 4], B: dace.int32[8, 4]):
-    return np.multiply(A, B)
+    return A * B
 
 sdfg = identity.to_sdfg()
 sdfg.expand_library_nodes()
