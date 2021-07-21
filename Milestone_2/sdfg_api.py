@@ -16,18 +16,31 @@ N_example = 640
 K_example = 640
 
 sdfg = dace.SDFG('gemm')
+state = sdfg.add_state(label='gemm_state')
 nested_sdfg = dace.SDFG('nested_gemm')
 
 sdfg.add_array('A', shape=[M, K], dtype=dace.float64)
-sdfg.add_transient('gpu_A', shape=[M, K], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
 sdfg.add_array('B', shape=[K, N], dtype=dace.float64)
-sdfg.add_transient('gpu_B', shape=[K, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
 sdfg.add_array('C', shape=[M, N], dtype=dace.float64)
-sdfg.add_transient('gpu_C', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
 sdfg.add_array('result', shape=[M, N], dtype=dace.float64)
+A_in = state.add_read('A')
+B_in = state.add_read('B')
+C_in = state.add_read('C')
+result = state.add_write('result')
+
+sdfg.add_transient('gpu_A', shape=[M, K], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
+sdfg.add_transient('gpu_B', shape=[K, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
+sdfg.add_transient('gpu_C', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
 sdfg.add_transient('gpu_result', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
+gpu_A = state.add_access('gpu_A')
+gpu_B = state.add_access('gpu_B')
+gpu_C = state.add_access('gpu_C')
+gpu_result = state.add_access('gpu_result') # or add_write?
+
 # sdfg.add_constant('alpha', value=1.0, dtype=dace.float64)
 # sdfg.add_constant('beta', value=1.0, dtype=dace.float64)
+# alpha_in = state.add_read('alpha')
+# beta_in = state.add_read('beta')
 # sdfg.add_array('alpha', shape=[1], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
 # sdfg.add_array('beta', shape=[1], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
 sdfg.add_constant('alpha', 1.0)
@@ -37,22 +50,9 @@ sdfg.add_transient('C_times_beta', shape=[M, N], dtype=dace.float64, storage=dac
 sdfg.add_transient('A_matmul_B', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
 sdfg.add_transient('A_matmul_B_times_alpha', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
 
-
-state = sdfg.add_state(label='gemm_state')
-A_in = state.add_read('A')
-B_in = state.add_read('B')
-C_in = state.add_read('C')
-gpu_A = state.add_access('gpu_A')
-gpu_B = state.add_access('gpu_B')
-gpu_C = state.add_access('gpu_C')
-# alpha_in = state.add_read('alpha')
-# beta_in = state.add_read('beta')
-
 C_times_beta = state.add_write('C_times_beta')
 A_matmul_B = state.add_write('A_matmul_B')
 A_matmul_B_times_alpha = state.add_write('A_matmul_B_times_alpha')
-gpu_result = state.add_write('gpu_result')
-result = state.add_write('result')
 
 #########################################################
 # Connect arrays to GPU transient and the GPU result transient to host array
@@ -74,7 +74,7 @@ state.add_edge(
 state.add_edge(
     gpu_result, None,
     result, None,
-    memlet=dace.Memlet.simple(result.data, '0:M, 0:N'))
+    memlet=dace.Memlet.simple(gpu_result.data, '0:M, 0:N'))
 
 #########################################################
 # Multiply C with beta
@@ -173,10 +173,12 @@ state.add_edge(
     nested_sdfg_node, 'input_B',
     memlet=dace.Memlet.simple(gpu_B.data, '0:K, 0:N'))
 
+# print(nested_sdfg_node.last_connector)
+
 state.add_edge(
-    nested_sdfg_node, 'output',
+    nested_sdfg_node, 'output', 
     A_matmul_B, None,
-    memlet=dace.Memlet.simple(A_matmul_B.data, '0:M, 0:N'))
+    memlet=dace.Memlet.simple(A_matmul_B.data, '0:M, 0:N')) # A_matmul_B.data or A_matmul_B_nested.data?
 
 nested_initstate = nested_sdfg.add_state(label='nested_initstate')
 nested_state = nested_sdfg.add_state(label='nested_state')
@@ -209,6 +211,11 @@ A_matmul_B_nested_initstate = nested_initstate.add_write('output')
 A_matmul_B_nested_state = nested_state.add_write('output')
 # A_matmul_B_nested_read = state.add_read('A_matmul_B_nested')
 
+# state.add_edge(
+#     nested_sdfg_node, 'output', 
+#     A_matmul_B, None,
+#     memlet=dace.Memlet.simple(A_matmul_B_nested.data, '0:M, 0:N'))
+
 #########################################################
 # matmul init state
 map_entry, map_exit = nested_initstate.add_map(
@@ -222,7 +229,6 @@ map_entry, map_exit = nested_initstate.add_map(
 # print(type(map_exit))
 
 tasklet = nested_initstate.add_tasklet('matmul_init', [], ['out'], 'out = 0')
-
 
 nested_initstate.add_edge(
     map_entry, None,
@@ -459,7 +465,7 @@ def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], 
     return alpha * (A @ B) + beta * C
 
 C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
-C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example, result=C)
+C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example, result = C)
 
 # Can replace this with np.allclose(A, B)
 def areSame(A,B):
