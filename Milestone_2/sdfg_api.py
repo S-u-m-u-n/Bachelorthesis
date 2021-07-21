@@ -206,24 +206,20 @@ desc_res.storage = dace.StorageType.Default
 # sdfg.add_array('A_matmul_B_nested', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.Default)
 # nested_sdfg.add_array('A_matmul_B_nested', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.Default)
 
-nested_sdfg.add_datadesc('output', desc_res)
+output = nested_sdfg.add_datadesc('output', desc_res)
+# print(output)
 # print(nested_sdfg)
 # print(nested_sdfg.arrays)
 
-A_matmul_B_nested_initstate = nested_initstate.add_write('output')
-A_matmul_B_nested_state = nested_state.add_write('output')
+A_matmul_B_nested_initstate = nested_initstate.add_write(output)
+A_matmul_B_nested_state = nested_state.add_write(output)
 # A_matmul_B_nested_read = state.add_read('A_matmul_B_nested')
-
-# state.add_edge(
-#     nested_sdfg_node, 'output', 
-#     A_matmul_B, None,
-#     memlet=dace.Memlet.simple(A_matmul_B_nested.data, '0:M, 0:N'))
 
 # for e in state.out_edges(nested_sdfg_node):
 #     if e.src_conn == "output":
 #         desc_res = e
 
-# desc_res.memlet=dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N') # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
+desc_res.memlet=dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N') # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
 
 #########################################################
 # matmul init state
