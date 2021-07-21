@@ -473,11 +473,15 @@ alpha = 1.0
 beta = 1.0
 
 def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
-    C = alpha * (A @ B) + beta * C
+    return alpha * (A @ B) + beta * C
 
 C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
 C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example, result=result)
 print(result)
+print(result[0][0])
+print(result[0][1])
+print(result[0][2])
+print(result[0][3])
 
 # Can replace this with np.allclose(A, B)
 def areSame(A,B):
