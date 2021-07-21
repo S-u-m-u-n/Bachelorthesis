@@ -35,7 +35,7 @@ sdfg.add_transient('gpu_result', shape=[M, N], dtype=dace.float64, storage=dace.
 gpu_A = state.add_access('gpu_A')
 gpu_B = state.add_access('gpu_B')
 gpu_C = state.add_access('gpu_C')
-gpu_result = state.add_access('gpu_result') # or add_write?
+gpu_result = state.add_access('gpu_result') # add_access or add_write?
 
 # sdfg.add_constant('alpha', value=1.0, dtype=dace.float64)
 # sdfg.add_constant('beta', value=1.0, dtype=dace.float64)
@@ -46,9 +46,9 @@ gpu_result = state.add_access('gpu_result') # or add_write?
 sdfg.add_constant('alpha', 1.0)
 sdfg.add_constant('beta', 1.0)
 
-sdfg.add_transient('C_times_beta', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
-sdfg.add_transient('A_matmul_B', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
-sdfg.add_transient('A_matmul_B_times_alpha', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
+sdfg.add_transient('C_times_beta', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
+sdfg.add_transient('A_matmul_B', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
+sdfg.add_transient('A_matmul_B_times_alpha', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
 
 C_times_beta = state.add_write('C_times_beta')
 A_matmul_B = state.add_write('A_matmul_B')
@@ -84,7 +84,6 @@ map_entry, map_exit = state.add_map(
         schedule=dace.dtypes.ScheduleType.GPU_Device)
 
 tasklet = state.add_tasklet('multiply_matrix_with_constant', ['__in'], ['__out'], '__out = (beta * __in)')
-
 
 state.add_memlet_path(gpu_C,
                         map_entry,
@@ -178,7 +177,7 @@ state.add_edge(
 state.add_edge(
     nested_sdfg_node, 'output', 
     A_matmul_B, None,
-    memlet=dace.Memlet.simple(A_matmul_B.data, '0:M, 0:N')) # A_matmul_B.data or A_matmul_B_nested.data?
+    memlet=dace.Memlet.simple(A_matmul_B.data, '0:M, 0:N')) # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
 
 nested_initstate = nested_sdfg.add_state(label='nested_initstate')
 nested_state = nested_sdfg.add_state(label='nested_state')
@@ -189,9 +188,12 @@ for e in state.in_edges(nested_sdfg_node):
         desc_a = sdfg.arrays[e.data.data]
     elif e.dst_conn == "input_B":
         desc_b = sdfg.arrays[e.data.data]
-for e in state.out_edges(nested_sdfg_node):
+
+for e in state.out_edges(nested_sdfg_node): # Can we find the connector without the edge?
     if e.src_conn == "output":
         desc_res = sdfg.arrays[e.data.data]
+
+
 
 desc_a = desc_a.clone()
 desc_a.transient = False
@@ -199,6 +201,7 @@ desc_b = desc_b.clone()
 desc_b.transient = False
 desc_res = desc_res.clone()
 desc_res.transient = False
+desc_res.storage = dace.StorageType.Default
 
 # sdfg.add_array('A_matmul_B_nested', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.Default)
 # nested_sdfg.add_array('A_matmul_B_nested', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.Default)
@@ -479,20 +482,20 @@ def areSame(A,B):
                 return False
     return True
 
-helpers.print_info("SDFG result: ", False)
-print()
-for i in range(16):
-    for j in range(16):
-        print("%.2f" % C_test[i][j], end=" ")
-    print()
-
-print()
-print()
 helpers.print_info("Correct result: ", False)
 for i in range(16):
     for j in range(16):
         print("%.2f" % C_correct[i][j], end=" ")
     print()
+
+print()
+print()
+helpers.print_info("SDFG result: ", False)
+for i in range(16):
+    for j in range(16):
+        print("%.2f" % C_test[i][j], end=" ")
+    print()
+
 
 if areSame(C_correct, C_test):
     helpers.print_success("The SDFG is correct!", False)
