@@ -176,10 +176,12 @@ state.add_edge(
 state.add_edge(
     nested_sdfg_node, 'output', 
     A_matmul_B, None,
-    memlet=dace.Memlet.simple(A_matmul_B.data, '0:M, 0:N')) # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
+    memlet=dace.Memlet(A_matmul_B.data, '0:M, 0:N')) # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
 
 nested_initstate = nested_sdfg.add_state(label='nested_initstate')
+nested_initstate.executions = 1
 nested_state = nested_sdfg.add_state(label='nested_state')
+nested_state.executions = 1
 nested_sdfg.add_edge(nested_initstate, nested_state, dace.InterstateEdge()) # connect the two states
 
 for e in state.in_edges(nested_sdfg_node):
@@ -192,9 +194,9 @@ for e in state.out_edges(nested_sdfg_node): # Can we find the connector without 
     if e.src_conn == "output":
         desc_res = sdfg.arrays[e.data.data]
 
-print(nested_sdfg_node.out_connectors)
+# print(nested_sdfg_node.out_connectors)
 
-
+# print(desc_res)
 desc_a = desc_a.clone()
 desc_a.transient = False
 desc_b = desc_b.clone()
@@ -215,11 +217,11 @@ A_matmul_B_nested_initstate = nested_initstate.add_write(output)
 A_matmul_B_nested_state = nested_state.add_write(output)
 # A_matmul_B_nested_read = state.add_read('A_matmul_B_nested')
 
-for e in state.out_edges(nested_sdfg_node):
-    if e.src_conn == "output":
-        desc_res = e
+# for e in state.out_edges(nested_sdfg_node):
+    # if e.src_conn == "output":
+        # desc_res = e
 
-desc_res.memlet = dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N') # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
+# desc_res.memlet = dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N') # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
 
 #########################################################
 # matmul init state
