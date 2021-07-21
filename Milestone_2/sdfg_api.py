@@ -218,11 +218,12 @@ A_matmul_B_nested_state = nested_state.add_write('output')
 #     nested_sdfg_node, 'output', 
 #     A_matmul_B, None,
 #     memlet=dace.Memlet.simple(A_matmul_B_nested.data, '0:M, 0:N'))
-for e in state.out_edges(nested_sdfg_node): # Can we find the connector without the edge?
-    if e.src_conn == "output":
-        desc_res = e
 
-desc_res.memlet=dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N') # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
+# for e in state.out_edges(nested_sdfg_node):
+#     if e.src_conn == "output":
+#         desc_res = e
+
+# desc_res.memlet=dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N') # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
 
 #########################################################
 # matmul init state
