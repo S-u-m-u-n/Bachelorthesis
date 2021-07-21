@@ -215,11 +215,11 @@ A_matmul_B_nested_initstate = nested_initstate.add_write(output)
 A_matmul_B_nested_state = nested_state.add_write(output)
 # A_matmul_B_nested_read = state.add_read('A_matmul_B_nested')
 
-# for e in state.out_edges(nested_sdfg_node):
-#     if e.src_conn == "output":
-#         desc_res = e
+for e in state.out_edges(nested_sdfg_node):
+    if e.src_conn == "output":
+        desc_res = e
 
-desc_res.memlet=dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N') # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
+desc_res.memlet = dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N') # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
 
 #########################################################
 # matmul init state
