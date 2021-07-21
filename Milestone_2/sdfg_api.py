@@ -173,7 +173,6 @@ state.add_edge(
     memlet=dace.Memlet.simple(gpu_B.data, '0:K, 0:N'))
 
 # print(nested_sdfg_node.last_connector)
-
 state.add_edge(
     nested_sdfg_node, 'output', 
     A_matmul_B, None,
@@ -193,6 +192,7 @@ for e in state.out_edges(nested_sdfg_node): # Can we find the connector without 
     if e.src_conn == "output":
         desc_res = sdfg.arrays[e.data.data]
 
+print(nested_sdfg_node.out_connectors)
 
 
 desc_a = desc_a.clone()
@@ -218,6 +218,11 @@ A_matmul_B_nested_state = nested_state.add_write('output')
 #     nested_sdfg_node, 'output', 
 #     A_matmul_B, None,
 #     memlet=dace.Memlet.simple(A_matmul_B_nested.data, '0:M, 0:N'))
+for e in state.out_edges(nested_sdfg_node): # Can we find the connector without the edge?
+    if e.src_conn == "output":
+        desc_res = e
+
+desc_res.memlet=dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N') # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
 
 #########################################################
 # matmul init state
@@ -376,6 +381,8 @@ thread_map_entry, thread_map_exit = nested_state.add_map(
 #     shared_memory_A, None,
 #     memlet=dace.Memlet.simple(_A.data, '0:M, 0:K'))
 
+
+
 ### From matrix to shared memory
 nested_state.add_memlet_path(_A,
                         thread_block_grid_map_entry,
@@ -461,14 +468,16 @@ helpers.print_info("Verifying results...", False)
 A = np.random.rand(M_example, K_example).astype(np.float64)
 B = np.random.rand(K_example, N_example).astype(np.float64)
 C = np.zeros((M_example, N_example)).astype(np.float64)
+result = np.array((M_example, N_example)).astype(np.float64)
 alpha = 1.0
 beta = 1.0
 
 def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
-    return alpha * (A @ B) + beta * C
+    C = alpha * (A @ B) + beta * C
 
 C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
-C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example, result = C)
+C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example, result=result)
+print(result)
 
 # Can replace this with np.allclose(A, B)
 def areSame(A,B):
