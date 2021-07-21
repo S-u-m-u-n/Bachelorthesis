@@ -468,7 +468,7 @@ helpers.print_info("Verifying results...", False)
 A = np.random.rand(M_example, K_example).astype(np.float64)
 B = np.random.rand(K_example, N_example).astype(np.float64)
 C = np.zeros((M_example, N_example)).astype(np.float64)
-result = np.array((M_example, N_example)).astype(np.float64)
+result = np.empty((M_example, N_example)).astype(np.float64)
 alpha = 1.0
 beta = 1.0
 
