@@ -502,6 +502,8 @@ print(result[0][2])
 print(result[0][3])
 print('--')
 print(C_test)
+print('--')
+print(result)
 
 # Can replace this with np.allclose(A, B)
 def areSame(A,B):
@@ -530,7 +532,7 @@ for i in range(16):
     print()
 
 
-if areSame(C_correct, C_test):
+if areSame(C_correct, C):
     helpers.print_success("The SDFG is correct!", False)
 else:
     helpers.print_error("The SDFG is incorrect!", False)
