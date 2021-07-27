@@ -229,7 +229,7 @@ output = nested_sdfg.add_datadesc('output', desc_res)
 
 _A = nested_state.add_read(input_A)
 _B = nested_state.add_read(input_B)
-A_matmul_B_nested_initstate = nested_initstate.add_write(output)
+# A_matmul_B_nested_initstate = nested_initstate.add_write(output)
 A_matmul_B_nested_state = nested_state.add_write(output)
 
 # A_matmul_B_nested_read = state.add_read('A_matmul_B_nested')
@@ -241,18 +241,39 @@ A_matmul_B_nested_state = nested_state.add_write(output)
 # desc_res.memlet = dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N') # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
 
 #########################################################
-# matmul init state
-map_entry, map_exit = nested_initstate.add_map(
-        'initialize_matmul_result',
-        dict(i='0:M', j='0:N'),
-        schedule=dace.dtypes.ScheduleType.Default)
+# # matmul init state
+# map_entry, map_exit = nested_initstate.add_map(
+#         'initialize_matmul_result',
+#         dict(i='0:M', j='0:N'),
+#         schedule=dace.dtypes.ScheduleType.Default)
 
-# map_entry.in_connec
-# print(type(map_entry))
-# print(map_exit)
-# print(type(map_exit))
+# tasklet = nested_initstate.add_tasklet('matmul_init', [], ['out'], 'out = 100') # TODO: replace with out = 0 once this works
 
-tasklet = nested_initstate.add_tasklet('matmul_init', [], ['out'], 'out = 100') # TODO: replace with out = 0 once this works
+
+
+# nested_initstate.add_memlet_path(map_entry,
+#             tasklet,
+#             # A_matmul_B_nested_initstate,
+#             # src_conn='out',
+#             memlet=dace.Memlet()) # TODO: can this be an empty Memlet???
+
+# nested_initstate.add_memlet_path(tasklet,
+#             map_exit,
+#             A_matmul_B_nested_initstate,
+#             src_conn='out',
+#             # memlet=dace.Memlet.simple(A_matmul_B_nested_initstate.data, '0:M, 0:N'))
+#             memlet=dace.Memlet(f"{A_matmul_B_nested_initstate.data}[i, j]"))
+
+
+
+
+
+
+
+
+
+
+
 
 # nested_initstate.add_edge(
 #     map_entry, None,
@@ -268,19 +289,6 @@ tasklet = nested_initstate.add_tasklet('matmul_init', [], ['out'], 'out = 100') 
 #     map_exit, None,
 #     A_matmul_B_nested_initstate, None,
 #     memlet=dace.Memlet.simple(A_matmul_B_nested_initstate.data, '0:M, 0:N'))
-
-nested_initstate.add_memlet_path(map_entry,
-            tasklet,
-            # A_matmul_B_nested_initstate,
-            # src_conn='out',
-            memlet=dace.Memlet()) # TODO: can this be an empty Memlet???
-
-nested_initstate.add_memlet_path(tasklet,
-            map_exit,
-            A_matmul_B_nested_initstate,
-            src_conn='out',
-            # memlet=dace.Memlet.simple(A_matmul_B_nested_initstate.data, '0:M, 0:N'))
-            memlet=dace.Memlet(f"{A_matmul_B_nested_initstate.data}[i, j]"))
 
 # nested_initstate.add_memlet_path(map_exit,
 #             A_matmul_B_nested_initstate,
