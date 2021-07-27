@@ -183,11 +183,11 @@ state.add_edge(
 nested_initstate = nested_sdfg.add_state(label='nested_initstate')
 nested_initstate.executions = 1
 nested_initstate.dynamic_executions = False
-# nested_state = nested_sdfg.add_state(label='nested_state')
-# nested_state.executions = 1
-# nested_state.dynamic_executions = False
+nested_state = nested_sdfg.add_state(label='nested_state')
+nested_state.executions = 1
+nested_state.dynamic_executions = False
 
-# nested_sdfg.add_edge(nested_initstate, nested_state, dace.InterstateEdge()) # connect the two states
+nested_sdfg.add_edge(nested_initstate, nested_state, dace.InterstateEdge()) # connect the two states
 # print(sdfg.start_state)
 # print(nested_sdfg.start_state)
 # nested_sdfg.
@@ -216,21 +216,15 @@ desc_res.transient = False
 desc_res.storage = dace.StorageType.Default
 desc_res.lifetime = dace.AllocationLifetime.Scope
 
-# sdfg.add_array('A_matmul_B_nested', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.Default)
-# nested_sdfg.add_array('A_matmul_B_nested', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.Default)
-
 input_A = nested_sdfg.add_datadesc('input_A', desc_a)
 input_B = nested_sdfg.add_datadesc('input_B', desc_b)
 output = nested_sdfg.add_datadesc('output', desc_res)
 
-# print(output)
-# print(nested_sdfg)
-# print(nested_sdfg.arrays)
 
-# _A = nested_state.add_read(input_A)
-# _B = nested_state.add_read(input_B)
+_A = nested_state.add_read(input_A)
+_B = nested_state.add_read(input_B)
 A_matmul_B_nested_initstate = nested_initstate.add_write(output)
-# A_matmul_B_nested_state = nested_state.add_write(output)
+A_matmul_B_nested_state = nested_state.add_write(output)
 
 # A_matmul_B_nested_read = state.add_read('A_matmul_B_nested')
 
@@ -262,28 +256,6 @@ nested_initstate.add_memlet_path(tasklet,
             # memlet=dace.Memlet.simple(A_matmul_B_nested_initstate.data, '0:M, 0:N'))
             memlet=dace.Memlet(f"{A_matmul_B_nested_initstate.data}[i, j]"))
 
-
-
-# nested_initstate.add_edge(
-#     map_entry, None,
-#     tasklet, None,
-#     memlet=dace.Memlet())
-
-# nested_initstate.add_edge(
-#     tasklet, 'out',
-#     map_exit, None,
-#     memlet=dace.Memlet(f"{A_matmul_B_nested_initstate.data}[i, j]"))
-
-# nested_initstate.add_edge(
-#     map_exit, None,
-#     A_matmul_B_nested_initstate, None,
-#     memlet=dace.Memlet.simple(A_matmul_B_nested_initstate.data, '0:M, 0:N'))
-
-# nested_initstate.add_memlet_path(map_exit,
-#             A_matmul_B_nested_initstate,
-#             # src_conn='out',
-#             memlet=dace.Memlet.simple(A_matmul_B_nested_initstate.data, '0:M, 0:N'))
-
 #########################################################
 ### matmul state
 
@@ -311,7 +283,17 @@ nested_initstate.add_memlet_path(tasklet,
 # sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
 # sdfg.add_constant('size_thread_tile_k', schedule.thread_tile_k)
 
-# tasklet = nested_state.add_tasklet('matrix_multiplication', ['__a', '__b'], ['__out'], '__out = (__a * __b)')
+
+tasklet = nested_state.add_tasklet('matrix_multiplication', ['__a', '__b'], ['__out'], '__out = (__a * __b)')
+
+map_entry, map_exit = nested_state.add_map(
+        'Thread_block_grid',
+        dict(i='0:M', j='0:N'),
+        schedule=dace.dtypes.ScheduleType.Default)
+
+nested_state.add_memlet_path(_A, map_entry, tasklet, dst_conn='__a', memlet=dace.Memlet(f"{_A.data}[i, 0]"))
+nested_state.add_memlet_path(_B, map_entry, tasklet, dst_conn='__b', memlet=dace.Memlet(f"{_B.data}[0, j]"))
+nested_state.add_memlet_path(tasklet, map_exit, A_matmul_B_nested_state, src_conn='__out', memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]", wcr='(lambda x, y: (x + y))'))
 
 # thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
 #         'Thread_block_grid',
@@ -411,7 +393,7 @@ nested_initstate.add_memlet_path(tasklet,
 #                         A_matmul_B_nested_state,
 #                         # memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[], wcr='(lambda x, y: (x + y))'))                        
 #                         memlet=dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N', wcr_str='(lambda x, y: (x + y))'))                 
-#                         # memlet=dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N', wcr_str='(lambda x, y: (x + y))', num_accesses=M * N))                 
+#                         # memlet=dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N', wcr_str='(lambda x, y: (x + y))', num_accesses=M * N))
 
 nested_sdfg.fill_scope_connectors()
 sdfg.fill_scope_connectors()
@@ -445,9 +427,9 @@ print(result[0][1])
 print(result[0][2])
 print(result[0][3])
 print('--')
-print(C_test)
-print('--')
-print(result)
+# print(C_test)
+# print('--')
+# print(result)
 
 # Can replace this with np.allclose(A, B)
 def areSame(A,B):
@@ -472,11 +454,11 @@ print()
 helpers.print_info("SDFG result: ", False)
 for i in range(16):
     for j in range(16):
-        print("%.2f" % C[i][j], end=" ")
+        print("%.2f" % result[i][j], end=" ")
     print()
 
 
-if areSame(C_correct, C):
+if areSame(C_correct, result):
     helpers.print_success("The SDFG is correct!", False)
 else:
     helpers.print_error("The SDFG is incorrect!", False)
