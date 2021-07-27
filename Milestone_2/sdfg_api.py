@@ -179,10 +179,13 @@ state.add_edge(
     memlet=dace.Memlet(A_matmul_B.data, '0:M, 0:N')) # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
 
 nested_initstate = nested_sdfg.add_state(label='nested_initstate')
-nested_initstate.executions = 1
+# nested_initstate.executions = 1
 nested_state = nested_sdfg.add_state(label='nested_state')
-nested_state.executions = 1
+# nested_state.executions = 1
 nested_sdfg.add_edge(nested_initstate, nested_state, dace.InterstateEdge()) # connect the two states
+print(sdfg.start_state)
+print(nested_sdfg.start_state)
+# nested_sdfg.
 
 for e in state.in_edges(nested_sdfg_node):
     if e.dst_conn == "input_A":
@@ -235,7 +238,7 @@ map_entry, map_exit = nested_initstate.add_map(
 # print(map_exit)
 # print(type(map_exit))
 
-tasklet = nested_initstate.add_tasklet('matmul_init', [], ['out'], 'out = 0')
+tasklet = nested_initstate.add_tasklet('matmul_init', [], ['out'], 'out = 2')
 
 nested_initstate.add_edge(
     map_entry, None,
