@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 import numpy as np
 import dace
+import math
 from Schedule import Schedule
 import helpers
 
@@ -177,13 +178,15 @@ state.add_edge(
 state.add_edge(
     nested_sdfg_node, 'output', 
     A_matmul_B, None,
-    memlet=dace.Memlet(A_matmul_B.data, '0:M, 0:N')) # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
+    memlet=dace.Memlet.simple(A_matmul_B.data, '0:M, 0:N')) # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
 
 nested_initstate = nested_sdfg.add_state(label='nested_initstate')
-# nested_initstate.executions = 1
+nested_initstate.executions = 1
+nested_initstate.dynamic_executions = False
 nested_state = nested_sdfg.add_state(label='nested_state')
+nested_state.executions = 1
+nested_state.dynamic_executions = False
 
-# nested_state.executions = 1
 nested_sdfg.add_edge(nested_initstate, nested_state, dace.InterstateEdge()) # connect the two states
 print(sdfg.start_state)
 print(nested_sdfg.start_state)
@@ -211,7 +214,7 @@ desc_b.storage = dace.StorageType.Default
 desc_res = desc_res.clone()
 desc_res.transient = False
 desc_res.storage = dace.StorageType.Default
-desc_res.lifetime = dace.AllocationLifetime.SDFG
+desc_res.lifetime = dace.AllocationLifetime.Scope
 
 # sdfg.add_array('A_matmul_B_nested', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.Default)
 # nested_sdfg.add_array('A_matmul_B_nested', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.Default)
@@ -249,7 +252,7 @@ map_entry, map_exit = nested_initstate.add_map(
 # print(map_exit)
 # print(type(map_exit))
 
-tasklet = nested_initstate.add_tasklet('matmul_init', [], ['out'], 'out = 0') # TODO: replace 2 with 0 once this works
+tasklet = nested_initstate.add_tasklet('matmul_init', [], ['out'], 'out = 100') # TODO: replace with out = 0 once this works
 
 # nested_initstate.add_edge(
 #     map_entry, None,
@@ -270,7 +273,7 @@ nested_initstate.add_memlet_path(map_entry,
             tasklet,
             # A_matmul_B_nested_initstate,
             # src_conn='out',
-            memlet=dace.Memlet())
+            memlet=dace.Memlet()) # TODO: can this be an empty Memlet???
 
 nested_initstate.add_memlet_path(tasklet,
             map_exit,
@@ -345,7 +348,7 @@ tasklet = nested_state.add_tasklet('matrix_multiplication', ['__a', '__b'], ['__
 thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
         'Thread_block_grid',
         dict(thread_block_i='0:num_thread_blocks_m', thread_block_j='0:num_thread_blocks_n'),
-        schedule=dace.dtypes.ScheduleType.GPU_Device)
+        schedule=dace.dtypes.ScheduleType.Default)
 
 K_tile_map_entry, K_tile_map_exit = nested_state.add_map(
         'K_tile',
@@ -497,6 +500,8 @@ print(result[0][0])
 print(result[0][1])
 print(result[0][2])
 print(result[0][3])
+print('--')
+print(C_test)
 
 # Can replace this with np.allclose(A, B)
 def areSame(A,B):
