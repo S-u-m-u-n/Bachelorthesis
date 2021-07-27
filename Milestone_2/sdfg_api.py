@@ -180,14 +180,14 @@ state.add_edge(
     A_matmul_B, None,
     memlet=dace.Memlet.simple(A_matmul_B.data, '0:M, 0:N')) # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
 
-nested_initstate = nested_sdfg.add_state(label='nested_initstate')
-nested_initstate.executions = 1
-nested_initstate.dynamic_executions = False
+# nested_initstate = nested_sdfg.add_state(label='nested_initstate')
+# nested_initstate.executions = 1
+# nested_initstate.dynamic_executions = False
 nested_state = nested_sdfg.add_state(label='nested_state')
 nested_state.executions = 1
 nested_state.dynamic_executions = False
 
-nested_sdfg.add_edge(nested_initstate, nested_state, dace.InterstateEdge()) # connect the two states
+# nested_sdfg.add_edge(nested_initstate, nested_state, dace.InterstateEdge()) # connect the two states
 print(sdfg.start_state)
 print(nested_sdfg.start_state)
 # nested_sdfg.
