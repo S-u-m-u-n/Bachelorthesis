@@ -276,8 +276,8 @@ nested_initstate.add_memlet_path(tasklet,
             map_exit,
             A_matmul_B_nested_initstate,
             src_conn='out',
-            memlet=dace.Memlet.simple(A_matmul_B_nested_initstate.data, '0:M, 0:N'))
-            # memlet=dace.Memlet(f"{A_matmul_B_nested_initstate.data}[i, j]"))
+            # memlet=dace.Memlet.simple(A_matmul_B_nested_initstate.data, '0:M, 0:N'))
+            memlet=dace.Memlet(f"{A_matmul_B_nested_initstate.data}[i, j]"))
 
 # nested_initstate.add_memlet_path(map_exit,
 #             A_matmul_B_nested_initstate,
@@ -500,8 +500,8 @@ print(result[0][3])
 
 # Can replace this with np.allclose(A, B)
 def areSame(A,B):
-    for i in range(M):
-        for j in range(N):
+    for i in range(M_example):
+        for j in range(N_example):
             diff = math.fabs(A[i][j] - B[i][j])
             if (diff > 0.000001):
                 helpers.print_error("Error at position (" + str(i) + ", " + str(j) + "): matrices are not equal! Difference is: " + str(diff), False)
