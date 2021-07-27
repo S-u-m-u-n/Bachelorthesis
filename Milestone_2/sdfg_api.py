@@ -160,7 +160,7 @@ state.add_memlet_path(tasklet,
 
 #########################################################
 # Create nested sdfg
-nested_sdfg_node = state.add_nested_sdfg(nested_sdfg, state, {'input_A', 'input_B'}, {'output'}, schedule=dace.ScheduleType.GPU_Default, symbol_mapping={"K": "K", "M": "M", "N": "N"})
+nested_sdfg_node = state.add_nested_sdfg(nested_sdfg, state, {'input_A', 'input_B'}, {'output'}, schedule=dace.ScheduleType.Default, symbol_mapping={"K": "K", "M": "M", "N": "N"})
 
 state.add_edge(
     gpu_A, None,
@@ -212,12 +212,16 @@ desc_res.storage = dace.StorageType.Default
 # nested_sdfg.add_array('A_matmul_B_nested', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.Default)
 
 output = nested_sdfg.add_datadesc('output', desc_res)
+input_A = nested_sdfg.add_datadesc('input_A', desc_a)
+input_B = nested_sdfg.add_datadesc('input_B', desc_b)
 # print(output)
 # print(nested_sdfg)
 # print(nested_sdfg.arrays)
 
 A_matmul_B_nested_initstate = nested_initstate.add_write(output)
 A_matmul_B_nested_state = nested_state.add_write(output)
+_A = nested_state.add_read(input_A)
+_B = nested_state.add_read(input_B)
 # A_matmul_B_nested_read = state.add_read('A_matmul_B_nested')
 
 # for e in state.out_edges(nested_sdfg_node):
@@ -276,10 +280,10 @@ nested_initstate.add_edge(
 # matmul state
 # nested_state.add_array('_A', shape=[M, K], dtype=dace.float64, storage=dace.StorageType.Default)
 # nested_sdfg.add_array('_B', shape=[K, N], dtype=dace.float64, storage=dace.StorageType.Default)
-nested_sdfg.add_datadesc('input_A', desc_a)
-nested_sdfg.add_datadesc('input_B', desc_b)
-_A = nested_state.add_read('input_A')
-_B = nested_state.add_read('input_B')
+# nested_sdfg.add_datadesc('input_A', desc_a)
+# nested_sdfg.add_datadesc('input_B', desc_b)
+# _A = nested_state.add_read('input_A')
+# _B = nested_state.add_read('input_B')
 nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
 nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
 shared_memory_A = nested_state.add_access('shared_memory_A')
@@ -508,7 +512,7 @@ print()
 helpers.print_info("SDFG result: ", False)
 for i in range(16):
     for j in range(16):
-        print("%.2f" % C_test[i][j], end=" ")
+        print("%.2f" % C[i][j], end=" ")
     print()
 
 
