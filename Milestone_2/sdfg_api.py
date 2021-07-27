@@ -241,7 +241,7 @@ map_entry, map_exit = nested_initstate.add_map(
         dict(i='0:M', j='0:N'),
         schedule=dace.dtypes.ScheduleType.Default)
 
-tasklet = nested_initstate.add_tasklet('matmul_init', [], ['out'], 'out = 100') # TODO: replace with out = 0 once this works
+tasklet = nested_initstate.add_tasklet('matmul_init', [], ['out'], 'out = 0') # TODO: replace with out = 0 once this works
 
 nested_initstate.add_memlet_path(map_entry,
             tasklet,
@@ -287,12 +287,12 @@ nested_initstate.add_memlet_path(tasklet,
 tasklet = nested_state.add_tasklet('matrix_multiplication', ['__a', '__b'], ['__out'], '__out = (__a * __b)')
 
 map_entry, map_exit = nested_state.add_map(
-        'Thread_block_grid',
-        dict(i='0:M', j='0:N'),
+        'matmul_map',
+        dict(i='0:M', j='0:N', k='0:K'),
         schedule=dace.dtypes.ScheduleType.Default)
 
-nested_state.add_memlet_path(_A, map_entry, tasklet, dst_conn='__a', memlet=dace.Memlet(f"{_A.data}[i, 0]"))
-nested_state.add_memlet_path(_B, map_entry, tasklet, dst_conn='__b', memlet=dace.Memlet(f"{_B.data}[0, j]"))
+nested_state.add_memlet_path(_A, map_entry, tasklet, dst_conn='__a', memlet=dace.Memlet(f"{_A.data}[i, k]"))
+nested_state.add_memlet_path(_B, map_entry, tasklet, dst_conn='__b', memlet=dace.Memlet(f"{_B.data}[k, j]"))
 nested_state.add_memlet_path(tasklet, map_exit, A_matmul_B_nested_state, src_conn='__out', memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]", wcr='(lambda x, y: (x + y))'))
 
 # thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
