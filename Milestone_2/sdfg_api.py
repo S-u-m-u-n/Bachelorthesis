@@ -263,8 +263,8 @@ nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.th
 shared_memory_A = nested_state.add_access('shared_memory_A')
 shared_memory_B = nested_state.add_access('shared_memory_B')
 
-nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m, schedule.thread_tile_k], dtype=dace.float64, storage=dace.StorageType.Default)
-nested_sdfg.add_transient('register_storage_B', shape=[schedule.thread_tile_k, schedule.thread_tile_n], dtype=dace.float64, storage=dace.StorageType.Default)
+nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m, 1], dtype=dace.float64, storage=dace.StorageType.Default)
+nested_sdfg.add_transient('register_storage_B', shape=[1, schedule.thread_tile_n], dtype=dace.float64, storage=dace.StorageType.Default)
 nested_sdfg.add_transient('register_storage_C', shape=[schedule.thread_tile_m, schedule.thread_tile_n], dtype=dace.float64, storage=dace.StorageType.Default)
 register_storage_A = nested_state.add_access('register_storage_A')
 register_storage_B = nested_state.add_access('register_storage_B')
@@ -340,7 +340,7 @@ nested_state.add_memlet_path(register_storage_B, thread_map_entry, tasklet, dst_
 
 # nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, warp_map_entry, thread_tile_map_entry, map_entry, tasklet, dst_conn='__a', memlet=dace.Memlet(f"{_A.data}[i, k]"))
 # nested_state.add_memlet_path(_B, thread_block_grid_map_entry, K_tile_map_entry, warp_map_entry, thread_tile_map_entry, map_entry, tasklet, dst_conn='__b', memlet=dace.Memlet(f"{_B.data}[k, j]"))
-nested_state.add_memlet_path(tasklet, thread_map_exit, thread_K_map_exit, thread_tile_map_exit, warp_map_exit, K_tile_map_exit, thread_block_grid_map_exit, A_matmul_B_nested_state, src_conn='__out', memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[thread_block_i * size_thread_block_tile_m + thread_tile_i + i, thread_block_j * size_thread_block_tile_n +  + thread_tile_j + j]", wcr='(lambda x, y: (x + y))'))
+nested_state.add_memlet_path(tasklet, thread_map_exit, thread_K_map_exit, thread_tile_map_exit, warp_map_exit, K_tile_map_exit, thread_block_grid_map_exit, A_matmul_B_nested_state, src_conn='__out', memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[thread_block_i*size_thread_block_tile_m + thread_tile_i + i, thread_block_j*size_thread_block_tile_n + thread_tile_j + j]", wcr='(lambda x, y: (x + y))'))
 
 # ### From matrix to shared memory
 # nested_state.add_memlet_path(_A,
