@@ -271,18 +271,6 @@ shared_memory_B = nested_state.add_access('shared_memory_B')
 # register_storage_C = nested_state.add_access('register_storage_C')
 # register_storage_C.setzero = True
 
-# nested_sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
-# nested_sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
-# nested_sdfg.add_constant('size_K_tile', schedule.load_k)
-# nested_sdfg.add_constant('num_thread_blocks_m', int(M_example / schedule.thread_block_tile_m))
-# nested_sdfg.add_constant('num_thread_blocks_n', int(N_example / schedule.thread_block_tile_n))
-# nested_sdfg.add_constant('num_K_tiles', int(K_example / schedule.load_k))
-# nested_sdfg.add_constant('size_warp_tile_m', schedule.warp_tile_m)
-# nested_sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
-# nested_sdfg.add_constant('size_thread_tile_m', schedule.thread_tile_m)
-# nested_sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
-# nested_sdfg.add_constant('size_thread_tile_k', schedule.thread_tile_k) # = size_K_tile
-
 sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
 sdfg.add_constant('size_K_tile', schedule.load_k)
@@ -294,7 +282,6 @@ sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
 sdfg.add_constant('size_thread_tile_m', schedule.thread_tile_m)
 sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
 sdfg.add_constant('size_thread_tile_k', schedule.thread_tile_k) # = size_K_tile
-
 
 tasklet = nested_state.add_tasklet('matrix_multiplication', ['__a', '__b'], ['__out'], '__out = (__a * __b)')
 
