@@ -5,16 +5,16 @@ import math
 from Schedule import Schedule
 import helpers
 
-schedule = Schedule(load_k=1, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32,
+schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32,
                         thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640,
                         SWIZZLE_thread_block=2, SWIZZLE_thread_tile=True, split_k=2, double_buffering=False)
 
 M = dace.symbol('M')
 N = dace.symbol('N')
 K = dace.symbol('K')
-M_example = 640
-N_example = 640
-K_example = 640
+M_example = 128
+N_example = 128
+K_example = 128
 
 sdfg = dace.SDFG('gemm')
 state = sdfg.add_state(label='gemm_state')
@@ -471,10 +471,10 @@ C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
 print("Launching sdfg...")
 C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example, result=result)
 print(result)
-print(result[0][0])
-print(result[0][1])
-print(result[0][2])
-print(result[0][3])
+# print(result[0][0])
+# print(result[0][1])
+# print(result[0][2])
+# print(result[0][3])
 print('--')
 # print(C_test)
 # print('--')
