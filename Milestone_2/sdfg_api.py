@@ -268,8 +268,8 @@ nested_sdfg.add_transient('register_storage_B', shape=[1, schedule.thread_tile_n
 nested_sdfg.add_transient('register_storage_C', shape=[schedule.thread_tile_m, schedule.thread_tile_n], dtype=dace.float64, storage=dace.StorageType.Default)
 register_storage_A = nested_state.add_access('register_storage_A')
 register_storage_B = nested_state.add_access('register_storage_B')
-# register_storage_C = nested_state.add_access('register_storage_C')
-# register_storage_C.setzero = True
+register_storage_C = nested_state.add_access('register_storage_C')
+register_storage_C.setzero = True
 
 sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
@@ -324,7 +324,8 @@ nested_state.add_memlet_path(_B, thread_block_grid_map_entry, K_tile_map_entry, 
 nested_state.add_memlet_path(shared_memory_B, warp_map_entry, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, 'k, thread_tile_j:thread_tile_j+size_thread_tile_n')) # load size_thread_tile_n elements into register storage
 nested_state.add_memlet_path(register_storage_B, thread_map_entry, tasklet, dst_conn='__b', memlet=dace.Memlet(f"{register_storage_B.data}[0, j]"))
 
-nested_state.add_memlet_path(tasklet, thread_map_exit, thread_K_map_exit, thread_tile_map_exit, warp_map_exit, K_tile_map_exit, thread_block_grid_map_exit, A_matmul_B_nested_state, src_conn='__out', memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[thread_block_i*size_thread_block_tile_m + thread_tile_i + i, thread_block_j*size_thread_block_tile_n + thread_tile_j + j]", wcr='(lambda x, y: (x + y))'))
+nested_state.add_memlet_path(tasklet, thread_map_exit, thread_K_map_exit, register_storage_C, src_conn='__out', memlet=dace.Memlet(f"{register_storage_C.data}[i, j]"))
+nested_state.add_memlet_path(register_storage_C, thread_tile_map_exit, warp_map_exit, K_tile_map_exit, thread_block_grid_map_exit, A_matmul_B_nested_state, memlet=dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N', wcr_str='(lambda x, y: (x + y))'))
 
 # ### From matrix to shared memory
 # nested_state.add_memlet_path(_A,
