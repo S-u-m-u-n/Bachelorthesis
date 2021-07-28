@@ -281,7 +281,7 @@ sdfg.add_constant('size_warp_tile_m', schedule.warp_tile_m)
 sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
 sdfg.add_constant('size_thread_tile_m', schedule.thread_tile_m)
 sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
-sdfg.add_constant('size_thread_tile_k', schedule.thread_tile_k)
+sdfg.add_constant('size_thread_tile_k', schedule.thread_tile_k) # = size_K_tile
 
 
 tasklet = nested_state.add_tasklet('matrix_multiplication', ['__a', '__b'], ['__out'], '__out = (__a * __b)')
