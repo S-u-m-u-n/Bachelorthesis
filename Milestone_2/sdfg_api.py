@@ -23,13 +23,10 @@ nested_sdfg = dace.SDFG('nested_gemm')
 sdfg.add_array('A', shape=[M, K], dtype=dace.float64)
 sdfg.add_array('B', shape=[K, N], dtype=dace.float64)
 sdfg.add_array('C', shape=[M, N], dtype=dace.float64)
-# sdfg.add_array('result', shape=[M, N], dtype=dace.float64)
 A_in = state.add_read('A')
 B_in = state.add_read('B')
 C_in = state.add_read('C')
 C_out = state.add_write('C')
-# C_in = state.add_access('C')
-# result = state.add_write('result')
 
 sdfg.add_transient('gpu_A', shape=[M, K], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
 sdfg.add_transient('gpu_B', shape=[K, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
@@ -38,14 +35,8 @@ sdfg.add_transient('gpu_result', shape=[M, N], dtype=dace.float64, storage=dace.
 gpu_A = state.add_access('gpu_A')
 gpu_B = state.add_access('gpu_B')
 gpu_C = state.add_access('gpu_C')
-gpu_result = state.add_access('gpu_result') # add_access or add_write?
+gpu_result = state.add_access('gpu_result')
 
-# sdfg.add_constant('alpha', value=1.0, dtype=dace.float64)
-# sdfg.add_constant('beta', value=1.0, dtype=dace.float64)
-# alpha_in = state.add_read('alpha')
-# beta_in = state.add_read('beta')
-# sdfg.add_array('alpha', shape=[1], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
-# sdfg.add_array('beta', shape=[1], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
 sdfg.add_constant('alpha', 1.0)
 sdfg.add_constant('beta', 1.0)
 
@@ -148,11 +139,9 @@ state.add_memlet_path(tasklet,
                         src_conn='__out',
                         memlet=dace.Memlet(f"{gpu_result.data}[i, j]"))
 
-
 #########################################################
 # Create nested sdfg
 nested_sdfg_node = state.add_nested_sdfg(nested_sdfg, state, {'input_A', 'input_B'}, {'output'}, schedule=dace.ScheduleType.GPU_Default, symbol_mapping={"K": "K", "M": "M", "N": "N"})
-
 
 state.add_edge(
     gpu_A, None,
@@ -164,7 +153,6 @@ state.add_edge(
     nested_sdfg_node, 'input_B',
     memlet=dace.Memlet.simple(gpu_B.data, '0:K, 0:N'))
 
-# print(nested_sdfg_node.last_connector)
 state.add_edge(
     nested_sdfg_node, 'output', 
     A_matmul_B, None,
@@ -185,7 +173,7 @@ for e in state.in_edges(nested_sdfg_node):
     elif e.dst_conn == "input_B":
         desc_b = sdfg.arrays[e.data.data]
 
-for e in state.out_edges(nested_sdfg_node): # Can we find the connector without the edge?
+for e in state.out_edges(nested_sdfg_node):
     if e.src_conn == "output":
         desc_res = sdfg.arrays[e.data.data]
 
@@ -216,19 +204,16 @@ map_entry, map_exit = nested_initstate.add_map(
         dict(i='0:M', j='0:N'),
         schedule=dace.dtypes.ScheduleType.Default)
 
-tasklet = nested_initstate.add_tasklet('matmul_init', [], ['out'], 'out = 0') # TODO: replace with out = 0 once this works
+tasklet = nested_initstate.add_tasklet('matmul_init', [], ['out'], 'out = 0')
 
 nested_initstate.add_memlet_path(map_entry,
             tasklet,
-            # A_matmul_B_nested_initstate,
-            # src_conn='out',
-            memlet=dace.Memlet()) # TODO: can this be an empty Memlet???
+            memlet=dace.Memlet())
 
 nested_initstate.add_memlet_path(tasklet,
             map_exit,
             A_matmul_B_nested_initstate,
             src_conn='out',
-            # memlet=dace.Memlet.simple(A_matmul_B_nested_initstate.data, '0:M, 0:N'))
             memlet=dace.Memlet(f"{A_matmul_B_nested_initstate.data}[i, j]"))
 
 #########################################################
@@ -257,17 +242,6 @@ sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
 sdfg.add_constant('size_thread_tile_m', schedule.thread_tile_m)
 sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
 sdfg.add_constant('size_thread_tile_k', schedule.thread_tile_k) # = size_K_tile
-nested_sdfg.add_symbol('size_thread_block_tile_m', stype=dace.int32)
-nested_sdfg.add_symbol('size_thread_block_tile_n', stype=dace.int32)
-nested_sdfg.add_symbol('size_K_tile', stype=dace.int32)
-nested_sdfg.add_symbol('num_thread_blocks_m', stype=dace.int32)
-nested_sdfg.add_symbol('num_thread_blocks_n', stype=dace.int32)
-nested_sdfg.add_symbol('num_K_tiles', stype=dace.int32)
-nested_sdfg.add_symbol('size_warp_tile_m', stype=dace.int32)
-nested_sdfg.add_symbol('size_warp_tile_n', stype=dace.int32)
-nested_sdfg.add_symbol('size_thread_tile_m', stype=dace.int32)
-nested_sdfg.add_symbol('size_thread_tile_n', stype=dace.int32)
-nested_sdfg.add_symbol('size_thread_tile_k', stype=dace.int32) # = size_K_tile
 nested_sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 nested_sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
 nested_sdfg.add_constant('size_K_tile', schedule.load_k)
@@ -279,7 +253,6 @@ nested_sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
 nested_sdfg.add_constant('size_thread_tile_m', schedule.thread_tile_m)
 nested_sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
 nested_sdfg.add_constant('size_thread_tile_k', schedule.thread_tile_k) # = size_K_tile
-
 sdfg.add_symbol('size_thread_block_tile_m', stype=dace.int32)
 sdfg.add_symbol('size_thread_block_tile_n', stype=dace.int32)
 sdfg.add_symbol('size_K_tile', stype=dace.int32)
@@ -291,6 +264,17 @@ sdfg.add_symbol('size_warp_tile_n', stype=dace.int32)
 sdfg.add_symbol('size_thread_tile_m', stype=dace.int32)
 sdfg.add_symbol('size_thread_tile_n', stype=dace.int32)
 sdfg.add_symbol('size_thread_tile_k', stype=dace.int32) # = size_K_tile
+nested_sdfg.add_symbol('size_thread_block_tile_m', stype=dace.int32)
+nested_sdfg.add_symbol('size_thread_block_tile_n', stype=dace.int32)
+nested_sdfg.add_symbol('size_K_tile', stype=dace.int32)
+nested_sdfg.add_symbol('num_thread_blocks_m', stype=dace.int32)
+nested_sdfg.add_symbol('num_thread_blocks_n', stype=dace.int32)
+nested_sdfg.add_symbol('num_K_tiles', stype=dace.int32)
+nested_sdfg.add_symbol('size_warp_tile_m', stype=dace.int32)
+nested_sdfg.add_symbol('size_warp_tile_n', stype=dace.int32)
+nested_sdfg.add_symbol('size_thread_tile_m', stype=dace.int32)
+nested_sdfg.add_symbol('size_thread_tile_n', stype=dace.int32)
+nested_sdfg.add_symbol('size_thread_tile_k', stype=dace.int32) # = size_K_tile
 
 tasklet = nested_state.add_tasklet('matrix_multiplication', ['__a', '__b'], ['__out'], '__out = (__a * __b)')
 
@@ -371,7 +355,6 @@ helpers.print_info("Verifying results...", False)
 A = np.random.rand(M_example, K_example).astype(np.float64)
 B = np.random.rand(K_example, N_example).astype(np.float64)
 C = np.zeros((M_example, N_example)).astype(np.float64)
-# result = np.empty((M_example, N_example)).astype(np.float64)
 alpha = 1.0
 beta = 1.0
 
@@ -380,14 +363,13 @@ def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], 
 
 C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
 print("Launching sdfg...")
-C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example)
+csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example)
 print(C)
 # print(result[0][0])
 # print(result[0][1])
 # print(result[0][2])
 # print(result[0][3])
 print('--')
-print(C_test)
 
 # Can replace this with np.allclose(A, B)
 def areSame(A,B):
@@ -412,11 +394,11 @@ print()
 helpers.print_info("SDFG result: ", False)
 for i in range(16):
     for j in range(16):
-        print("%.2f" % result[i][j], end=" ")
+        print("%.2f" % C[i][j], end=" ")
     print()
 
 
-if areSame(C_correct, result):
+if areSame(C_correct, C):
     helpers.print_success("The SDFG is correct!", False)
 else:
     helpers.print_error("The SDFG is incorrect!", False)
