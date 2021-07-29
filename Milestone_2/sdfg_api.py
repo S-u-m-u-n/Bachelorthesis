@@ -5,6 +5,89 @@ import math
 from Schedule import Schedule
 import helpers
 
+parser = ArgumentParser()
+parser.add_argument("-v", "--verbose",
+                    dest='verbose',
+                    help="Explain what is being done. Default: False",
+                    action="store_true",
+                    default=False)
+parser.add_argument("-q", "--quiet",
+                    dest='quiet',
+                    help="Only print errors.",
+                    action="store_true",
+                    default=False)
+parser.add_argument("-c", "--colorless",
+                    dest='colorless',
+                    help="Does not print colors, useful when writing to a file.",
+                    action="store_true",
+                    default=False)
+parser.add_argument("-g", "--gpu-type",
+                    dest='gpu_type',
+                    help="use this to specify the gpu type (\"NVIDIA\" or \"AMD\" or \"default\" (skips query)). Default: default",
+                    action="store",
+                    default="default")
+parser.add_argument("-M", type=int, dest='M', nargs="?", default=640)
+parser.add_argument("-K", type=int, dest='K', nargs="?", default=640)
+parser.add_argument("-N", type=int, dest='N', nargs="?", default=640)
+parser.add_argument("--alpha", type=np.float64, dest='alpha', nargs="?", default=1.0)
+parser.add_argument("--beta", type=np.float64, dest='beta', nargs="?", default=1.0)
+parser.add_argument("-r", "--repetitions", type=int, dest='repetitions', nargs="?", default=1)
+parser.add_argument("--version",
+                    choices=['dace' 'cublas'],
+                    default='dace',
+                    help='''Different available versions:
+dace: Transform `matmul` to a reasonably-optimized version for GPU;
+cublas: Run `matmul` with the CUBLAS library node implementation.''')
+parser.add_argument('-p', '--precision',
+                    dest='precision',
+                    choices=['16', '32', '64', '128'],
+                    default='64',
+                    help="Specify bit precision (16, 32, 64 or 128) - currently unsupported.")
+parser.add_argument('--verify',
+                    dest='verification',
+                    help="Verify results. Default: True",
+                    action="store_false",
+                    default=True)
+parser.add_argument('--all-optimizations',
+                    dest='all_optimizations',
+                    help="Use all possible optimizations",
+                    action="store_true",
+                    default=False)
+parser.add_argument('--split-k',
+                    dest='split_k',
+                    help="Use Split K",
+                    action="store_true",
+                    default=False)
+parser.add_argument('--swizzle-thread-blocks',
+                    dest='swizzle_thread_blocks',
+                    help="Use swizzle on the thread blocks",
+                    action="store_true",
+                    default=False)
+parser.add_argument('--swizzle-threads',
+                    dest='swizzle_threads',
+                    help="Use swizzle on the threads",
+                    action="store_true",
+                    default=False)
+parser.add_argument('--vectorization',
+                    dest='vectorization',
+                    help="Use vectorization",
+                    action="store_true",
+                    default=False)
+parser.add_argument('--double-buffering',
+                    dest='double_buffering',
+                    help="Use double buffering",
+                    action="store_true",
+                    default=False)
+
+args = parser.parse_args()
+if args.verbose:
+    helpers.print_info("Program launched with the following arguments: " + str(args), args.colorless)
+
+
+
+
+
+
 schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32,
                         thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640,
                         SWIZZLE_thread_block=2, SWIZZLE_thread_tile=True, split_k=2, double_buffering=False)
@@ -295,7 +378,7 @@ warp_map_entry, warp_map_exit = nested_state.add_map(
 
 thread_tile_map_entry, thread_tile_map_exit = nested_state.add_map(
         'Thread_tile',
-        dict(thread_tile_i='warp_i:warp_i+size_warp_tile_m:size_thread_tile_m', thread_tile_j='warp_j:warp_j+size_warp_tile_n:size_thread_tile_n'),
+        dict(thread_tile_i='0:size_warp_tile_m:size_thread_tile_m', thread_tile_j='0:size_warp_tile_n:size_thread_tile_n'),
         schedule=dace.dtypes.ScheduleType.Sequential)
 
 thread_K_map_entry, thread_K_map_exit = nested_state.add_map(
@@ -313,7 +396,7 @@ thread_map_entry, thread_map_exit = nested_state.add_map(
 # _A -> shared_memory_A
 nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, 'thread_block_i*size_thread_block_tile_m:thread_block_i*size_thread_block_tile_m+size_thread_block_tile_m, k_tile*size_K_tile:k_tile*size_K_tile+size_K_tile'))
 # shared_memory_A -> register_storage_A
-nested_state.add_memlet_path(shared_memory_A, warp_map_entry, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, 'thread_tile_i:thread_tile_i+size_thread_tile_m, k')) # load size_thread_tile_m elements into register storage
+nested_state.add_memlet_path(shared_memory_A, warp_map_entry, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, 'warp_i+thread_tile_i:warp_i+thread_tile_i+size_thread_tile_m, k')) # load size_thread_tile_m elements into register storage
 # register_storage_A -> tasklet
 nested_state.add_memlet_path(register_storage_A, thread_map_entry, tasklet, dst_conn='__a', memlet=dace.Memlet(f"{register_storage_A.data}[i, 0]"))
 
@@ -321,7 +404,7 @@ nested_state.add_memlet_path(register_storage_A, thread_map_entry, tasklet, dst_
 # _B -> shared_memory_B
 nested_state.add_memlet_path(_B, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_B, memlet=dace.Memlet.simple(_B.data, 'k_tile*size_K_tile:k_tile*size_K_tile+size_K_tile, thread_block_j*size_thread_block_tile_n:thread_block_j*size_thread_block_tile_n+size_thread_block_tile_n'))
 # shared_memory_B -> register_storage_B
-nested_state.add_memlet_path(shared_memory_B, warp_map_entry, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, 'k, thread_tile_j:thread_tile_j+size_thread_tile_n')) # load size_thread_tile_n elements into register storage
+nested_state.add_memlet_path(shared_memory_B, warp_map_entry, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, 'k, warp_j+thread_tile_j:warp_j+thread_tile_j+size_thread_tile_n')) # load size_thread_tile_n elements into register storage
 # register_storage_B -> tasklet
 nested_state.add_memlet_path(register_storage_B, thread_map_entry, tasklet, dst_conn='__b', memlet=dace.Memlet(f"{register_storage_B.data}[0, j]"))
 
@@ -336,7 +419,7 @@ nested_state.add_memlet_path(register_storage_C,
                         thread_block_grid_map_exit,
                         A_matmul_B_nested_state,
                         memlet=dace.Memlet.simple(A_matmul_B_nested_state.data,
-                                    'thread_block_i*size_thread_block_tile_m + thread_tile_i:thread_block_i*size_thread_block_tile_m + thread_tile_i + size_thread_tile_m, thread_block_j*size_thread_block_tile_n + thread_tile_j:thread_block_j*size_thread_block_tile_n + thread_tile_j + size_thread_tile_n',
+                                    'thread_block_i*size_thread_block_tile_m + warp_i + thread_tile_i:thread_block_i*size_thread_block_tile_m + warp_i + thread_tile_i + size_thread_tile_m, thread_block_j*size_thread_block_tile_n + warp_j + thread_tile_j:thread_block_j*size_thread_block_tile_n + warp_j + thread_tile_j + size_thread_tile_n',
                                     wcr_str='(lambda x, y: (x + y))'))
 
 nested_sdfg.fill_scope_connectors()
@@ -397,8 +480,7 @@ for i in range(16):
         print("%.2f" % C[i][j], end=" ")
     print()
 
-
-if areSame(C_correct, C):
+if args.verify and areSame(C_correct, C):
     helpers.print_success("The SDFG is correct!", False)
 else:
     helpers.print_error("The SDFG is incorrect!", False)
