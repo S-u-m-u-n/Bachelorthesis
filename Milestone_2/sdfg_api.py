@@ -450,6 +450,7 @@ nested_state.add_memlet_path(shared_memory_B, warp_map_entry, thread_tile_map_en
 # register_storage_B -> tasklet
 nested_state.add_memlet_path(register_storage_B, thread_map_entry, tasklet, dst_conn='__b', memlet=dace.Memlet(f"{register_storage_B.data}[0, j]"))
 
+
 ### Data Movement: output
 # tasklet -> register_storage_C
 nested_state.add_memlet_path(tasklet, thread_map_exit, thread_K_map_exit, register_storage_C, src_conn='__out', memlet=dace.Memlet(f"{register_storage_C.data}[i, j]", wcr='(lambda x, y: (x + y))'))
