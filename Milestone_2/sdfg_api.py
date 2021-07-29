@@ -449,10 +449,10 @@ nested_state.add_memlet_path(_B, thread_block_grid_map_entry, K_tile_map_entry, 
 # nested_state.add_memlet_path(shared_memory_B, warp_map_entry, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, 'k, warp_j+SWIZZLE_y(thread_tile_j):warp_j+SWIZZLE_y(thread_tile_j)+size_thread_tile_n')) # load size_thread_tile_n elements into register storage
 nested_state.add_memlet_path(shared_memory_B, warp_map_entry, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B,
 '''k, warp_j + size_thread_tile_n * bitwise_and(
-thread_tile_j / size_thread_tile_n // 2,
+(thread_tile_j / size_thread_tile_n) // 2,
 warp_tile_height - 1)
 :warp_j + size_thread_tile_n * bitwise_and(
-thread_tile_j / size_thread_tile_n // 2,
+(thread_tile_j / size_thread_tile_n) // 2,
 warp_tile_height - 1)
 +size_thread_tile_n''')) # load size_thread_tile_n elements into register storage
 # register_storage_B -> tasklet
