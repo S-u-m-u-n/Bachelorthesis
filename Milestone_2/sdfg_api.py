@@ -23,11 +23,13 @@ nested_sdfg = dace.SDFG('nested_gemm')
 sdfg.add_array('A', shape=[M, K], dtype=dace.float64)
 sdfg.add_array('B', shape=[K, N], dtype=dace.float64)
 sdfg.add_array('C', shape=[M, N], dtype=dace.float64)
-sdfg.add_array('result', shape=[M, N], dtype=dace.float64)
+# sdfg.add_array('result', shape=[M, N], dtype=dace.float64)
 A_in = state.add_read('A')
 B_in = state.add_read('B')
 C_in = state.add_read('C')
-result = state.add_write('result')
+C_out = state.add_write('C')
+# C_in = state.add_access('C')
+# result = state.add_write('result')
 
 sdfg.add_transient('gpu_A', shape=[M, K], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
 sdfg.add_transient('gpu_B', shape=[K, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
@@ -74,7 +76,7 @@ state.add_edge(
 
 state.add_edge(
     gpu_result, None,
-    result, None,
+    C_out, None,
     memlet=dace.Memlet.simple(gpu_result.data, '0:M, 0:N'))
 
 #########################################################
@@ -91,12 +93,6 @@ state.add_memlet_path(gpu_C,
                         tasklet,
                         dst_conn='__in',
                         memlet=dace.Memlet(f"{gpu_C.data}[i, j]"))
-
-# state.add_memlet_path(beta_in,
-#                         map_entry,
-#                         tasklet,
-#                         dst_conn='__in2',
-#                         memlet=dace.Memlet(f"{beta_in.data}[0]"))
 
 state.add_memlet_path(tasklet,
                         map_exit,
@@ -118,12 +114,6 @@ state.add_memlet_path(A_matmul_B,
                         tasklet,
                         dst_conn='__in',
                         memlet=dace.Memlet(f"{A_matmul_B.data}[i, j]"))
-
-# state.add_memlet_path(alpha_in,
-#                         map_entry,
-#                         tasklet,
-#                         dst_conn='__in2',
-#                         memlet=dace.Memlet(f"{alpha_in.data}[0]"))
 
 state.add_memlet_path(tasklet,
                         map_exit,
@@ -178,7 +168,7 @@ state.add_edge(
 state.add_edge(
     nested_sdfg_node, 'output', 
     A_matmul_B, None,
-    memlet=dace.Memlet.simple(A_matmul_B.data, '0:M, 0:N')) # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
+    memlet=dace.Memlet.simple(A_matmul_B.data, '0:M, 0:N'))
 
 nested_initstate = nested_sdfg.add_state(label='nested_initstate')
 nested_initstate.executions = 1
@@ -188,9 +178,6 @@ nested_state.executions = 1
 nested_state.dynamic_executions = False
 
 nested_sdfg.add_edge(nested_initstate, nested_state, dace.InterstateEdge()) # connect the two states
-# print(sdfg.start_state)
-# print(nested_sdfg.start_state)
-# nested_sdfg.
 
 for e in state.in_edges(nested_sdfg_node):
     if e.dst_conn == "input_A":
@@ -202,9 +189,6 @@ for e in state.out_edges(nested_sdfg_node): # Can we find the connector without 
     if e.src_conn == "output":
         desc_res = sdfg.arrays[e.data.data]
 
-# print(nested_sdfg_node.out_connectors)
-
-# print(desc_res)
 desc_a = desc_a.clone()
 desc_a.transient = False
 desc_a.storage = dace.StorageType.Default
@@ -220,19 +204,10 @@ input_A = nested_sdfg.add_datadesc('input_A', desc_a)
 input_B = nested_sdfg.add_datadesc('input_B', desc_b)
 output = nested_sdfg.add_datadesc('output', desc_res)
 
-
 _A = nested_state.add_read(input_A)
 _B = nested_state.add_read(input_B)
 A_matmul_B_nested_initstate = nested_initstate.add_write(output)
 A_matmul_B_nested_state = nested_state.add_write(output)
-
-# A_matmul_B_nested_read = state.add_read('A_matmul_B_nested')
-
-# for e in state.out_edges(nested_sdfg_node):
-    # if e.src_conn == "output":
-        # desc_res = e
-
-# desc_res.memlet = dace.Memlet.simple(A_matmul_B_nested_state.data, '0:M, 0:N') # A_matmul_B.data or A_matmul_B_nested.data or A_matmul_B_nested_state.data?
 
 #########################################################
 ### matmul init state
@@ -396,7 +371,7 @@ helpers.print_info("Verifying results...", False)
 A = np.random.rand(M_example, K_example).astype(np.float64)
 B = np.random.rand(K_example, N_example).astype(np.float64)
 C = np.zeros((M_example, N_example)).astype(np.float64)
-result = np.empty((M_example, N_example)).astype(np.float64)
+# result = np.empty((M_example, N_example)).astype(np.float64)
 alpha = 1.0
 beta = 1.0
 
@@ -405,16 +380,14 @@ def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], 
 
 C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
 print("Launching sdfg...")
-C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example, result=result)
-print(result)
+C_test = csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example)
+print(C)
 # print(result[0][0])
 # print(result[0][1])
 # print(result[0][2])
 # print(result[0][3])
 print('--')
-# print(C_test)
-# print('--')
-# print(result)
+print(C_test)
 
 # Can replace this with np.allclose(A, B)
 def areSame(A,B):
