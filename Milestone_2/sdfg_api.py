@@ -85,11 +85,7 @@ if args.verbose:
     helpers.print_info("Program launched with the following arguments: " + str(args), args.colorless)
 
 
-
-
-
-
-schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32,
+schedule = Schedule(load_k=8, thread_tile_m=4, thread_tile_n=4, thread_tile_k=8, warp_tile_m=32, warp_tile_n=16,
                         thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640,
                         SWIZZLE_thread_block=2, SWIZZLE_thread_tile=True, split_k=2, double_buffering=False)
 
