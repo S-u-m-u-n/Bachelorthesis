@@ -11,14 +11,18 @@ A = np.array([
     [28, 29, 30, 31]
 ])
 
-def SWIZZLE_x(idx): # LaneIdy
-#     # return (idx >> 1) & 7
+C = np.empty((8, 4))
+
+# (y, x)
+def SWIZZLE_y(idx): # LaneIdy
+    return (idx >> 1) & 7
+    # return (idx >> 2) & 7
     # return 2 * (idx >> 2) + (idx & 1)
-    return 2 * (idx >> 2) + (idx & 1)
-def SWIZZLE_y(idx): # LaneIdx
-    # return ((idx & 16) >> 3) | (idx & 1)
+    # return (idx >> 2) | (idx & 3) 
+def SWIZZLE_x(idx): # LaneIdx
+    return ((idx & 16) >> 3) | (idx & 1)
     # return 16 * ((idx >> 1) & 1)
-    return 16 * ((idx >> 1) & 1)
+    # return ((idx & 16) >> 3) | (idx & 1)
 
 # print(SWIZZLE_x(0))
 # print(SWIZZLE_x(1))
@@ -52,17 +56,43 @@ def SWIZZLE_y(idx): # LaneIdx
 #     print("|")
 # print("-" * 3 * 8 + "-")
 
+# for x in range (0, 8):
+#     # print("-" * 3 * 8 + "-")
+#     for y in range (0, 4):
+#         idx = x * 4 + y
+#         print("old index = (" + str(x) + ", " + str(y) + ")")
+#         print("SWIZZLE_x(" + str(x) + ") = " + str(SWIZZLE_x(idx)))
+#         print("SWIZZLE_y(" + str(y) + ") = " + str(SWIZZLE_y(idx)))
+#         print("new index = (" + str(SWIZZLE_x(idx)) + ", " + str(SWIZZLE_y(idx)) + ")")
+#         print("--")
+#         # print("| " + str(SWIZZLE_x(x * 4 + y) * 4 + SWIZZLE_y(x * 4 + y)) + " ", end="")
+#     # print("|")
+# print("-" * 3 * 8 + "-")
+
+for x in range (0, 8):
+    print("-" * 3 * 8 + "-")
+    for y in range (0, 4):
+        idx = x * 4 + y
+        print(" (" + str(x) + ", " + str(y) + ") ", end="")
+    print("|")
+print("-" * 3 * 8 + "-")
+
 for x in range (0, 8):
     # print("-" * 3 * 8 + "-")
     for y in range (0, 4):
         idx = x * 4 + y
-        print("old index = " + str(idx))
-        print("SWIZZLE_x(" + str(x) + ") = " + str(SWIZZLE_x(idx)))
-        print("SWIZZLE_y(" + str(y) + ") = " + str(SWIZZLE_y(idx)))
-        print("new index = " + str(SWIZZLE_x(idx) + SWIZZLE_y(idx)))
-        print("--")
-        # print("| " + str(SWIZZLE_x(x * 4 + y) * 4 + SWIZZLE_y(x * 4 + y)) + " ", end="")
+        # print(" (" + str(SWIZZLE_y(idx)) + ", " + str(SWIZZLE_x(idx)) + ") ", end="")
+        C[SWIZZLE_y(idx)][SWIZZLE_x(idx)] = A[SWIZZLE_y(idx)][SWIZZLE_x(idx)]
+        # print(" (" + str(A[SWIZZLE_y(idx)][SWIZZLE_x(idx)]), end="")
     # print("|")
+# print("-" * 3 * 8 + "-")
+
+for x in range (0, 8):
+    print("-" * 3 * 8 + "-")
+    for y in range (0, 4):
+        idx = x * 4 + y
+        print(" (" + str(C[x][y]) + ") ", end="")
+    print("|")
 print("-" * 3 * 8 + "-")
 
 # for x in range (0, 8):
