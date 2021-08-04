@@ -357,7 +357,7 @@ right_shift = sy.Function('right_shift')
 nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, 'thread_block_i*size_thread_block_tile_m:thread_block_i*size_thread_block_tile_m+size_thread_block_tile_m, k_tile*size_K_tile:k_tile*size_K_tile+size_K_tile'))
 # shared_memory_A -> register_storage_A
 nested_state.add_memlet_path(shared_memory_A, warp_map_entry, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, # load size_thread_tile_m elements into register storage
-# 'warp_i+thread_tile_i:warp_i+thread_tile_i+size_thread_tile_m, k' if not args.swizzle_threads else
+'warp_i+thread_tile_i:warp_i+thread_tile_i+size_thread_tile_m, k' if not args.swizzle_threads else
 '''warp_i + size_thread_tile_m * (bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7))
 :warp_i + size_thread_tile_m * (bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7))
 +size_thread_tile_m, k''')) # load size_thread_tile_m elements into register storage
