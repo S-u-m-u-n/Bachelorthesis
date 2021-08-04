@@ -85,7 +85,7 @@ if args.verbose:
     helpers.print_info("Program launched with the following arguments: " + str(args), args.colorless)
 
 
-schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32,
+schedule = Schedule(load_k=2, thread_tile_m=2, thread_tile_n=2, thread_tile_k=2, warp_tile_m=64, warp_tile_n=32,
                         thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640,
                         SWIZZLE_thread_block=2, SWIZZLE_thread_tile=True, split_k=2, double_buffering=False)
 
@@ -369,11 +369,14 @@ thread_map_entry, thread_map_exit = nested_state.add_map(
         unroll=True,
         schedule=dace.dtypes.ScheduleType.Sequential)
 
+if args.swizzle_threads:
+    bitwise_and = sy.Function('bitwise_and')
+    bitwise_or = sy.Function('bitwise_or')
+    right_shift = sy.Function('right_shift')
 
-# if args.swizzle_threads:
-bitwise_and = sy.Function('bitwise_and')
-bitwise_or = sy.Function('bitwise_or')
-right_shift = sy.Function('right_shift')
+# warp_i + size_thread_tile_m * (bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7))
+# warp_j + size_thread_tile_n * (bitwise_or(right_shift(bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1)))
+
 
 ### Data Movement: _A
 # _A -> shared_memory_A
@@ -410,12 +413,13 @@ nested_state.add_memlet_path(register_storage_C,
                         thread_block_grid_map_exit,
                         A_matmul_B_nested_state,
                         memlet=dace.Memlet.simple(A_matmul_B_nested_state.data,
-'thread_block_i*size_thread_block_tile_m+warp_i + thread_tile_i:thread_block_i*size_thread_block_tile_m+warp_i + thread_tile_i + size_thread_tile_m, thread_block_j*size_thread_block_tile_n+warp_j + thread_tile_j:thread_block_j*size_thread_block_tile_n+warp_j + thread_tile_j + size_thread_tile_n' if not args.swizzle_threads else
+'''thread_block_i*size_thread_block_tile_m+warp_i + thread_tile_i
+:thread_block_i*size_thread_block_tile_m+warp_i + thread_tile_i + size_thread_tile_m
+, thread_block_j*size_thread_block_tile_n+warp_j + thread_tile_j:thread_block_j*size_thread_block_tile_n+warp_j + thread_tile_j + size_thread_tile_n''' if not args.swizzle_threads else
 '''thread_block_i*size_thread_block_tile_m+warp_i + size_thread_tile_m * (bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7))
 :thread_block_i*size_thread_block_tile_m+warp_i + size_thread_tile_m * (bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7))
 + size_thread_tile_m
-,
-thread_block_j*size_thread_block_tile_n+warp_j + size_thread_tile_n * (bitwise_or(right_shift(bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1)))
+,thread_block_j*size_thread_block_tile_n+warp_j + size_thread_tile_n * (bitwise_or(right_shift(bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1)))
 :thread_block_j*size_thread_block_tile_n+warp_j + size_thread_tile_n * (bitwise_or(right_shift(bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1)))
 + size_thread_tile_n''',
                         wcr_str='(lambda x, y: (x + y))'))
@@ -443,7 +447,7 @@ def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], 
     return alpha * (A @ B) + beta * C
 
 C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
-print("Launching sdfg...")
+print("Running sdfg...")
 csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example)
 print(C)
 # print(result[0][0])
