@@ -356,7 +356,7 @@ warp_map_entry, warp_map_exit = nested_state.add_map(
 thread_tile_map_entry, thread_tile_map_exit = nested_state.add_map(
         'Thread_tile',
         dict(thread_tile_i='0:size_warp_tile_m:size_thread_tile_m', thread_tile_j='0:size_warp_tile_n:size_thread_tile_n'),
-        schedule=dace.dtypes.ScheduleType.GPU_Device) # What Schedule should this be???
+        schedule=dace.dtypes.ScheduleType.Default) # What Schedule should this be???
 
 thread_K_map_entry, thread_K_map_exit = nested_state.add_map(
         'Thread_K',
