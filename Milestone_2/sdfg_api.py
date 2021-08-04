@@ -335,6 +335,30 @@ nested_sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
 nested_sdfg.add_constant('size_thread_tile_k', schedule.thread_tile_k) # = size_K_tile
 nested_sdfg.add_constant('warp_tile_width', math.ceil(schedule.warp_tile_n / schedule.thread_tile_n))
 nested_sdfg.add_constant('warp_tile_height', math.ceil(schedule.warp_tile_m / schedule.thread_tile_m))
+sdfg.add_symbol('size_thread_block_tile_m', stype=dace.int32)
+sdfg.add_symbol('size_thread_block_tile_n', stype=dace.int32)
+sdfg.add_symbol('size_K_tile', stype=dace.int32)
+sdfg.add_symbol('num_thread_blocks_m', stype=dace.int32)
+sdfg.add_symbol('num_thread_blocks_n', stype=dace.int32)
+sdfg.add_symbol('num_K_tiles', stype=dace.int32)
+sdfg.add_symbol('size_warp_tile_m', stype=dace.int32)
+sdfg.add_symbol('size_warp_tile_n', stype=dace.int32)
+sdfg.add_symbol('size_thread_tile_m', stype=dace.int32)
+sdfg.add_symbol('size_thread_tile_n', stype=dace.int32)
+sdfg.add_symbol('size_thread_tile_k', stype=dace.int32) # = size_K_tile
+nested_sdfg.add_symbol('size_thread_block_tile_m', stype=dace.int32)
+nested_sdfg.add_symbol('size_thread_block_tile_n', stype=dace.int32)
+nested_sdfg.add_symbol('size_K_tile', stype=dace.int32)
+nested_sdfg.add_symbol('num_thread_blocks_m', stype=dace.int32)
+nested_sdfg.add_symbol('num_thread_blocks_n', stype=dace.int32)
+nested_sdfg.add_symbol('num_K_tiles', stype=dace.int32)
+nested_sdfg.add_symbol('size_warp_tile_m', stype=dace.int32)
+nested_sdfg.add_symbol('size_warp_tile_n', stype=dace.int32)
+nested_sdfg.add_symbol('size_thread_tile_m', stype=dace.int32)
+nested_sdfg.add_symbol('size_thread_tile_n', stype=dace.int32)
+nested_sdfg.add_symbol('size_thread_tile_k', stype=dace.int32) # = size_K_tile
+nested_sdfg.add_symbol('warp_tile_width', stype=dace.int32)
+nested_sdfg.add_symbol('warp_tile_height', stype=dace.int32)
 
 tasklet = nested_state.add_tasklet('matrix_multiplication', ['__a', '__b'], ['__out'], '__out = (__a * __b)')
 
@@ -370,10 +394,10 @@ thread_map_entry, thread_map_exit = nested_state.add_map(
         schedule=dace.dtypes.ScheduleType.Sequential)
 
 
-if args.swizzle_threads:
-    bitwise_and = sy.Function('bitwise_and')
-    bitwise_or = sy.Function('bitwise_or')
-    right_shift = sy.Function('right_shift')
+# if args.swizzle_threads:
+bitwise_and = sy.Function('bitwise_and')
+bitwise_or = sy.Function('bitwise_or')
+right_shift = sy.Function('right_shift')
 
 ### Data Movement: _A
 # _A -> shared_memory_A
