@@ -343,13 +343,10 @@ thread_map_entry, thread_map_exit = nested_state.add_map(
         unroll=True,
         schedule=dace.dtypes.ScheduleType.Sequential)
 
-# if args.swizzle_threads:
-bitwise_and = sy.Function('bitwise_and')
-bitwise_or = sy.Function('bitwise_or')
-right_shift = sy.Function('right_shift')
-
-# warp_i + size_thread_tile_m * (bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7))
-# warp_j + size_thread_tile_n * (bitwise_or(right_shift(bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1)))
+if args.swizzle_threads:
+    bitwise_and = sy.Function('bitwise_and')
+    bitwise_or = sy.Function('bitwise_or')
+    right_shift = sy.Function('right_shift')
 
 ### Data Movement: _A
 # _A -> shared_memory_A
