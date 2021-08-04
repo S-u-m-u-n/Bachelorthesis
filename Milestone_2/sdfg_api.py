@@ -370,10 +370,10 @@ thread_map_entry, thread_map_exit = nested_state.add_map(
         schedule=dace.dtypes.ScheduleType.Sequential)
 
 
-# if args.swizzle_threads:
-#     bitwise_and = sy.Function('bitwise_and')
-#     bitwise_or = sy.Function('bitwise_or')
-#     right_shift = sy.Function('right_shift')
+if args.swizzle_threads:
+    bitwise_and = sy.Function('bitwise_and')
+    bitwise_or = sy.Function('bitwise_or')
+    right_shift = sy.Function('right_shift')
     # def SWIZZLE_x(idx): # LaneIdx
     #     # return ((idx & (warp_tile_height * warp_tile_width // 2)) >> (warp_tile_width - 1)) | (idx & 1)
     #     idx /= size_thread_tile_m
