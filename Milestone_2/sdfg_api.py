@@ -335,30 +335,6 @@ nested_sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
 nested_sdfg.add_constant('size_thread_tile_k', schedule.thread_tile_k) # = size_K_tile
 nested_sdfg.add_constant('warp_tile_width', math.ceil(schedule.warp_tile_n / schedule.thread_tile_n))
 nested_sdfg.add_constant('warp_tile_height', math.ceil(schedule.warp_tile_m / schedule.thread_tile_m))
-sdfg.add_symbol('size_thread_block_tile_m', stype=dace.int32)
-sdfg.add_symbol('size_thread_block_tile_n', stype=dace.int32)
-sdfg.add_symbol('size_K_tile', stype=dace.int32)
-sdfg.add_symbol('num_thread_blocks_m', stype=dace.int32)
-sdfg.add_symbol('num_thread_blocks_n', stype=dace.int32)
-sdfg.add_symbol('num_K_tiles', stype=dace.int32)
-sdfg.add_symbol('size_warp_tile_m', stype=dace.int32)
-sdfg.add_symbol('size_warp_tile_n', stype=dace.int32)
-sdfg.add_symbol('size_thread_tile_m', stype=dace.int32)
-sdfg.add_symbol('size_thread_tile_n', stype=dace.int32)
-sdfg.add_symbol('size_thread_tile_k', stype=dace.int32) # = size_K_tile
-nested_sdfg.add_symbol('size_thread_block_tile_m', stype=dace.int32)
-nested_sdfg.add_symbol('size_thread_block_tile_n', stype=dace.int32)
-nested_sdfg.add_symbol('size_K_tile', stype=dace.int32)
-nested_sdfg.add_symbol('num_thread_blocks_m', stype=dace.int32)
-nested_sdfg.add_symbol('num_thread_blocks_n', stype=dace.int32)
-nested_sdfg.add_symbol('num_K_tiles', stype=dace.int32)
-nested_sdfg.add_symbol('size_warp_tile_m', stype=dace.int32)
-nested_sdfg.add_symbol('size_warp_tile_n', stype=dace.int32)
-nested_sdfg.add_symbol('size_thread_tile_m', stype=dace.int32)
-nested_sdfg.add_symbol('size_thread_tile_n', stype=dace.int32)
-nested_sdfg.add_symbol('size_thread_tile_k', stype=dace.int32) # = size_K_tile
-nested_sdfg.add_symbol('warp_tile_width', stype=dace.int32)
-nested_sdfg.add_symbol('warp_tile_height', stype=dace.int32)
 
 tasklet = nested_state.add_tasklet('matrix_multiplication', ['__a', '__b'], ['__out'], '__out = (__a * __b)')
 
@@ -380,7 +356,7 @@ warp_map_entry, warp_map_exit = nested_state.add_map(
 thread_tile_map_entry, thread_tile_map_exit = nested_state.add_map(
         'Thread_tile',
         dict(thread_tile_i='0:size_warp_tile_m:size_thread_tile_m', thread_tile_j='0:size_warp_tile_n:size_thread_tile_n'),
-        schedule=dace.dtypes.ScheduleType.Default) # What Schedule should this be???
+        schedule=dace.dtypes.ScheduleType.Sequential) # What Schedule should this be???
 
 thread_K_map_entry, thread_K_map_exit = nested_state.add_map(
         'Thread_K',
@@ -404,7 +380,7 @@ right_shift = sy.Function('right_shift')
 nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, 'thread_block_i*size_thread_block_tile_m:thread_block_i*size_thread_block_tile_m+size_thread_block_tile_m, k_tile*size_K_tile:k_tile*size_K_tile+size_K_tile'))
 # shared_memory_A -> register_storage_A
 nested_state.add_memlet_path(shared_memory_A, warp_map_entry, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, # load size_thread_tile_m elements into register storage
-# 'warp_i+thread_tile_i:warp_i+thread_tile_i+size_thread_tile_m, k' if not args.swizzle_threads else
+'warp_i+thread_tile_i:warp_i+thread_tile_i+size_thread_tile_m, k' if not args.swizzle_threads else
 '''warp_i + size_thread_tile_m * (bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7))
 :warp_i + size_thread_tile_m * (bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7))
 +size_thread_tile_m, k''')) # load size_thread_tile_m elements into register storage
@@ -416,7 +392,7 @@ nested_state.add_memlet_path(register_storage_A, thread_map_entry, tasklet, dst_
 nested_state.add_memlet_path(_B, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_B, memlet=dace.Memlet.simple(_B.data, 'k_tile*size_K_tile:k_tile*size_K_tile+size_K_tile, thread_block_j*size_thread_block_tile_n:thread_block_j*size_thread_block_tile_n+size_thread_block_tile_n'))
 # shared_memory_B -> register_storage_B
 nested_state.add_memlet_path(shared_memory_B, warp_map_entry, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, # load size_thread_tile_n elements into register storage
-# 'k, warp_j+thread_tile_j:warp_j+thread_tile_j+size_thread_tile_n' if not args.swizzle_threads else
+'k, warp_j+thread_tile_j:warp_j+thread_tile_j+size_thread_tile_n' if not args.swizzle_threads else
 '''k, warp_j + size_thread_tile_n * (bitwise_or(right_shift(bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1)))
 :warp_j + size_thread_tile_n * (bitwise_or(right_shift(bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1)))
 # +size_thread_tile_n''')) # load size_thread_tile_n elements into register storage
@@ -434,7 +410,7 @@ nested_state.add_memlet_path(register_storage_C,
                         thread_block_grid_map_exit,
                         A_matmul_B_nested_state,
                         memlet=dace.Memlet.simple(A_matmul_B_nested_state.data,
-# 'thread_block_i*size_thread_block_tile_m+warp_i + thread_tile_i:thread_block_i*size_thread_block_tile_m+warp_i + thread_tile_i + size_thread_tile_m, thread_block_j*size_thread_block_tile_n+warp_j + thread_tile_j:thread_block_j*size_thread_block_tile_n+warp_j + thread_tile_j + size_thread_tile_n' if not args.swizzle_threads else
+'thread_block_i*size_thread_block_tile_m+warp_i + thread_tile_i:thread_block_i*size_thread_block_tile_m+warp_i + thread_tile_i + size_thread_tile_m, thread_block_j*size_thread_block_tile_n+warp_j + thread_tile_j:thread_block_j*size_thread_block_tile_n+warp_j + thread_tile_j + size_thread_tile_n' if not args.swizzle_threads else
 '''thread_block_i*size_thread_block_tile_m+warp_i + size_thread_tile_m * (bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7))
 :thread_block_i*size_thread_block_tile_m+warp_i + size_thread_tile_m * (bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7))
 + size_thread_tile_m
