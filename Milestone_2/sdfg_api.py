@@ -85,7 +85,7 @@ if args.verbose:
     helpers.print_info("Program launched with the following arguments: " + str(args), args.colorless)
 
 
-schedule = Schedule(load_k=2, thread_tile_m=2, thread_tile_n=2, thread_tile_k=2, warp_tile_m=16, warp_tile_n=8,
+schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32,
                         thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640,
                         SWIZZLE_thread_block=2, SWIZZLE_thread_tile=True, split_k=2, double_buffering=False)
 
@@ -130,25 +130,10 @@ A_matmul_B_times_alpha = state.add_write('A_matmul_B_times_alpha')
 
 #########################################################
 # Connect arrays to GPU transient and the GPU result transient to host array
-state.add_edge(
-    A_in, None,
-    gpu_A, None,
-    memlet=dace.Memlet.simple(A_in.data, '0:M, 0:K'))
-
-state.add_edge(
-    B_in, None,
-    gpu_B, None,
-    memlet=dace.Memlet.simple(B_in.data, '0:K, 0:N'))
-
-state.add_edge(
-    C_in, None,
-    gpu_C, None,
-    memlet=dace.Memlet.simple(C_in.data, '0:M, 0:N'))
-
-state.add_edge(
-    gpu_result, None,
-    C_out, None,
-    memlet=dace.Memlet.simple(gpu_result.data, '0:M, 0:N'))
+state.add_edge(A_in, None, gpu_A, None, memlet=dace.Memlet.simple(A_in.data, '0:M, 0:K'))
+state.add_edge(B_in, None, gpu_B, None, memlet=dace.Memlet.simple(B_in.data, '0:K, 0:N'))
+state.add_edge(C_in, None, gpu_C, None, memlet=dace.Memlet.simple(C_in.data, '0:M, 0:N'))
+state.add_edge(gpu_result, None, C_out, None, memlet=dace.Memlet.simple(gpu_result.data, '0:M, 0:N'))
 
 #########################################################
 # Multiply C with beta
@@ -223,20 +208,9 @@ state.add_memlet_path(tasklet,
 # Create nested sdfg
 nested_sdfg_node = state.add_nested_sdfg(nested_sdfg, state, {'input_A', 'input_B'}, {'output'}, schedule=dace.ScheduleType.GPU_Default, symbol_mapping={"K": "K", "M": "M", "N": "N"})
 
-state.add_edge(
-    gpu_A, None,
-    nested_sdfg_node, 'input_A',
-    memlet=dace.Memlet.simple(gpu_A.data, '0:M, 0:K'))
-
-state.add_edge(
-    gpu_B, None,
-    nested_sdfg_node, 'input_B',
-    memlet=dace.Memlet.simple(gpu_B.data, '0:K, 0:N'))
-
-state.add_edge(
-    nested_sdfg_node, 'output', 
-    A_matmul_B, None,
-    memlet=dace.Memlet.simple(A_matmul_B.data, '0:M, 0:N'))
+state.add_edge(gpu_A, None, nested_sdfg_node, 'input_A', memlet=dace.Memlet.simple(gpu_A.data, '0:M, 0:K'))
+state.add_edge(gpu_B, None, nested_sdfg_node, 'input_B', memlet=dace.Memlet.simple(gpu_B.data, '0:K, 0:N'))
+state.add_edge(nested_sdfg_node, 'output', A_matmul_B, None, memlet=dace.Memlet.simple(A_matmul_B.data, '0:M, 0:N'))
 
 nested_initstate = nested_sdfg.add_state(label='nested_initstate')
 nested_initstate.executions = 1
@@ -369,10 +343,10 @@ thread_map_entry, thread_map_exit = nested_state.add_map(
         unroll=True,
         schedule=dace.dtypes.ScheduleType.Sequential)
 
-if args.swizzle_threads:
-    bitwise_and = sy.Function('bitwise_and')
-    bitwise_or = sy.Function('bitwise_or')
-    right_shift = sy.Function('right_shift')
+# if args.swizzle_threads:
+bitwise_and = sy.Function('bitwise_and')
+bitwise_or = sy.Function('bitwise_or')
+right_shift = sy.Function('right_shift')
 
 # warp_i + size_thread_tile_m * (bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7))
 # warp_j + size_thread_tile_n * (bitwise_or(right_shift(bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1)))
@@ -383,7 +357,7 @@ if args.swizzle_threads:
 nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, 'thread_block_i*size_thread_block_tile_m:thread_block_i*size_thread_block_tile_m+size_thread_block_tile_m, k_tile*size_K_tile:k_tile*size_K_tile+size_K_tile'))
 # shared_memory_A -> register_storage_A
 nested_state.add_memlet_path(shared_memory_A, warp_map_entry, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, # load size_thread_tile_m elements into register storage
-'warp_i+thread_tile_i:warp_i+thread_tile_i+size_thread_tile_m, k' if not args.swizzle_threads else
+# 'warp_i+thread_tile_i:warp_i+thread_tile_i+size_thread_tile_m, k' if not args.swizzle_threads else
 '''warp_i + size_thread_tile_m * (bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7))
 :warp_i + size_thread_tile_m * (bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7))
 +size_thread_tile_m, k''')) # load size_thread_tile_m elements into register storage
@@ -450,10 +424,6 @@ C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
 print("Running sdfg...")
 csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example)
 print(C)
-# print(result[0][0])
-# print(result[0][1])
-# print(result[0][2])
-# print(result[0][3])
 print('--')
 
 # Can replace this with np.allclose(A, B)
