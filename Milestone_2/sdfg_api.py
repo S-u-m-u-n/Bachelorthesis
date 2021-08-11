@@ -326,7 +326,7 @@ K_tile_map_entry, K_tile_map_exit = nested_state.add_map(
 # This map creates threads (and not warps!!)
 thread_tile_map_entry, thread_tile_map_exit = nested_state.add_map(
         'Thread_tile',
-        dict(thread_tile_i='0:size_thread_block_tile_m:size_thread_tile_m', thread_tile_j='0:size_thread_block_tile_n:size_thread_tile_n'),
+        dict(thread_i='0:size_thread_block_tile_m:size_thread_tile_m', thread_j='0:size_thread_block_tile_n:size_thread_tile_n'),
         schedule=dace.dtypes.ScheduleType.GPU_ThreadBlock) # needs to be dace.dtypes.ScheduleType.GPU_ThreadBlock
 
 thread_K_map_entry, thread_K_map_exit = nested_state.add_map(
@@ -345,51 +345,63 @@ if args.swizzle_threads:
     bitwise_or = sy.Function('bitwise_or')
     right_shift = sy.Function('right_shift')
 
+####################################################################################################################
 ### Data Movement: _A
 # _A -> shared_memory_A
 nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, 'thread_block_i*size_thread_block_tile_m:thread_block_i*size_thread_block_tile_m+size_thread_block_tile_m, k_tile*size_K_tile:k_tile*size_K_tile+size_K_tile'))
 # shared_memory_A -> register_storage_A
 nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, # load size_thread_tile_m elements into register storage
-'thread_tile_i:thread_tile_i+size_thread_tile_m, k' if not args.swizzle_threads else
-'''size_thread_tile_m * bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7)
-:size_thread_tile_m * bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7)
+'thread_i:thread_i+size_thread_tile_m, k' if not args.swizzle_threads else
+'''size_thread_tile_m * bitwise_and(right_shift(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 1), 7)
+:size_thread_tile_m * bitwise_and(right_shift(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 1), 7)
 +size_thread_tile_m, k''')) # load size_thread_tile_m elements into register storage
 # register_storage_A -> tasklet
 nested_state.add_memlet_path(register_storage_A, thread_map_entry, tasklet, dst_conn='__a', memlet=dace.Memlet(f"{register_storage_A.data}[i, 0]"))
 
+####################################################################################################################
 ### Data Movement: _B
 # _B -> shared_memory_B
 nested_state.add_memlet_path(_B, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_B, memlet=dace.Memlet.simple(_B.data, 'k_tile*size_K_tile:k_tile*size_K_tile+size_K_tile, thread_block_j*size_thread_block_tile_n:thread_block_j*size_thread_block_tile_n+size_thread_block_tile_n'))
 # shared_memory_B -> register_storage_B
 nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, # load size_thread_tile_n elements into register storage
-'k, thread_tile_j:thread_tile_j+size_thread_tile_n' if not args.swizzle_threads else
-'''k, size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1))
-:size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1))
+'k, thread_j:thread_j+size_thread_tile_n' if not args.swizzle_threads else
+'''k, size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 1))
+:size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 1))
 +size_thread_tile_n''')) # load size_thread_tile_n elements into register storage
 # register_storage_B -> tasklet
 nested_state.add_memlet_path(register_storage_B, thread_map_entry, tasklet, dst_conn='__b', memlet=dace.Memlet(f"{register_storage_B.data}[0, j]"))
 
+####################################################################################################################
 ### Data Movement: output
-# tasklet -> register_storage_C
-# Todo: move register_storage_C down, s.t. it sits right above the last map!
-nested_state.add_memlet_path(tasklet, thread_map_exit, thread_K_map_exit, register_storage_C, src_conn='__out', memlet=dace.Memlet(f"{register_storage_C.data}[i, j]", wcr='(lambda x, y: (x + y))'))
+# tasklet -> register_storage_C (Todo: move register_storage_C down, s.t. it sits right above the last map!)
+nested_state.add_memlet_path(tasklet,
+                        thread_map_exit,
+                        thread_K_map_exit,
+                        register_storage_C,
+                        src_conn='__out',
+                        memlet=dace.Memlet(f"{register_storage_C.data}[i, j]",
+                        # memlet=dace.Memlet.simple(register_storage_C.data, 'thread_i:thread_i+size_thread_tile_m, thread_j:thread_j+size_thread_tile_n',
+                        # wcr_str='(lambda x, y: (x + y))'))
+                        wcr='(lambda x, y: (x + y))'))
 # register_storage_C -> A_matmul_B_nested_state (= result that will be transferred to outer sdfg)
 nested_state.add_memlet_path(register_storage_C,
                         thread_tile_map_exit,
                         K_tile_map_exit,
                         thread_block_grid_map_exit,
                         A_matmul_B_nested_state,
-                        memlet=dace.Memlet.simple(A_matmul_B_nested_state.data,
-'''thread_block_i*size_thread_block_tile_m + thread_tile_i
-:thread_block_i*size_thread_block_tile_m + thread_tile_i + size_thread_tile_m
-, thread_block_j*size_thread_block_tile_n + thread_tile_j:thread_block_j*size_thread_block_tile_n + thread_tile_j + size_thread_tile_n''' if not args.swizzle_threads else
-'''thread_block_i*size_thread_block_tile_m + size_thread_tile_m * bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7)
-:thread_block_i*size_thread_block_tile_m + size_thread_tile_m * bitwise_and(right_shift(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1), 7)
+                        memlet=dace.Memlet(data=A_matmul_B_nested_state.data,
+                        subset='''thread_block_i*size_thread_block_tile_m + thread_i
+:thread_block_i*size_thread_block_tile_m + thread_i + size_thread_tile_m
+, thread_block_j*size_thread_block_tile_n + thread_j:
+thread_block_j*size_thread_block_tile_n + thread_j + size_thread_tile_n''' if not args.swizzle_threads else
+'''thread_block_i*size_thread_block_tile_m + size_thread_tile_m * bitwise_and(right_shift(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 1), 7)
+:thread_block_i*size_thread_block_tile_m + size_thread_tile_m * bitwise_and(right_shift(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 1), 7)
 + size_thread_tile_m
-,thread_block_j*size_thread_block_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1))
-:thread_block_j*size_thread_block_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_tile_i / size_thread_tile_m) + (thread_tile_j / size_thread_tile_n), 1))
+,thread_block_j*size_thread_block_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 1))
+:thread_block_j*size_thread_block_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 1))
 + size_thread_tile_n''',
-                        wcr_str='(lambda x, y: (x + y))'))
+                        wcr='(lambda x, y: (x + y))',
+                        wcr_nonatomic=True))
 
 nested_sdfg.fill_scope_connectors()
 sdfg.fill_scope_connectors()
