@@ -18,6 +18,7 @@ parser.add_argument("-N", type=int, dest='N', nargs="?", default=640)
 parser.add_argument("--alpha", type=np.float64, dest='alpha', nargs="?", default=1.0)
 parser.add_argument("--beta", type=np.float64, dest='beta', nargs="?", default=1.0)
 parser.add_argument("-r", "--repetitions", type=int, dest='repetitions', nargs="?", default=1)
+args = parser.parse_args()
 
 M=np.int32(args.M)
 N=np.int32(args.N)
