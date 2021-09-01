@@ -2,6 +2,10 @@ import dace
 import numpy as np
 from argparse import ArgumentParser
 
+M = dace.symbol('M')
+N = dace.symbol('N')
+K = dace.symbol('K')
+
 @dace.program
 def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
     C = alpha * (A @ B) + beta * C
