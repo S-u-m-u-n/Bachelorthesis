@@ -373,15 +373,13 @@ nested_state.add_memlet_path(register_storage_B, thread_map_entry, tasklet, dst_
 
 ####################################################################################################################
 ### Data Movement: output
-# tasklet -> register_storage_C (Todo: move register_storage_C down, s.t. it sits right above the last map!)
+# tasklet -> register_storage_C
 nested_state.add_memlet_path(tasklet,
                         thread_map_exit,
                         thread_K_map_exit,
                         register_storage_C,
                         src_conn='__out',
                         memlet=dace.Memlet(f"{register_storage_C.data}[i, j]",
-                        # memlet=dace.Memlet.simple(register_storage_C.data, 'thread_i:thread_i+size_thread_tile_m, thread_j:thread_j+size_thread_tile_n',
-                        # wcr_str='(lambda x, y: (x + y))'))
                         wcr='(lambda x, y: (x + y))'))
 # register_storage_C -> A_matmul_B_nested_state (= result that will be transferred to outer sdfg)
 nested_state.add_memlet_path(register_storage_C,
@@ -401,7 +399,7 @@ thread_block_j*size_thread_block_tile_n + thread_j + size_thread_tile_n''' if no
 :thread_block_j*size_thread_block_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 1))
 + size_thread_tile_n''',
                         wcr='(lambda x, y: (x + y))',
-                        wcr_nonatomic=True))
+                        wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
 
 nested_sdfg.fill_scope_connectors()
 sdfg.fill_scope_connectors()
@@ -426,7 +424,7 @@ def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], 
     return alpha * (A @ B) + beta * C
 
 C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
-print("Running sdfg...")
+helpers.print_info("Running sdfg...", False)
 csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example)
 print(C)
 print('--')
