@@ -1,4 +1,5 @@
 import dace
+import dace.libraries.blas
 import numpy as np
 from argparse import ArgumentParser
 
@@ -8,8 +9,7 @@ K = dace.symbol('K')
 
 @dace.program
 def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
-    C = alpha * (A @ B) + beta * C
-    return C
+    return alpha * (A @ B) + beta * C
 
 parser = ArgumentParser()
 parser.add_argument("-M", type=int, dest='M', nargs="?", default=640)
@@ -28,7 +28,7 @@ beta = np.float64(args.beta)
 
 dace.libraries.blas.default_implementation = 'cuBLAS'
 for i in range(args.repetitions):
-    A = np.random.rand(M, K).astype(np_dtype)
-    B = np.random.rand(K, N).astype(np_dtype)
-    C = np.zeros((M, N)).astype(np_dtype)
+    A = np.random.rand(M, K).astype(np.float64)
+    B = np.random.rand(K, N).astype(np.float64)
+    C = np.zeros((M, N)).astype(np.float64)
     matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
