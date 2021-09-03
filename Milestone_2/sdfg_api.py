@@ -92,6 +92,11 @@ schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8,
 M = dace.symbol('M')
 N = dace.symbol('N')
 K = dace.symbol('K')
+M_example = args.M
+N_example = args.N
+K_example = args.K
+alpha = args.alpha
+beta = args.beta
 
 sdfg = dace.SDFG('gemm')
 state = sdfg.add_state(label='gemm_state')
@@ -405,15 +410,8 @@ nested_sdfg.validate()
 sdfg.validate()
 
 sdfg.arg_names = ['A', 'B', 'C', 'alpha', 'beta']
-
 sdfg.save('sdfg_api.sdfg')
 csdfg = sdfg.compile()
-
-M_example = args.M
-N_example = args.N
-K_example = args.K
-alpha = args.alpha
-beta = args.beta
 
 for i in range(args.repetitions):
     A = np.random.rand(M_example, K_example).astype(np.float64)

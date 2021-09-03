@@ -1,15 +1,11 @@
 import subprocess
 import helpers
-import seaborn as sns
-import matplotlib.pyplot as plt
 from argparse import ArgumentParser
 
 parser = ArgumentParser()
 parser.add_argument("--test", type=int, dest='test', nargs="?", default=1)
 # parser.add_argument("-r", "--repetitions", type=int, dest='repetitions', nargs="?", default=1)
 args = parser.parse_args()
-
-# ToDo: Use seaborn to plot & calculate CI
 
 helpers.print_info("Running performance tests...", False)
 
