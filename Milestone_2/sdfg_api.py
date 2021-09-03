@@ -46,9 +46,9 @@ parser.add_argument('-p', '--precision',
                     help="Specify bit precision (16, 32, 64 or 128) - currently unsupported.")
 parser.add_argument('--verify',
                     dest='verify',
-                    help="Verify results. Default: True",
-                    action="store_false",
-                    default=True)
+                    help="Verify results. Default: False",
+                    action="store_true",
+                    default=False)
 parser.add_argument('--all-optimizations',
                     dest='all_optimizations',
                     help="Use all possible optimizations",
@@ -92,9 +92,6 @@ schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8,
 M = dace.symbol('M')
 N = dace.symbol('N')
 K = dace.symbol('K')
-M_example = 640
-N_example = 640
-K_example = 640
 
 sdfg = dace.SDFG('gemm')
 state = sdfg.add_state(label='gemm_state')
@@ -412,50 +409,57 @@ sdfg.arg_names = ['A', 'B', 'C', 'alpha', 'beta']
 sdfg.save('sdfg_api.sdfg')
 csdfg = sdfg.compile()
 
-helpers.print_info("Verifying results...", False)
+M_example = args.M
+N_example = args.N
+K_example = args.K
+alpha = args.alpha
+beta = args.beta
 
-A = np.random.rand(M_example, K_example).astype(np.float64)
-B = np.random.rand(K_example, N_example).astype(np.float64)
-C = np.zeros((M_example, N_example)).astype(np.float64)
-alpha = 1.0
-beta = 1.0
+for i in range(args.repetitions):
+    A = np.random.rand(M_example, K_example).astype(np.float64)
+    B = np.random.rand(K_example, N_example).astype(np.float64)
+    C = np.zeros((M_example, N_example)).astype(np.float64)
 
-def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
-    return alpha * (A @ B) + beta * C
+    # helpers.print_info("Running sdfg...", False)
+    csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example)
 
-C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
-helpers.print_info("Running sdfg...", False)
-csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example)
-print(C)
-print('--')
+    if args.verify:
+        helpers.print_info("Verifying results...", False)
+        
+        def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
+            return alpha * (A @ B) + beta * C
 
-# Can replace this with np.allclose(A, B)
-def areSame(A,B):
-    for i in range(M_example):
-        for j in range(N_example):
-            diff = math.fabs(A[i][j] - B[i][j])
-            if (diff > 0.000001):
-                helpers.print_error("Error at position (" + str(i) + ", " + str(j) + "): matrices are not equal! Difference is: " + str(diff), False)
-                helpers.print_error(str(B[i][j]) + " should be " + str(A[i][j]), False)
-                print()
-                return False
-    return True
+        C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
+        print(C)
+        print('--')
 
-helpers.print_info("Correct result: ", False)
-for i in range(16):
-    for j in range(16):
-        print("%.2f" % C_correct[i][j], end=" ")
-    print()
+        # Can replace this with np.allclose(A, B)
+        def areSame(A,B):
+            for i in range(M_example):
+                for j in range(N_example):
+                    diff = math.fabs(A[i][j] - B[i][j])
+                    if (diff > 0.000001):
+                        helpers.print_error("Error at position (" + str(i) + ", " + str(j) + "): matrices are not equal! Difference is: " + str(diff), False)
+                        helpers.print_error(str(B[i][j]) + " should be " + str(A[i][j]), False)
+                        print()
+                        return False
+            return True
 
-print()
-print()
-helpers.print_info("SDFG result: ", False)
-for i in range(16):
-    for j in range(16):
-        print("%.2f" % C[i][j], end=" ")
-    print()
+        helpers.print_info("Correct result: ", False)
+        for i in range(16):
+            for j in range(16):
+                print("%.2f" % C_correct[i][j], end=" ")
+            print()
 
-if args.verify and areSame(C_correct, C):
-    helpers.print_success("The SDFG is correct!", False)
-else:
-    helpers.print_error("The SDFG is incorrect!", False)
+        print()
+        print()
+        helpers.print_info("SDFG result: ", False)
+        for i in range(16):
+            for j in range(16):
+                print("%.2f" % C[i][j], end=" ")
+            print()
+
+        if areSame(C_correct, C):
+            helpers.print_success("The SDFG is correct!", False)
+        else:
+            helpers.print_error("The SDFG is incorrect!", False)
