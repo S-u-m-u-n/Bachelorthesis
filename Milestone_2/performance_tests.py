@@ -14,9 +14,9 @@ if args.test == 1:
     helpers.print_info("=" * 20, False)
     helpers.print_info("===== (1024 x 1024) x (1024 x 1024)", False)
     helpers.print_info("=" * 20, False)
-    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "1024_1024_unoptimized.csv", "python", "./sdfg_api.py", "-M=1024", "-N=1024", "-K=1024", "--repetitions=", str(args.repetitions)])
-    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "1024_1024_swizzled_threads.csv", "python", "./sdfg_api.py", "-M=1024", "-N=1024", "-K=1024", "--swizzle-threads", "--repetitions=", str(args.repetitions)])
-    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "1024_1024_cublas.csv", "python", "./cublas.py", "-M=1024", "-N=1024", "-K=1024", "--repetitions=", str(args.repetitions)])
+    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "1024_1024_unoptimized.csv", "python", "./sdfg_api.py", "-M=1024", "-N=1024", "-K=1024", "--repetitions=" + str(args.repetitions)])
+    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "1024_1024_swizzled_threads.csv", "python", "./sdfg_api.py", "-M=1024", "-N=1024", "-K=1024", "--swizzle-threads", "--repetitions=" + str(args.repetitions)])
+    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "1024_1024_cublas.csv", "python", "./cublas.py", "-M=1024", "-N=1024", "-K=1024", "--repetitions=" + str(args.repetitions)])
 
 ### (4096 x 4096) x (4096 x 4096)
 if args.test == 2:
