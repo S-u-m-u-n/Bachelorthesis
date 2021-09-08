@@ -444,7 +444,8 @@ for i in range(args.repetitions):
         def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
             return alpha * (A @ B) + beta * C
 
-        C_correct = matmul(A=A, B=B, C=C, alpha=alpha, beta=beta)
+        C_init = np.zeros((M_example, N_example)).astype(np.float64)
+        C_correct = matmul(A=A, B=B, C=C_init, alpha=alpha, beta=beta)
         print(C)
         print('--')
 
