@@ -33,36 +33,6 @@ K = dace.symbol('K')
 def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
     return alpha * (A @ B) + beta * C
 
-# Finds and returns the best schedule
-def find_best_schedule(load_k_possible, threadtiles_possible):
-    best_schedule = Schedule()
-
-    for load_k in tqdm(load_k_possible, desc="load_k", position=0, leave=False, ncols=80):
-        for thread_tile_m in tqdm(threadtiles_possible, desc="thread_tile_m", position=1, leave=False, ncols=80):
-            for thread_tile_n in tqdm(threadtiles_possible, desc="thread_tile_n", position=2, leave=False, ncols=80):
-                for thread_tile_k in tqdm(threadtiles_possible, desc="thread_tile_k", position=3, leave=False, ncols=80):
-                    for warp_tile_m in tqdm(range(thread_tile_m, device.registers_per_warp, thread_tile_m), desc="warp_tile_m", position=4, leave=False, ncols=80):
-                        for warp_tile_n in tqdm(range(thread_tile_n, device.registers_per_warp, thread_tile_n), desc="warp_tile_n", position=5, leave=False, ncols=80):
-                            for thread_block_tile_m in tqdm(range(warp_tile_m, device.registers_per_thread_block, warp_tile_m), desc="thread_block_tile_m", position=6, leave=False, ncols=80):
-                                for thread_block_tile_n in tqdm(range(warp_tile_n, device.registers_per_thread_block, warp_tile_n), desc="thread_block_tile_n", position=7, leave=False, ncols=80):
-                                    for split_k in tqdm(range(1, device.SMs * device.warps_per_SM * 2), desc="split_k", position=8, leave=False, ncols=80):
-                                        schedule = Schedule(load_k, thread_tile_m, thread_tile_n, warp_tile_m, warp_tile_n,
-                                                            thread_block_tile_m, thread_block_tile_n, split_k)
-                                        # print(schedule)
-                                        if not fulfills_constraints(schedule):
-                                            continue
-
-                                        if schedule > best_schedule:
-                                            best_schedule = schedule
-    return best_schedule
-
-
-
-def fulfills_constraints(schedule):
-    # check constraints
-    return True
-
-
 def create_sdfg(schedule) -> None:
     sdfg = matmul.to_sdfg()
     sdfg.expand_library_nodes()
@@ -432,7 +402,7 @@ def create_sdfg(schedule) -> None:
 
     # #####################################################################
     # ### Vectorization
-    if args.split_k and schedule.load_k > 1:
+    if args.vectorization and schedule.load_k > 1:
         sdfg.save('sdfg_pre_vectorization.sdfg')
         # 128 bits maximum
         if not args.quiet:
@@ -450,11 +420,11 @@ def create_sdfg(schedule) -> None:
                         _tasklet=state.out_edges(entry)[0].dst,
                         _map_exit=state.exit_node(entry))
                         
-        Vectorization.apply_to(state.parent,
-                        dict(vector_len=vector_length, preamble=False, postamble=False),
-                        _map_entry=entry,
-                        _tasklet=state.out_edges(entry)[1].dst,
-                        _map_exit=state.exit_node(entry))
+        # Vectorization.apply_to(state.parent,
+        #                 dict(vector_len=vector_length, preamble=False, postamble=False),
+        #                 _map_entry=entry,
+        #                 _tasklet=state.out_edges(entry)[1].dst,
+        #                 _map_exit=state.exit_node(entry))
         if not args.quiet:
             helpers.print_success("Successfully applied vectorization.", args.colorless)
    
@@ -476,43 +446,6 @@ def create_sdfg(schedule) -> None:
     if not args.quiet:
         helpers.print_success("Successfully compiled SDFG.", args.colorless)
     return csdfg
-
-#####################################################################
-# Query functions
-
-def queryNVIDIA():
-    if not args.quiet:
-        helpers.print_info("Querying NVIDIA device info...", args.colorless)
-    if args.verbose:
-        getDeviceInfo_NVIDIA = subprocess.run(["./getDeviceInfo_NVIDIA"])
-    else:
-        getDeviceInfo_NVIDIA = subprocess.run(
-            ["./getDeviceInfo_NVIDIA"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-    if getDeviceInfo_NVIDIA.returncode == 0:
-        if not args.quiet:
-            helpers.print_success("Successfully read NVIDIA device Info", args.colorless)
-        return True
-    else:
-        if not args.quiet:
-            helpers.print_warning("No CUDA Capable GPU found", args.colorless)
-        return False
-
-def queryAMD():
-    if not args.quiet:
-        helpers.print_info("Querying AMD device info...", args.colorless)
-    if args.verbose:
-        getDeviceInfo_AMD = subprocess.run(["./getDeviceInfo_AMD"])
-    else:
-        getDeviceInfo_AMD = subprocess.run(
-            ["./getDeviceInfo_AMD"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-    if getDeviceInfo_AMD.returncode == 0:
-        if not args.quiet:
-            helpers.print_success("Successfully read AMD device Info", args.colorless)
-        return True
-    else:
-        if not args.quiet:
-            helpers.print_warning("No AMD GPU found", args.colorless)
-        return False
 
 #####################################################################
 ### Main function
@@ -617,44 +550,6 @@ cublas: Run `matmul` with the CUBLAS library node implementation.''')
     threadtiles_possible = [1, 2, 4, 8]
     # threadtiles_possible = [1, 2, 4, 8, 16, 32, 64, 128, 256]
 
-    ########################################################
-    # 1. Get Device Properties or use default (Tesla V100)
-    default_device_data = open('device_data.py', 'w')
-    default_device_data.write("""Name = "Tesla V100-PCIE-32GB"
-SMs = 80
-warps_per_SM = 2
-threads_per_warp = 32
-registers_per_thread_block = 65536
-registers_per_warp = 65536
-total_compute_cores = 5120
-capability_version = 7.0""")
-    default_device_data.close()
-
-    if not args.quiet:
-        helpers.print_info("Phase 1/3: Querying device info...", args.colorless)
-
-    if args.gpu_type == "NVIDIA":
-        queryNVIDIA()
-    elif args.gpu_type == "AMD":
-        # os.environ['DACE_compiler_cuda_backend'] = 'hip'
-        dace.Config.set('DACE_compiler_cuda_backend', value='hip')
-        queryAMD()
-    elif args.gpu_type != "default":
-        helpers.print_error("Invalid usage of -g parameter!")
-        exit(-1)
-
-    import device_data as device
-
-    if not args.quiet:
-        helpers.print_info(
-            "Using the following GPU for the schedule generator: ", args.colorless)
-        helpers.print_device_info(device, args.colorless)
-
-    device.registers_per_thread_block = int(device.registers_per_thread_block /
-                                            (sys.getsizeof(dace.float64()) / 4))
-    device.registers_per_warp = int(device.registers_per_warp /
-                                    (sys.getsizeof(dace.float64()) / 4))
-
     M=np.int32(args.M)
     N=np.int32(args.N)
     K=np.int32(args.K)
@@ -671,8 +566,10 @@ capability_version = 7.0""")
             helpers.print_info("Phase 2/3: Finding best schedule...", args.colorless)
         # schedule = find_best_schedule(load_k_possible, threadtiles_possible, device.registers_per_warp, device.registers_per_thread_block, device.threads_per_warp, device.warps_per_SM, device.SMs, device.total_compute_cores)
         # best_schedule = find_best_schedule(load_k_possible, threadtiles_possible)
-        best_schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32,
-                                thread_block_tile_m=128, thread_block_tile_n=128, thread_block_tile_k=640, SWIZZLE_thread_block=2, SWIZZLE_thread_tile=True, splice_k=2, split_k=2, double_buffering=True)
+
+        best_schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32,
+                        thread_block_tile_m=64, thread_block_tile_n=32, thread_block_tile_k=640,
+                        SWIZZLE_thread_block=1, SWIZZLE_thread_tile=True, split_k=2)
         if not args.quiet:
             helpers.print_success("Found best schedule!", args.colorless)
             print(best_schedule)

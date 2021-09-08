@@ -5,6 +5,7 @@ import dace
 import math
 from Schedule import Schedule
 import helpers
+from dace.transformation.dataflow import DoubleBuffering
 
 parser = ArgumentParser()
 parser.add_argument("-v", "--verbose",
@@ -312,7 +313,10 @@ nested_sdfg.add_constant('size_thread_tile_k', schedule.thread_tile_k) # = size_
 nested_sdfg.add_constant('warp_tile_width', math.ceil(schedule.warp_tile_n / schedule.thread_tile_n))
 nested_sdfg.add_constant('warp_tile_height', math.ceil(schedule.warp_tile_m / schedule.thread_tile_m))
 
-tasklet = nested_state.add_tasklet('matrix_multiplication', ['__a', '__b'], ['__out'], '__out = (__a * __b)')
+if args.vectorization:
+    tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a': dace.float64, '__b': dace.vector(dace.float64, 2)}, {'__out': dace.vector(dace.float64, 2)}, '__out = (__a * __b)')
+else:
+    tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a', '__b'}, {'__out'}, '__out = (__a * __b)')    
 
 # This map creates threadblocks
 thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
@@ -338,7 +342,7 @@ thread_K_map_entry, thread_K_map_exit = nested_state.add_map(
 
 thread_map_entry, thread_map_exit = nested_state.add_map(
         'Thread',
-        dict(i='0:size_thread_tile_m', j='0:size_thread_tile_n'),
+        dict(i='0:size_thread_tile_m', j='0:size_thread_tile_n') if not args.vectorization else dict(i='0:size_thread_tile_m', j='0:size_thread_tile_n:2'),
         unroll=True,
         schedule=dace.dtypes.ScheduleType.Sequential)
 
@@ -358,7 +362,11 @@ nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_ma
 :size_thread_tile_m * bitwise_and(right_shift(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 1), 7)
 +size_thread_tile_m, k''')) # load size_thread_tile_m elements into register storage
 # register_storage_A -> tasklet
-nested_state.add_memlet_path(register_storage_A, thread_map_entry, tasklet, dst_conn='__a', memlet=dace.Memlet(f"{register_storage_A.data}[i, 0]"))
+nested_state.add_memlet_path(register_storage_A,
+                        thread_map_entry,
+                        tasklet,
+                        dst_conn='__a',
+                        memlet=dace.Memlet(f"{register_storage_A.data}[i, 0]"))
 
 ####################################################################################################################
 ### Data Movement: _B
@@ -371,7 +379,13 @@ nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_ma
 :size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 16), 3), bitwise_and(4 * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n), 1))
 +size_thread_tile_n''')) # load size_thread_tile_n elements into register storage
 # register_storage_B -> tasklet
-nested_state.add_memlet_path(register_storage_B, thread_map_entry, tasklet, dst_conn='__b', memlet=dace.Memlet(f"{register_storage_B.data}[0, j]"))
+nested_state.add_memlet_path(register_storage_B,
+                        thread_map_entry,
+                        tasklet,
+                        dst_conn='__b',
+                        memlet=dace.Memlet(f"{register_storage_B.data}[0, j]") if not args.vectorization else dace.Memlet(f"{register_storage_B.data}[0, j:j+2]"))
+                        # memlet=dace.Memlet(data=register_storage_B.data,
+                        # subset="0:0, j:j" if not args.vectorization else "0:0, j:j+2"))
 
 ####################################################################################################################
 ### Data Movement: output
@@ -381,8 +395,8 @@ nested_state.add_memlet_path(tasklet,
                         thread_K_map_exit,
                         register_storage_C,
                         src_conn='__out',
-                        memlet=dace.Memlet(f"{register_storage_C.data}[i, j]",
-                        wcr='(lambda x, y: (x + y))'))
+                        memlet=dace.Memlet(f"{register_storage_C.data}[i, j]", wcr='(lambda x, y: (x + y))') if not args.vectorization else
+                            dace.Memlet(f"{register_storage_C.data}[i, j:j+2]", wcr='(lambda x, y: (x + y))'))
 # register_storage_C -> A_matmul_B_nested_state (= result that will be transferred to outer sdfg)
 nested_state.add_memlet_path(register_storage_C,
                         thread_tile_map_exit,
@@ -402,6 +416,9 @@ thread_block_j*size_thread_block_tile_n + thread_j + size_thread_tile_n''' if no
 + size_thread_tile_n''',
                         wcr='(lambda x, y: (x + y))',
                         wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
+
+if args.double_buffering:
+    DoubleBuffering.apply_to(nested_state.parent, _map_entry=K_tile_map_entry, _transient=shared_memory_A)
 
 nested_sdfg.fill_scope_connectors()
 sdfg.fill_scope_connectors()
