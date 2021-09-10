@@ -20,13 +20,16 @@ def read_nvprof_data(path_to_csv):
 ### (1024 x 1024) x (1024 x 1024)
 if args.test == 1:
     unoptimized_df = read_nvprof_data("./1024_1024_unoptimized.csv")
+    vectorization_df = read_nvprof_data("./1024_1024_vectorization.csv")
+    double_buffering_df = read_nvprof_data("./1024_1024_double_buffering.csv")
     swizzled_threads_df = read_nvprof_data("./1024_1024_swizzled_threads.csv")
+    v_db_st_df = read_nvprof_data("./1024_1024_vectorization_double_buffering_swizzled_threads.csv")
     cublas_df = read_nvprof_data("./1024_1024_cublas.csv")
-    combined_df = pd.concat([unoptimized_df, swizzled_threads_df, cublas_df], axis=1)
-    combined_df.columns = ["unoptimized", "swizzled_threads", "cublas"]
+    combined_df = pd.concat([unoptimized_df, vectorization_df, double_buffering_df, swizzled_threads_df, v_db_st_df, cublas_df], axis=1)
+    combined_df.columns = ["unoptimized", "vectorization", "double_buffering", "swizzled_threads", "v_db_st", "cublas"]
 
     plot_1 = sns.violinplot(data=combined_df)
-    plot_1.set(xticklabels=["Unoptimized", "Swizzled Threads", "Cublas"], ylabel="Runtime [ms]", title="M = 1024, N = 1024, K = 1024") # , xlabel=""
+    plot_1.set(xticklabels=["Unoptimized", "Vectorization", "Double Buffering", "Swizzled Threads", "All", "Cublas"], ylabel="Runtime [ms]", title="M = 1024, N = 1024, K = 1024") # , xlabel=""
     # plt.show()
     fig = plot_1.get_figure()
     fig.savefig("./1024_1024_comparison.png")
@@ -34,13 +37,16 @@ if args.test == 1:
 ### (4096 x 4096) x (4096 x 4096)
 if args.test == 2:
     unoptimized_df = read_nvprof_data("./4096_4096_unoptimized.csv")
+    vectorization_df = read_nvprof_data("./4096_4096_vectorization.csv")
+    double_buffering_df = read_nvprof_data("./4096_4096_double_buffering.csv")
     swizzled_threads_df = read_nvprof_data("./4096_4096_swizzled_threads.csv")
+    v_db_st_df = read_nvprof_data("./4096_4096_vectorization_double_buffering_swizzled_threads.csv")
     cublas_df = read_nvprof_data("./4096_4096_cublas.csv")
-    combined_df = pd.concat([unoptimized_df, swizzled_threads_df, cublas_df], axis=1)
-    combined_df.columns = ["unoptimized", "swizzled_threads", "cublas"]
+    combined_df = pd.concat([unoptimized_df, vectorization_df, double_buffering_df, swizzled_threads_df, v_db_st_df, cublas_df], axis=1)
+    combined_df.columns = ["unoptimized", "vectorization", "double_buffering", "swizzled_threads", "v_db_st", "cublas"]
 
     plot_2 = sns.violinplot(data=combined_df)
-    plot_2.set(xticklabels=["Unoptimized", "Swizzled Threads", "Cublas"], ylabel="Runtime [ms]", title="M = 4096, N = 4096, K = 4096") # , xlabel=""
+    plot_2.set(xticklabels=["Unoptimized", "Vectorization", "Double Buffering", "Swizzled Threads", "All", "Cublas"], ylabel="Runtime [ms]", title="M = 4096, N = 4096, K = 4096") # , xlabel=""
     # plt.show()
     fig = plot_2.get_figure()
     fig.savefig("./4096_4096_comparison.png")
