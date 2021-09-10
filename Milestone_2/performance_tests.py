@@ -27,9 +27,12 @@ if args.test == 2:
     helpers.print_info("=" * 20, False)
     helpers.print_info("===== (4096 x 4096) x (4096 x 4096)", False)
     helpers.print_info("=" * 20, False)
-    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "4096_4096_unoptimized.csv", "python", "./sdfg_api.py", "-M=4096", "-N=4096", "-K=4096", "--repetitions=" + str(args.repetitions)])
-    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "4096_4096_swizzled_threads.csv", "python", "./sdfg_api.py", "-M=4096", "-N=4096", "-K=4096", "--swizzle-threads", "--repetitions=" + str(args.repetitions)])
-    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "4096_4096_cublas.csv", "python", "./cublas.py", "-M=4096", "-N=4096", "-K=4096", "--repetitions=" + str(args.repetitions)])
+    # subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "4096_4096_unoptimized.csv", "python", "./sdfg_api.py", "-M=4096", "-N=4096", "-K=4096", "--repetitions=" + str(args.repetitions)])
+    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "4096_4096_vectorization.csv", "python", "./sdfg_api.py", "-M=4096", "-N=4096", "-K=4096", "--vectorization", "--repetitions=" + str(args.repetitions)])
+    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "4096_4096_double_buffering.csv", "python", "./sdfg_api.py", "-M=4096", "-N=4096", "-K=4096", "--double-buffering", "--repetitions=" + str(args.repetitions)])
+    # subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "4096_4096_swizzled_threads.csv", "python", "./sdfg_api.py", "-M=4096", "-N=4096", "-K=4096", "--swizzle-threads", "--repetitions=" + str(args.repetitions)])
+    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "4096_4096_vectorization_double_buffering_swizzled_threads.csv", "python", "./sdfg_api.py", "-M=4096", "-N=4096", "-K=4096", "--double-buffering", "--vectorization", "--swizzle-threads", "--repetitions=" + str(args.repetitions)])
+    # subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "4096_4096_cublas.csv", "python", "./cublas.py", "-M=4096", "-N=4096", "-K=4096", "--repetitions=" + str(args.repetitions)])
 
 ### (1024 x 8192) x (8192 x 1024)
 if args.test == 3:
