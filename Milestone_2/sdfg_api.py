@@ -420,15 +420,15 @@ thread_block_j*size_thread_block_tile_n + thread_j + size_thread_tile_n''' if no
                         wcr='(lambda x, y: (x + y))',
                         wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
 
-if args.double_buffering:
-    DoubleBuffering.apply_to(nested_state.parent, _map_entry=K_tile_map_entry, _transient=shared_memory_A)
-
 if args.vectorization:
     Vectorization.apply_to(nested_state.parent,
                     dict(vector_len=2, preamble=False, postamble=False),
                     _map_entry=thread_map_entry,
                     _tasklet=tasklet,
                     _map_exit=thread_map_exit)
+
+if args.double_buffering:
+    DoubleBuffering.apply_to(nested_state.parent, _map_entry=K_tile_map_entry, _transient=shared_memory_A)
 
 nested_sdfg.fill_scope_connectors()
 sdfg.fill_scope_connectors()
