@@ -310,8 +310,8 @@ nested_sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
 nested_sdfg.add_constant('size_thread_tile_m', schedule.thread_tile_m)
 nested_sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
 nested_sdfg.add_constant('size_thread_tile_k', schedule.thread_tile_k) # = size_K_tile
-nested_sdfg.add_constant('warp_tile_width', math.ceil(schedule.warp_tile_n / schedule.thread_tile_n))
-nested_sdfg.add_constant('warp_tile_height', math.ceil(schedule.warp_tile_m / schedule.thread_tile_m))
+nested_sdfg.add_constant('warp_width', math.ceil(schedule.warp_tile_n / schedule.thread_tile_n))
+nested_sdfg.add_constant('warp_height', math.ceil(schedule.warp_tile_m / schedule.thread_tile_m))
 
 # if args.vectorization:
     # tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a': dace.float64, '__b': dace.vector(dace.float64, 2)}, {'__out': dace.vector(dace.float64, 2)}, '__out = (__a * __b)')
@@ -359,8 +359,8 @@ nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, 
 # shared_memory_A -> register_storage_A
 nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, # load size_thread_tile_m elements into register storage
 'thread_i:thread_i+size_thread_tile_m, k' if not args.swizzle_threads else
-'''(thread_i // size_warp_tile_m) * size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1), 7)
-:(thread_i // size_warp_tile_m) * size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1), 7)
+'''(thread_i // size_warp_tile_m) * size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1), warp_height - 1)
+:(thread_i // size_warp_tile_m) * size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1), warp_height - 1)
 +size_thread_tile_m, k''')) # load size_thread_tile_m elements into register storage
 # register_storage_A -> tasklet
 nested_state.add_memlet_path(register_storage_A,
@@ -376,8 +376,8 @@ nested_state.add_memlet_path(_B, thread_block_grid_map_entry, K_tile_map_entry, 
 # shared_memory_B -> register_storage_B
 nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, # load size_thread_tile_n elements into register storage
 'k, thread_j:thread_j+size_thread_tile_n' if not args.swizzle_threads else
-'''k, (thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 16), 3), bitwise_and(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
-:(thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 16), 3), bitwise_and(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
+'''k, (thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), warp_height * warp_width // 2), warp_width - 1), bitwise_and(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
+:(thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), warp_height * warp_width // 2), warp_width - 1), bitwise_and(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
 +size_thread_tile_n''')) # load size_thread_tile_n elements into register storage
 # register_storage_B -> tasklet
 nested_state.add_memlet_path(register_storage_B,
@@ -411,11 +411,11 @@ nested_state.add_memlet_path(register_storage_C,
 :thread_block_i*size_thread_block_tile_m + thread_i + size_thread_tile_m
 , thread_block_j*size_thread_block_tile_n + thread_j:
 thread_block_j*size_thread_block_tile_n + thread_j + size_thread_tile_n''' if not args.swizzle_threads else
-'''thread_block_i*size_thread_block_tile_m + (thread_i // size_warp_tile_m) * size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1), 7)
-:thread_block_i*size_thread_block_tile_m + (thread_i // size_warp_tile_m) * size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1), 7)
+'''thread_block_i*size_thread_block_tile_m + (thread_i // size_warp_tile_m) * size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1), warp_height - 1)
+:thread_block_i*size_thread_block_tile_m + (thread_i // size_warp_tile_m) * size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1), warp_height - 1)
 + size_thread_tile_m
-,thread_block_j*size_thread_block_tile_n + (thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 16), 3), bitwise_and(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
-:thread_block_j*size_thread_block_tile_n + (thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 16), 3), bitwise_and(4 * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
+,thread_block_j*size_thread_block_tile_n + (thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), warp_height * warp_width // 2), warp_width - 1), bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
+:thread_block_j*size_thread_block_tile_n + (thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), warp_height * warp_width // 2), warp_width - 1), bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
 + size_thread_tile_n''',
                         wcr='(lambda x, y: (x + y))',
                         wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
