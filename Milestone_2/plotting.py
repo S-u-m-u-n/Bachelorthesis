@@ -22,6 +22,8 @@ if args.test == 1:
     unoptimized_df = read_nvprof_data("./1024_1024_unoptimized.csv")
     vectorization_df = read_nvprof_data("./1024_1024_vectorization.csv")
     double_buffering_df = read_nvprof_data("./1024_1024_double_buffering.csv")
+    double_buffering_df = double_buffering_df / 1000
+    # print(double_buffering_df)
     swizzled_threads_df = read_nvprof_data("./1024_1024_swizzled_threads.csv")
     v_db_st_df = read_nvprof_data("./1024_1024_vectorization_double_buffering_swizzled_threads.csv")
     cublas_df = read_nvprof_data("./1024_1024_cublas.csv")
