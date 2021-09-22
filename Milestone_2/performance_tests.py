@@ -24,6 +24,9 @@ if args.test == 1:
     subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "./performance_test_results/1024_1024/128_threads/double_buffering_swizzled_threads.csv", "python", "./sdfg_api.py", "-M=1024", "-N=1024", "-K=1024", "--double-buffering", "--swizzle-threads", "--repetitions=" + str(args.repetitions)])
     subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "./performance_test_results/1024_1024/128_threads/double_buffering_vectorization_swizzled_threads.csv", "python", "./sdfg_api.py", "-M=1024", "-N=1024", "-K=1024", "--double-buffering", "--vectorization", "--swizzle-threads", "--repetitions=" + str(args.repetitions)])
     # subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "./performance_test_results/1024_1024/cublas.csv", "python", "./cublas.py", "-M=1024", "-N=1024", "-K=1024", "--repetitions=" + str(args.repetitions)])
+    # subprocess.run(["sed", "-i", "'1d;2d;3d'", "./performance_test_results/1024_1024/cublas.csv"]) # Delete first three lines, which are filled with nvprof information
+
+    subprocess.run(["sed", "-i", "'1d;2d;3d'", "./performance_test_results/1024_1024/128_threads/*.csv"]) # Delete first three lines, which are filled with nvprof information
 
 ### (4096 x 4096) x (4096 x 4096)
 if args.test == 2:
@@ -38,8 +41,11 @@ if args.test == 2:
     subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "./performance_test_results/4096_4096/128_threads/double_buffering.csv", "python", "./sdfg_api.py", "-M=4096", "-N=4096", "-K=4096", "--double-buffering", "--repetitions=" + str(args.repetitions)])
     subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "./performance_test_results/4096_4096/128_threads/double_buffering_vectorization.csv", "python", "./sdfg_api.py", "-M=4096", "-N=4096", "-K=4096", "--double-buffering", "--vectorization", "--repetitions=" + str(args.repetitions)])
     subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "./performance_test_results/4096_4096/128_threads/double_buffering_swizzled_threads.csv", "python", "./sdfg_api.py", "-M=4096", "-N=4096", "-K=4096", "--double-buffering", "--swizzle-threads", "--repetitions=" + str(args.repetitions)])
-    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "./performance_test_results/4096_4096/128_threads/double_buffering_vectorization?swizzled_threads.csv", "python", "./sdfg_api.py", "-M=4096", "-N=4096", "-K=4096", "--double-buffering", "--vectorization", "--swizzle-threads", "--repetitions=" + str(args.repetitions)])
+    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "./performance_test_results/4096_4096/128_threads/double_buffering_vectorization_swizzled_threads.csv", "python", "./sdfg_api.py", "-M=4096", "-N=4096", "-K=4096", "--double-buffering", "--vectorization", "--swizzle-threads", "--repetitions=" + str(args.repetitions)])
     # subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "./performance_test_results/4096_4096/cublas.csv", "python", "./cublas.py", "-M=4096", "-N=4096", "-K=4096", "--repetitions=" + str(args.repetitions)])
+    # subprocess.run(["sed", "-i", "'1d;2d;3d'", "./performance_test_results/4096_4096/cublas.csv"]) # Delete first three lines, which are filled with nvprof information
+
+    subprocess.run(["sed", "-i", "'1d;2d;3d'", "./performance_test_results/4096_4096/128_threads/*.csv"]) # Delete first three lines, which are filled with nvprof information
 
 ### (1024 x 8192) x (8192 x 1024)
 if args.test == 3:
