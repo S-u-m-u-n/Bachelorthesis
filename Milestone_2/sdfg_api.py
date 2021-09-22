@@ -87,7 +87,7 @@ if args.verbose:
 
 
 schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32,
-                        thread_block_tile_m=128, thread_block_tile_n=32, thread_block_tile_k=640,
+                        thread_block_tile_m=128, thread_block_tile_n=64, thread_block_tile_k=640,
                         SWIZZLE_thread_block=2, SWIZZLE_thread_tile=True, split_k=2, double_buffering=False)
 
 M = dace.symbol('M')
@@ -279,6 +279,8 @@ nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m
 nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
 shared_memory_A = nested_state.add_access('shared_memory_A')
 shared_memory_B = nested_state.add_access('shared_memory_B')
+shared_memory_A.setzero = True
+shared_memory_B.setzero = True
 
 nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m, 1], dtype=dace.float64, storage=dace.StorageType.Register)
 nested_sdfg.add_transient('register_storage_B', shape=[1, schedule.thread_tile_n], dtype=dace.float64, storage=dace.StorageType.Register)
@@ -286,6 +288,8 @@ nested_sdfg.add_transient('register_storage_C', shape=[schedule.thread_tile_m, s
 register_storage_A = nested_state.add_access('register_storage_A')
 register_storage_B = nested_state.add_access('register_storage_B')
 register_storage_C = nested_state.add_access('register_storage_C')
+register_storage_A.setzero = True
+register_storage_B.setzero = True
 register_storage_C.setzero = True
 
 sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
@@ -420,6 +424,7 @@ thread_block_j*size_thread_block_tile_n + thread_j + size_thread_tile_n''' if no
                         wcr='(lambda x, y: (x + y))',
                         wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
 
+# cuobjdump -sass .dacecache/program/build/libmatmul.so 
 if args.vectorization:
     Vectorization.apply_to(nested_state.parent,
                     dict(vector_len=2, preamble=False, postamble=False),
