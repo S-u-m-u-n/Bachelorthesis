@@ -87,7 +87,7 @@ if args.verbose:
 
 
 schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32,
-                        thread_block_tile_m=64, thread_block_tile_n=64, thread_block_tile_k=640,
+                        thread_block_tile_m=128, thread_block_tile_n=32, thread_block_tile_k=640,
                         SWIZZLE_thread_block=2, SWIZZLE_thread_tile=True, split_k=2, double_buffering=False)
 
 M = dace.symbol('M')
@@ -316,7 +316,7 @@ nested_sdfg.add_constant('warp_height', math.ceil(schedule.warp_tile_m / schedul
 # if args.vectorization:
     # tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a': dace.float64, '__b': dace.vector(dace.float64, 2)}, {'__out': dace.vector(dace.float64, 2)}, '__out = (__a * __b)')
 # else:
-tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a', '__b'}, {'__out'}, '__out = (__a * __b)')    
+tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a', '__b'}, {'__out'}, '__out = (__a * __b)')
 
 # This map creates threadblocks
 thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
