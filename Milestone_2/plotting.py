@@ -19,44 +19,58 @@ def read_nvprof_data(path_to_csv):
 
 ### (1024 x 1024) x (1024 x 1024)
 if args.test == 1:
-    unoptimized_df = read_nvprof_data("./1024_1024_unoptimized.csv")
-    vectorization_df = read_nvprof_data("./1024_1024_vectorization.csv")
-    double_buffering_df = read_nvprof_data("./1024_1024_double_buffering.csv")
-    double_buffering_df = double_buffering_df / 1000
-    # print(double_buffering_df)
-    swizzled_threads_df = read_nvprof_data("./1024_1024_swizzled_threads.csv")
-    v_db_st_df = read_nvprof_data("./1024_1024_vectorization_double_buffering_swizzled_threads.csv")
-    cublas_df = read_nvprof_data("./1024_1024_cublas.csv")
-    combined_df = pd.concat([unoptimized_df, vectorization_df, double_buffering_df, swizzled_threads_df, v_db_st_df, cublas_df], axis=1)
-    combined_df.columns = ["unoptimized", "vectorization", "double_buffering", "swizzled_threads", "v_db_st", "cublas"]
-
+    ### Without Double Buffering
+    unoptimized_df = read_nvprof_data("./performance_test_results/1024_1024/128_threads/unoptimized.csv")
+    vectorization_df = read_nvprof_data("./performance_test_results/1024_1024/128_threads/vectorization.csv")
+    swizzled_threads_df = read_nvprof_data("./performance_test_results/1024_1024/128_threads/swizzled_threads.csv")
+    v_st_df = read_nvprof_data("./performance_test_results/1024_1024/128_threads/vectorization_swizzled_threads.csv")
+    combined_df = pd.concat([unoptimized_df, vectorization_df, swizzled_threads_df, v_st_df], axis=1)
+    combined_df.columns = ["unoptimized", "vectorization", "double_buffering", "swizzled_threads", "v_st"]
     plot_1 = sns.violinplot(data=combined_df)
-    plot_1.set(xticklabels=["Unoptimized", "Vectorization", "Double Buffering", "Swizzled Threads", "All", "Cublas"], ylabel="Runtime [ms]", title="M = 1024, N = 1024, K = 1024") # , xlabel=""
-    # plt.show()
+    plot_1.set(xticklabels=["Unoptimized", "Vectorization", "Swizzled_Threads", "Vectorization+Swizzled_Threads"], ylabel="Runtime [ms]", title="M = 1024, N = 1024, K = 1024") # , xlabel=""
     fig = plot_1.get_figure()
-    fig.savefig("./1024_1024_comparison.png")
+    fig.savefig("./performance_test_results/1024_1024/128_threads/1024_1024_comparison.png")
+    ### With Double Buffering
+    db_df = read_nvprof_data("./performance_test_results/1024_1024/128_threads/double_buffering.csv") / 1000
+    db_v_df = read_nvprof_data("./performance_test_results/1024_1024/128_threads/double_buffering_vectorization.csv") / 1000
+    db_st_df = read_nvprof_data("./performance_test_results/1024_1024/128_threads/double_buffering_swizzled_threads.csv") / 1000
+    db_v_st_df = read_nvprof_data("./performance_test_results/1024_1024/128_threads/double_buffering__vectorization_swizzled_threads.csv") / 1000
+    cublas_df = read_nvprof_data("./performance_test_results/1024_1024/cublas.csv")
+    combined_df = pd.concat([db_df, db_v_df, double_buffering_df, db_st_df, db_v_st_df, cublas_df], axis=1)
+    combined_df.columns = ["db", "db_v", "db_st", "db_v_st", "cublas"]
+    plot_1_db = sns.violinplot(data=combined_df)
+    plot_1_db.set(xticklabels=["DB", "DB+Vectorization", "DB+Swizzled_Threads", "DB+Vectorization+Swizzled_Threads", "cuBLAS"], ylabel="Runtime [ms]", title="M = 1024, N = 1024, K = 1024 with double buffering") # , xlabel=""
+    fig_db = plot_1_db.get_figure()
+    fig_db.savefig("./performance_test_results/1024_1024/128_threads/1024_1024_comparison_db.png")
 
 ### (4096 x 4096) x (4096 x 4096)
 if args.test == 2:
-    unoptimized_df = read_nvprof_data("./4096_4096_unoptimized.csv")
-    vectorization_df = read_nvprof_data("./4096_4096_vectorization.csv")
-    double_buffering_df = read_nvprof_data("./4096_4096_double_buffering.csv")
-    swizzled_threads_df = read_nvprof_data("./4096_4096_swizzled_threads.csv")
-    v_db_st_df = read_nvprof_data("./4096_4096_vectorization_double_buffering_swizzled_threads.csv")
-    cublas_df = read_nvprof_data("./4096_4096_cublas.csv")
-    combined_df = pd.concat([unoptimized_df, vectorization_df, double_buffering_df, swizzled_threads_df, v_db_st_df, cublas_df], axis=1)
-    combined_df.columns = ["unoptimized", "vectorization", "double_buffering", "swizzled_threads", "v_db_st", "cublas"]
-
-    plot_2 = sns.violinplot(data=combined_df)
-    plot_2.set(xticklabels=["Unoptimized", "Vectorization", "Double Buffering", "Swizzled Threads", "All", "Cublas"], ylabel="Runtime [ms]", title="M = 4096, N = 4096, K = 4096") # , xlabel=""
-    # plt.show()
-    fig = plot_2.get_figure()
-    fig.savefig("./4096_4096_comparison.png")
+    ### Without Double Buffering
+    unoptimized_df = read_nvprof_data("./performance_test_results/4096_4096/128_threads/unoptimized.csv")
+    vectorization_df = read_nvprof_data("./performance_test_results/4096_4096/128_threads/vectorization.csv")
+    swizzled_threads_df = read_nvprof_data("./performance_test_results/4096_4096/128_threads/swizzled_threads.csv")
+    v_st_df = read_nvprof_data("./performance_test_results/4096_4096/128_threads/vectorization_swizzled_threads.csv")
+    combined_df = pd.concat([unoptimized_df, vectorization_df, swizzled_threads_df, v_st_df], axis=1)
+    combined_df.columns = ["unoptimized", "vectorization", "double_buffering", "swizzled_threads", "v_st"]
+    plot_1 = sns.violinplot(data=combined_df)
+    plot_1.set(xticklabels=["Unoptimized", "Vectorization", "Swizzled_Threads", "Vectorization+Swizzled_Threads"], ylabel="Runtime [ms]", title="M = 4096, N = 4096, K = 4096") # , xlabel=""
+    fig = plot_1.get_figure()
+    fig.savefig("./performance_test_results/4096_4096/128_threads/4096_4096_comparison.png")
+    ### With Double Buffering
+    db_df = read_nvprof_data("./performance_test_results/4096_4096/128_threads/double_buffering.csv")
+    db_v_df = read_nvprof_data("./performance_test_results/4096_4096/128_threads/double_buffering_vectorization.csv")
+    db_st_df = read_nvprof_data("./performance_test_results/4096_4096/128_threads/double_buffering_swizzled_threads.csv")
+    db_v_st_df = read_nvprof_data("./performance_test_results/4096_4096/128_threads/double_buffering__vectorization_swizzled_threads.csv")
+    cublas_df = read_nvprof_data("./performance_test_results/4096_4096/cublas.csv")
+    combined_df = pd.concat([db_df, db_v_df, double_buffering_df, db_st_df, db_v_st_df, cublas_df], axis=1)
+    combined_df.columns = ["db", "db_v", "db_st", "db_v_st", "cublas"]
+    plot_1_db = sns.violinplot(data=combined_df)
+    plot_1_db.set(xticklabels=["DB", "DB+Vectorization", "DB+Swizzled_Threads", "DB+Vectorization+Swizzled_Threads", "cuBLAS"], ylabel="Runtime [ms]", title="M = 4096, N = 4096, K = 4096 with double buffering") # , xlabel=""
+    fig_db = plot_1_db.get_figure()
+    fig_db.savefig("./performance_test_results/4096_4096/128_threads/4096_4096_comparison_db.png")
 
 ### (1024 x 8192) x (8192 x 1024)
 if args.test == 3:
-    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "1024_8192_8192_1024_unoptimized.csv", "python", "./cosma.py", "-M=1024", "-N=1024", "-K=8192", "--quiet", "--version=dace", "--skip-verification", "--gpu-type=default", "--repetitions=5"])
-    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "1024_8192_8192_1024_optimized.csv", "python", "./cosma.py", "-M=1024", "-N=1024", "-K=8192", "--quiet", "--version=dace", "--skip-verification", "--gpu-type=default", "--repetitions=5"])
-    subprocess.run(["nvprof", "--print-gpu-trace", "--csv", "--log-file", "1024_8192_8192_1024_cublas.csv", "python", "./cosma.py", "-M=1024", "-N=1024", "-K=8192", "--repetitions=5"])
+    helpers.print_error("Currently unsuppported.", False)
 
 helpers.print_success("Performance plots created.", False)
