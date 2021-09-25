@@ -460,36 +460,39 @@ for i in range(args.repetitions):
 
         C_init = np.zeros((M_example, N_example)).astype(np.float64)
         C_correct = matmul(A=A, B=B, C=C_init, alpha=alpha, beta=beta)
-        print(C)
-        print('--')
+        # print(C)
+        # print('--')
+        diff = np.linalg.norm(C - C_correct) / (M_example * N_example)
+        print('Difference:', diff)
+        exit(0 if diff <= 1e-6 else 1)
 
         # Can replace this with np.allclose(A, B)
-        def areSame(A,B):
-            for i in range(M_example):
-                for j in range(N_example):
-                    diff = math.fabs(A[i][j] - B[i][j])
-                    if (diff > 0.000001):
-                        helpers.print_error("Error at position (" + str(i) + ", " + str(j) + "): matrices are not equal! Difference is: " + str(diff), False)
-                        helpers.print_error(str(B[i][j]) + " should be " + str(A[i][j]), False)
-                        print()
-                        return False
-            return True
+        # def areSame(A,B):
+        #     for i in range(M_example):
+        #         for j in range(N_example):
+        #             diff = math.fabs(A[i][j] - B[i][j])
+        #             if (diff > 0.000001):
+        #                 helpers.print_error("Error at position (" + str(i) + ", " + str(j) + "): matrices are not equal! Difference is: " + str(diff), False)
+        #                 helpers.print_error(str(B[i][j]) + " should be " + str(A[i][j]), False)
+        #                 print()
+        #                 return False
+        #     return True
 
-        helpers.print_info("Correct result: ", False)
-        for i in range(16):
-            for j in range(16):
-                print("%.2f" % C_correct[i][j], end=" ")
-            print()
+        # helpers.print_info("Correct result: ", False)
+        # for i in range(16):
+        #     for j in range(16):
+        #         print("%.2f" % C_correct[i][j], end=" ")
+        #     print()
 
-        print()
-        print()
-        helpers.print_info("SDFG result: ", False)
-        for i in range(16):
-            for j in range(16):
-                print("%.2f" % C[i][j], end=" ")
-            print()
+        # print()
+        # print()
+        # helpers.print_info("SDFG result: ", False)
+        # for i in range(16):
+        #     for j in range(16):
+        #         print("%.2f" % C[i][j], end=" ")
+        #     print()
 
-        if areSame(C_correct, C):
-            helpers.print_success("The SDFG is correct!", False)
-        else:
-            helpers.print_error("The SDFG is incorrect!", False)
+        # if areSame(C_correct, C):
+            # helpers.print_success("The SDFG is correct!", False)
+        # else:
+            # helpers.print_error("The SDFG is incorrect!", False)
