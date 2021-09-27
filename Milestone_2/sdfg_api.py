@@ -86,8 +86,8 @@ if args.verbose:
     helpers.print_info("Program launched with the following arguments: " + str(args), args.colorless)
 
 
-schedule = Schedule(load_k=8, thread_tile_m=4, thread_tile_n=4, thread_tile_k=8, warp_tile_m=64, warp_tile_n=64,
-                        thread_block_tile_m=64, thread_block_tile_n=32, thread_block_tile_k=640,
+schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, thread_tile_k=8, warp_tile_m=64, warp_tile_n=64,
+                        thread_block_tile_m=64, thread_block_tile_n=64, thread_block_tile_k=640,
                         SWIZZLE_thread_block=2, SWIZZLE_thread_tile=True, split_k=2, double_buffering=True)
 
 M = dace.symbol('M')
@@ -251,8 +251,10 @@ output = nested_sdfg.add_datadesc('output', desc_res)
 
 _A = nested_state.add_read(input_A)
 _B = nested_state.add_read(input_B)
-A_matmul_B_nested_initstate = nested_initstate.add_write(output)
-A_matmul_B_nested_state = nested_state.add_write(output)
+# A_matmul_B_nested_initstate = nested_initstate.add_write(output)
+A_matmul_B_nested_initstate = nested_initstate.add_access(output)
+# A_matmul_B_nested_state = nested_state.add_write(output)
+A_matmul_B_nested_state = nested_state.add_access(output)
 
 #########################################################
 ### matmul init state
@@ -326,7 +328,8 @@ tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a', '__b'}, {'__
 thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
         'Thread_block_grid',
         dict(thread_block_i='0:num_thread_blocks_m', thread_block_j='0:num_thread_blocks_n'),
-        schedule=dace.dtypes.ScheduleType.Default)
+        # schedule=dace.dtypes.ScheduleType.Default)
+        schedule=dace.dtypes.ScheduleType.GPU_Device)
 
 K_tile_map_entry, K_tile_map_exit = nested_state.add_map(
         'K_tile',
