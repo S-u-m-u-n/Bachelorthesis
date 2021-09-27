@@ -86,8 +86,8 @@ if args.verbose:
     helpers.print_info("Program launched with the following arguments: " + str(args), args.colorless)
 
 
-schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, thread_tile_k=4, warp_tile_m=64, warp_tile_n=32,
-                        thread_block_tile_m=64, thread_block_tile_n=32, thread_block_tile_k=640,
+schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, thread_tile_k=8, warp_tile_m=64, warp_tile_n=64,
+                        thread_block_tile_m=64, thread_block_tile_n=64, thread_block_tile_k=640,
                         SWIZZLE_thread_block=2, SWIZZLE_thread_tile=True, split_k=2, double_buffering=True)
 
 M = dace.symbol('M')
@@ -421,8 +421,8 @@ thread_block_j*size_thread_block_tile_n + thread_j + size_thread_tile_n''' if no
 ,thread_block_j*size_thread_block_tile_n + (thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), warp_height * warp_width // 2), warp_width - 1), bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
 :thread_block_j*size_thread_block_tile_n + (thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), warp_height * warp_width // 2), warp_width - 1), bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
 + size_thread_tile_n''',
-                        wcr='(lambda x, y: (x + y))'))
-                        # wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
+                        wcr='(lambda x, y: (x + y))',
+                        wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
 
 if args.vectorization:
     Vectorization.apply_to(nested_state.parent,
@@ -463,8 +463,11 @@ for i in range(args.repetitions):
         # print(C)
         # print('--')
         diff = np.linalg.norm(C - C_correct) / (M_example * N_example)
-        print('Difference:', diff)
-        exit(0 if diff <= 1e-6 else 1)
+        helpers.print_info("Difference: " + diff, False)
+        if diff <= 1e-6:
+            helpers.print_success("The SDFG is correct!", False)
+        else:
+            helpers.print_error("The SDFG is incorrect!", False)
 
         # Can replace this with np.allclose(A, B)
         # def areSame(A,B):
