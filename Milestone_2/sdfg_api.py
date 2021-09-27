@@ -425,8 +425,9 @@ thread_block_j*size_thread_block_tile_n + thread_j + size_thread_tile_n''' if no
 ,thread_block_j*size_thread_block_tile_n + (thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), warp_height * warp_width // 2), warp_width - 1), bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
 :thread_block_j*size_thread_block_tile_n + (thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), warp_height * warp_width // 2), warp_width - 1), bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
 + size_thread_tile_n''',
-                        wcr='(lambda x, y: (x + y))',
-                        wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
+                        wcr='(lambda x, y: (x + y))'
+                        ))
+                        # wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
 
 if args.vectorization:
     helpers.print_info("Applying Vectorization...", False)
