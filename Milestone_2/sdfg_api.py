@@ -463,7 +463,8 @@ for i in range(args.repetitions):
         # print(C)
         # print('--')
         diff = np.linalg.norm(C - C_correct) / (M_example * N_example)
-        helpers.print_info("Difference: " + diff, False)
+        helpers.print_info("Difference: ", False)
+        print(diff)
         if diff <= 1e-6:
             helpers.print_success("The SDFG is correct!", False)
         else:
