@@ -86,7 +86,7 @@ if args.verbose:
     helpers.print_info("Program launched with the following arguments: " + str(args), args.colorless)
 
 
-schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=64,
+schedule = Schedule(load_k=8, thread_tile_m=4, thread_tile_n=4, thread_tile_k=8, warp_tile_m=64, warp_tile_n=64,
                         thread_block_tile_m=64, thread_block_tile_n=32, thread_block_tile_k=640,
                         SWIZZLE_thread_block=2, SWIZZLE_thread_tile=True, split_k=2, double_buffering=True)
 
@@ -352,6 +352,7 @@ thread_map_entry, thread_map_exit = nested_state.add_map(
         schedule=dace.dtypes.ScheduleType.Sequential)
 
 if args.swizzle_threads:
+    helpers.print_info("Applying Swizzle Threads...", False)
     bitwise_and = sy.Function('bitwise_and')
     bitwise_or = sy.Function('bitwise_or')
     right_shift = sy.Function('right_shift')
@@ -425,6 +426,7 @@ thread_block_j*size_thread_block_tile_n + thread_j + size_thread_tile_n''' if no
                         wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
 
 if args.vectorization:
+    helpers.print_info("Applying Vectorization...", False)
     Vectorization.apply_to(nested_state.parent,
                     dict(vector_len=2, preamble=False, postamble=False),
                     _map_entry=thread_map_entry,
@@ -432,6 +434,7 @@ if args.vectorization:
                     _map_exit=thread_map_exit)
 
 if args.double_buffering:
+    helpers.print_info("Applying Double Buffering...", False)
     DoubleBuffering.apply_to(nested_state.parent, _map_entry=K_tile_map_entry, _transient=shared_memory_A)
 
 nested_sdfg.fill_scope_connectors()
