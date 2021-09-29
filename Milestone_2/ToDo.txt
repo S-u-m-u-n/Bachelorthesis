@@ -13,7 +13,7 @@
 
 
 ---------------------------------------------------------------------------
-- Add cuTLASS performance for benchmarking. Check out https://developer.nvidia.com/blog/cutlass-linear-algebra-cuda/
+- Add CUTLASS performance for benchmarking. Check out https://developer.nvidia.com/blog/cutlass-linear-algebra-cuda/
 >>> Done.
 >>> Column-Major (nn) vs. (tt) Row-Major?
 >>> Using --profiling-iterations=9 results in 10 iterations... why?
@@ -24,11 +24,17 @@
 ---------------------------------------------------------------------------
 - Implement Thread Block Swizzling
 >>> Done.
->>> Still need to check cases where the swizzled grid has a different number of blocks.
+>>> Still need to check cases where the swizzled grid has a different number of blocks than the original grid.
 
 
 ---------------------------------------------------------------------------
 - Check in Neville's thesis how close he gets to cuBLAS
+>>> For 1024x1024x1024 and other common cases he lies in the middle between cuBLAS and CUTLASS (see page 55 in his thesis)
+
+
+
+---------------------------------------------------------------------------
+- Implement Split K
 
 
 
@@ -36,6 +42,3 @@
 - Add testcases from Neville and test performance
 
 
-
----------------------------------------------------------------------------
-- Implement Split K
