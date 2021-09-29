@@ -297,7 +297,7 @@ register_storage_C.setzero = True
 sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
 sdfg.add_constant('size_K_tile', schedule.load_k)
-sdfg.add_constant('num_thread_blocks_m', int(M_example / schedule.thread_block_tile_m))
+sdfg.add_constant('num_thread_blocks_m', int(M_example / schedule.thread_block_tile_m) if not args.swizzle_thread_blocks else int((M_example / schedule.thread_block_tile_m + 2 - 1) / 2))
 sdfg.add_constant('num_thread_blocks_n', int(N_example / schedule.thread_block_tile_n) if not args.swizzle_thread_blocks else 2*int(N_example / schedule.thread_block_tile_n))
 sdfg.add_constant('num_K_tiles', int(K_example / schedule.load_k))
 sdfg.add_constant('size_warp_tile_m', schedule.warp_tile_m)
