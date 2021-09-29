@@ -411,20 +411,20 @@ if not (args.swizzle_threads or args.swizzle_thread_blocks):
 :thread_block_i*size_thread_block_tile_m + thread_i + size_thread_tile_m
 , thread_block_j*size_thread_block_tile_n + thread_j:
 thread_block_j*size_thread_block_tile_n + thread_j + size_thread_tile_n'''
-else if args.swizzle_threads and not args.swizzle_thread_blocks:
+else if (args.swizzle_threads and not args.swizzle_thread_blocks):
     subset = '''thread_block_i*size_thread_block_tile_m + (thread_i // size_warp_tile_m) * size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1), warp_height - 1)
 :thread_block_i*size_thread_block_tile_m + (thread_i // size_warp_tile_m) * size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1), warp_height - 1)
 + size_thread_tile_m
 ,thread_block_j*size_thread_block_tile_n + (thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), warp_height * warp_width // 2), warp_width - 1), bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
 :thread_block_j*size_thread_block_tile_n + (thread_j // size_warp_tile_n) * size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), warp_height * warp_width // 2), warp_width - 1), bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))
 + size_thread_tile_n'''
-else if not args.swizzle_threads and args.swizzle_thread_blocks:
+else if (not args.swizzle_threads and args.swizzle_thread_blocks):
     helpers.print_info("Swizzling Thread Blocks...", False)
     subset = '''(thread_block_i*2 + (thread_block_j % 2))*size_thread_block_tile_m + thread_i
 :(thread_block_i*2 + (thread_block_j % 2))*size_thread_block_tile_m + thread_i + size_thread_tile_m
 , (thread_block_j // 2)*size_thread_block_tile_n + thread_j:
 (thread_block_j // 2)*size_thread_block_tile_n + thread_j + size_thread_tile_n'''
-else if args.swizzle_threads and args.swizzle_thread_blocks:
+else if (args.swizzle_threads and args.swizzle_thread_blocks):
     helpers.print_info("Swizzling Thread Blocks...", False)
     subset = '''(thread_block_i*2 + (thread_block_j % 2))*size_thread_block_tile_m + (thread_i // size_warp_tile_m) * size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1), warp_height - 1)
 :(thread_block_i*2 + (thread_block_j % 2))*size_thread_block_tile_m + (thread_i // size_warp_tile_m) * size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1), warp_height - 1)
