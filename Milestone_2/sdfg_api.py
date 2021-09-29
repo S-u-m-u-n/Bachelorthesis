@@ -503,7 +503,7 @@ for i in range(args.repetitions):
         else:
             helpers.print_error("The SDFG is incorrect!", False)
 
-        Can replace this with np.allclose(A, B)
+        # Can replace this with np.allclose(A, B)
         def areSame(A,B):
             for i in range(M_example):
                 for j in range(N_example):
