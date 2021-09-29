@@ -451,7 +451,7 @@ nested_state.add_memlet_path(register_storage_C,
                         A_matmul_B_nested_state,
                         memlet=dace.Memlet(data=A_matmul_B_nested_state.data,
                         subset= subset,
-                        wcr='(lambda x, y: (x + y))'
+                        wcr='(lambda x, y: (x + y))',
                         # ))
                         wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
 
