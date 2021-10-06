@@ -1,6 +1,9 @@
 ---------------------------------------------------------------------------
 - Find mistake in code. Why is the solution wrong if I'm using more than 32 threads per threadblock???
 >>> No clue why solution is wrong. Non-deterministic in some cases => race-condition?
+>>> Need to use wcr_nonatomic=False if using more than 32 threads per threadblock!
+>>> Maybe not that important, since we want to use double-buffering anyways...
+- Check with cudamemcheck if there is a race condition!
 
 
 
@@ -9,6 +12,8 @@
         cuobjdump -sass .dacecache/gemm/build/libgemm.so > assembly_non_vectorized.txt
         cuobjdump -sass .dacecache/gemm/build/libgemm.so > assembly_vectorized.txt
 >>> Done, apparently no difference in Assembly... why not??
+>>> vectorization doesn't have an effect on loads from local storage 
+- Try to vectorize the global memory to shared memory loads!
 
 
 
@@ -16,8 +21,11 @@
 - Add CUTLASS performance for benchmarking. Check out https://developer.nvidia.com/blog/cutlass-linear-algebra-cuda/
 >>> Done.
 >>> Column-Major (nn) vs. (tt) Row-Major?
->>> Using --profiling-iterations=100 results in 10 iterations... why?
->>> Warmup iterations? --warmup-iterations=1 - 10
+>>> Using 9 results in 10 iterations... why?
+>>> Warmup iterations? --warmup-iterations: at least 1. Better: 10 iterations.
+
+=> Use --profiling-iterations=100
+=> Compare Column-Major vs Row-Major!
 
 
 
@@ -25,16 +33,16 @@
 - Implement Thread Block Swizzling
 >>> Done.
 >>> Still need to check cases where the swizzled grid has a different number of blocks than the original grid.
-- Check L2 performance counters via script
+- Can check L2 performance counters via script to see if swizzling thread blocks helps
+
+
 
 ---------------------------------------------------------------------------
 - Check in Neville's thesis how close he gets to cuBLAS
->>> For 1024x1024x1024 and other common cases he lies in the middle between cuBLAS and CUTLASS (see page 55 in his thesis)
-
-
-
+>>> For 1024x1024x1024 and other common cases he lies in the middle of cuBLAS and CUTLASS (see page 55 in his thesis)
 ---------------------------------------------------------------------------
 - Implement Split K
+>>>
 
 
 
