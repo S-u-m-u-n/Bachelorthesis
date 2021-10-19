@@ -357,7 +357,7 @@ thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
 K_tile_map_entry, K_tile_map_exit = nested_state.add_map(
         'K_tile',
         dict(k_tile='0:num_K_tiles'),
-        schedule=dace.dtypes.ScheduleType.Sequential)
+        schedule=dace.dtypes.ScheduleType.GPU_Device)
 
 # This map creates threads (and not warps!!)
 thread_tile_map_entry, thread_tile_map_exit = nested_state.add_map(
