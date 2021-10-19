@@ -304,8 +304,8 @@ if args.split_k > 1:
 
 shared_memory_A = nested_state.add_access('shared_memory_A')
 shared_memory_B = nested_state.add_access('shared_memory_B')
-# shared_memory_A.setzero = True
-# shared_memory_B.setzero = True
+shared_memory_A.setzero = True
+shared_memory_B.setzero = True
 register_storage_A = nested_state.add_access('register_storage_A')
 register_storage_B = nested_state.add_access('register_storage_B')
 register_storage_C = nested_state.add_access('register_storage_C')
