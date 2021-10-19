@@ -443,6 +443,10 @@ subset = thread_block_i_idx + ' + ' + thread_i_idx + ':' + thread_block_i_idx + 
 if args.split_k > 1:
     subset += ', thread_block_k'
 
+wcr_no_conflicts = False 
+if num_threads_per_threadblock == 32 or args.double_buffering:
+    wcr_no_conflicts = True
+
 nested_state.add_memlet_path(tasklet,
                         thread_map_exit,
                         thread_K_map_exit,
@@ -455,10 +459,6 @@ nested_state.add_memlet_path(tasklet,
                         )
 
 # register_storage_C -> A_matmul_B_nested_state (= result that will be transferred to outer sdfg)
-wcr_no_conflicts = False 
-if num_threads_per_threadblock == 32 or args.double_buffering:
-    wcr_no_conflicts = True
-
 if args.split_k == 1:
     nested_state.add_memlet_path(register_storage_C,
                             thread_tile_map_exit,
