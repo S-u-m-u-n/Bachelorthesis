@@ -343,6 +343,8 @@ nested_sdfg.add_constant('size_K_split', int(K_example / args.split_k))
 nested_sdfg.add_constant('SWIZZLE', args.swizzle_thread_blocks)
 nested_sdfg.add_constant('SPLIT_K', args.split_k)
 
+num_threads_per_threadblock = (schedule.thread_block_tile_m // schedule.thread_tile_m) * (schedule.thread_block_tile_n // schedule.thread_tile_n)
+
 tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a', '__b'}, {'__out'}, '__out = (__a * __b)')
 
 # This map creates threadblocks
@@ -437,7 +439,6 @@ nested_state.add_memlet_path(register_storage_B,
 ### Data Movement: output
 # tasklet -> register_storage_C
 subset = thread_block_i_idx + ' + ' + thread_i_idx + ':' + thread_block_i_idx + ' + ' + thread_i_idx + ' + size_thread_tile_m, ' + thread_block_j_idx + ' + ' + thread_j_idx + ':' + thread_block_j_idx + ' + ' + thread_j_idx + ' + size_thread_tile_n'
-print(subset)
 
 if args.split_k > 1:
     subset += ', thread_block_k'
@@ -450,6 +451,10 @@ nested_state.add_memlet_path(tasklet,
                         memlet=dace.Memlet(f"{register_storage_C.data}[i, j]", wcr='(lambda x, y: (x + y))'))
 
 # register_storage_C -> A_matmul_B_nested_state (= result that will be transferred to outer sdfg)
+wcr_no_conflicts = False 
+if num_threads_per_threadblock == 32 or args.double_buffering:
+    wcr_no_conflicts = True
+
 if args.split_k == 1:
     nested_state.add_memlet_path(register_storage_C,
                             thread_tile_map_exit,
@@ -459,9 +464,9 @@ if args.split_k == 1:
                             memlet=dace.Memlet(
                                 data=A_matmul_B_nested_state.data,
                                 subset= subset,
-                                wcr='(lambda x, y: (x + y))')
-                            )
-                            # wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
+                                wcr='(lambda x, y: (x + y))',
+                                wcr_nonatomic=wcr_no_conflicts)
+                            ) # needed so we have a non-atomic accumulate accross thread blocks
 else:
     nested_state.add_memlet_path(register_storage_C,
                             thread_tile_map_exit,
@@ -471,9 +476,9 @@ else:
                             memlet=dace.Memlet(
                                 data=partial_split_k_output.data,
                                 subset= subset,
-                                wcr='(lambda x, y: (x + y))')
-                            )
-                            # wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
+                                wcr='(lambda x, y: (x + y))',
+                                wcr_nonatomic=wcr_no_conflicts)
+                            ) # needed so we have a non-atomic accumulate accross thread blocks
 
     # Reduce the split k
     tasklet = nested_state.add_tasklet('reduce_split_k', ['__in'], ['__out'], '__out = __in')
