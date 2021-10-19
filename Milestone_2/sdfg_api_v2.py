@@ -304,8 +304,8 @@ if args.split_k > 1:
 
 shared_memory_A = nested_state.add_access('shared_memory_A')
 shared_memory_B = nested_state.add_access('shared_memory_B')
-shared_memory_A.setzero = True
-shared_memory_B.setzero = True
+# shared_memory_A.setzero = True
+# shared_memory_B.setzero = True
 register_storage_A = nested_state.add_access('register_storage_A')
 register_storage_B = nested_state.add_access('register_storage_B')
 register_storage_C = nested_state.add_access('register_storage_C')
@@ -418,7 +418,7 @@ nested_state.add_memlet_path(register_storage_A,
                         thread_map_entry,
                         tasklet,
                         dst_conn='__a',
-                        memlet=dace.Memlet(f"{register_storage_A.data}[i, 0]"))
+                        memlet=dace.Memlet(f"{register_storage_A.data}[i, k]"))
 
 ####################################################################################################################
 ### Data Movement: _B
@@ -433,7 +433,7 @@ nested_state.add_memlet_path(register_storage_B,
                         thread_map_entry,
                         tasklet,
                         dst_conn='__b',
-                        memlet=dace.Memlet(f"{register_storage_B.data}[0, j]"))
+                        memlet=dace.Memlet(f"{register_storage_B.data}[k, j]"))
 
 ####################################################################################################################
 ### Data Movement: output
