@@ -294,9 +294,9 @@ if args.split_k > 1:
     helpers.print_info("Applying Split K...")
     nested_sdfg.add_transient('partial_split_k_output', shape=[M, N, args.split_k], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
     partial_split_k_output = nested_state.add_access('partial_split_k_output')
-    # nested_sdfg.add_transient('accumulator', shape=[1], dtype=dace.float64, storage=dace.StorageType.Register)
-    # accumulator = nested_state.add_access('accumulator')
-    # accumulator.setzero = True
+    nested_sdfg.add_transient('accumulator', shape=[1], dtype=dace.float64, storage=dace.StorageType.Register)
+    accumulator = nested_state.add_access('accumulator')
+    accumulator.setzero = True
 
 
 shared_memory_A = nested_state.add_access('shared_memory_A')
@@ -530,18 +530,20 @@ else:
 
     nested_state.add_memlet_path(tasklet,
                             reduce_split_k_exit,
-                            reduction_exit,
-                            A_matmul_B_nested_state,
+                            accumulator,
+                            # reduction_exit,
+                            # A_matmul_B_nested_state,
                             src_conn='__out',
-                            # memlet=dace.Memlet(data=A_matmul_B_nested_state.data, subset="0:M, 0:N", wcr="lambda a, b: a + b"))
                             memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]", wcr='(lambda x, y: (x + y))'))
+                            memlet=dace.Memlet(f"{accumulator.data}[i, j]", wcr='(lambda x, y: (x + y))'))
 
                             # accumulator,
 
-    # nested_state.add_memlet_path(accumulator,
-    #                         reduction_exit,
-    #                         A_matmul_B_nested_state,
-    #                         memlet=dace.Memlet(A_matmul_B_nested_state.data, subset="tile_i:tile_i+8, tile_j:tile_j+8"))
+    nested_state.add_memlet_path(accumulator,
+                            reduction_exit,
+                            A_matmul_B_nested_state,
+                            # memlet=dace.Memlet(A_matmul_B_nested_state.data, subset="tile_i:tile_i+8, tile_j:tile_j+8"))
+                            memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]", wcr='(lambda x, y: (x + y))'))
         
 if args.double_buffering:
     helpers.print_info("Applying Double Buffering...", False)
