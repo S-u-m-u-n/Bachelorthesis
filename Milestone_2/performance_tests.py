@@ -100,6 +100,7 @@ if args.test == 3:
     cublas_options += ["-M=1024", "-N=1024", "-K=8192"]
     base_path = "./performance_test_results/1024_8192_1024/"
     path = base_path + str(args.path)
+    subprocess.run(["mkdir", "-p", path])
     subprocess.run(nvprof_options + [path + "/split_k_1.csv"] + python_options)
     subprocess.run(nvprof_options + [path + "/split_k_2.csv"] + python_options + ["--split-k 2"])
     subprocess.run(nvprof_options + [path + "/split_k_3.csv"] + python_options + ["--split-k 3"])
@@ -132,6 +133,7 @@ if args.test == 4:
     # cutlass_options += ["--m=256", "--n=256", "--k=10240"]
     base_path = "./performance_test_results/256_10240_256/"
     path = base_path + str(args.path)
+    subprocess.run(["mkdir", "-p", path])
     subprocess.run(nvprof_options + [path + "/split_k_1.csv"] + python_options)
     subprocess.run(nvprof_options + [path + "/split_k_2.csv"] + python_options + ["--split-k 2"])
     subprocess.run(nvprof_options + [path + "/split_k_3.csv"] + python_options + ["--split-k 3"])
