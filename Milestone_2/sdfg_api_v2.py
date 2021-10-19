@@ -298,7 +298,7 @@ if args.split_k > 1:
     # helpers.print_info("Applying Split K...")
     nested_sdfg.add_transient('partial_split_k_output', shape=[M, N, args.split_k], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
     partial_split_k_output = nested_state.add_access('partial_split_k_output')
-    nested_sdfg.add_transient('accumulator', shape=[8, 8], dtype=dace.float64, storage=dace.StorageType.Register) # TODO: what size should this local storage be?? Doesn't seem to have an effect on performance now.
+    nested_sdfg.add_transient('accumulator', shape=[1, 1], dtype=dace.float64, storage=dace.StorageType.Register) # TODO: what size should this local storage be?? Doesn't seem to have an effect on performance now.
     accumulator = nested_state.add_access('accumulator')
     accumulator.setzero = True
 
@@ -345,20 +345,12 @@ nested_sdfg.add_constant('SPLIT_K', args.split_k)
 
 tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a', '__b'}, {'__out'}, '__out = (__a * __b)')
 
-
 # This map creates threadblocks
-if args.split_k > 1:
-    thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
-            'Thread_block_grid',
-            dict(thread_block_i='0:num_thread_blocks_m', thread_block_j='0:num_thread_blocks_n', thread_block_k='0:SPLIT_K'),
-            # schedule=dace.dtypes.ScheduleType.Default)
-            schedule=dace.dtypes.ScheduleType.GPU_Device)
-else:
-    thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
-            'Thread_block_grid',
-            dict(thread_block_i='0:num_thread_blocks_m', thread_block_j='0:num_thread_blocks_n'),
-            # schedule=dace.dtypes.ScheduleType.Default)
-            schedule=dace.dtypes.ScheduleType.GPU_Device)
+thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
+        'Thread_block_grid',
+        dict(thread_block_i='0:num_thread_blocks_m', thread_block_j='0:num_thread_blocks_n') if args.split_k == 1 else
+        dict(thread_block_i='0:num_thread_blocks_m', thread_block_j='0:num_thread_blocks_n', thread_block_k='0:SPLIT_K'),
+        schedule=dace.dtypes.ScheduleType.GPU_Device)
 
 K_tile_map_entry, K_tile_map_exit = nested_state.add_map(
         'K_tile',
@@ -391,13 +383,13 @@ else:
     helpers.print_info("Swizzling Thread Blocks...", False)
     thread_block_i_idx = '(thread_block_i*SWIZZLE + (thread_block_j % SWIZZLE))*size_thread_block_tile_m'
     thread_block_j_idx = '(thread_block_j // SWIZZLE)*size_thread_block_tile_n'
-    
+
 ### Split K subset
 if args.split_k == 1:
     k_tile_range = 'k_tile*size_K_tile:k_tile*size_K_tile+size_K_tile'
 else:
     helpers.print_info("Splitting K...", False)
-    k_tile_range = '(thread_block_k*size_K_split) + k_tile*size_K_tile:(thread_block_k*size_K_split) + k_tile*size_K_tile+size_K_tile'
+    k_tile_range = '(thread_block_k*size_K_split) + k_tile*size_K_tile:(thread_block_k*size_K_split) + k_tile*size_K_tile + size_K_tile'
 
 ### Swizzle threads subset
 if not args.swizzle_threads:
@@ -455,20 +447,19 @@ nested_state.add_memlet_path(tasklet,
                         register_storage_C,
                         src_conn='__out',
                         memlet=dace.Memlet(f"{register_storage_C.data}[i, j]", wcr='(lambda x, y: (x + y))'))
-                        # if not args.vectorization else
-                            # dace.Memlet(f"{register_storage_C.data}[i, j:j+2]", wcr='(lambda x, y: (x + y))'))
+
 # register_storage_C -> A_matmul_B_nested_state (= result that will be transferred to outer sdfg)
 if args.split_k == 1:
     nested_state.add_memlet_path(register_storage_C,
                             thread_tile_map_exit,
                             K_tile_map_exit,
                             thread_block_grid_map_exit,
-                            # split_k_map_exit,
                             A_matmul_B_nested_state,
-                            memlet=dace.Memlet(data=A_matmul_B_nested_state.data,
-                            subset= subset,
-                            wcr='(lambda x, y: (x + y))',
-                            ))
+                            memlet=dace.Memlet(
+                                data=A_matmul_B_nested_state.data,
+                                subset= subset,
+                                wcr='(lambda x, y: (x + y))')
+                            )
                             # wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
 else:
     nested_state.add_memlet_path(register_storage_C,
@@ -476,10 +467,11 @@ else:
                             K_tile_map_exit,
                             thread_block_grid_map_exit,
                             partial_split_k_output,
-                            memlet=dace.Memlet(data=partial_split_k_output.data,
-                            subset= subset,
-                            wcr='(lambda x, y: (x + y))',
-                            ))
+                            memlet=dace.Memlet(
+                                data=partial_split_k_output.data,
+                                subset= subset,
+                                wcr='(lambda x, y: (x + y))')
+                            )
                             # wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
 
     # Reduce the split k
