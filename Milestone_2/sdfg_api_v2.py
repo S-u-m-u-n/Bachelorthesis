@@ -104,7 +104,6 @@ C_in = state.add_read('C')
 C_out = state.add_write('C')
 
 if args.vectorization:
-    helpers.print_info('Applying Vectorization...', False)
     sdfg.add_transient('gpu_A', shape=[M, K / 2], dtype=dace.vector(dace.float64, 2), storage=dace.StorageType.GPU_Global)
     sdfg.add_transient('gpu_B', shape=[K, N / 2], dtype=dace.vector(dace.float64, 2), storage=dace.StorageType.GPU_Global)
 else:
@@ -277,15 +276,27 @@ nested_initstate.add_memlet_path(tasklet,
 
 #########################################################
 ### matmul state
-nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
-nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
-nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m, 1], dtype=dace.float64, storage=dace.StorageType.Register)
-nested_sdfg.add_transient('register_storage_B', shape=[1, schedule.thread_tile_n], dtype=dace.float64, storage=dace.StorageType.Register)
-nested_sdfg.add_transient('register_storage_C', shape=[schedule.thread_tile_m, schedule.thread_tile_n], dtype=dace.float64, storage=dace.StorageType.Register)
+if args.vectorization:
+    helpers.print_info("Applying Vectorization...", False)
+    nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k / 2], dtype=dace.vector(dace.float64, 2), storage=dace.StorageType.GPU_Shared)
+    nested_sdfg.add_transient('shared_memory_B', shape=[schedule.thread_block_tile_n, schedule.load_k / 2], dtype=dace.vector(dace.float64, 2), storage=dace.StorageType.GPU_Shared)
+    nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m, 1], dtype=dace.vector(dace.float64, 2), storage=dace.StorageType.Register)
+    nested_sdfg.add_transient('register_storage_B', shape=[1, schedule.thread_tile_n / 2], dtype=dace.vector(dace.float64, 2), storage=dace.StorageType.Register)
+    nested_sdfg.add_transient('register_storage_C', shape=[schedule.thread_tile_m / 2, schedule.thread_tile_n / 2], dtype=dace.vector(dace.float64, 2), storage=dace.StorageType.Register)
+else:
+    nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
+    nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
+    nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m, 1], dtype=dace.float64, storage=dace.StorageType.Register)
+    nested_sdfg.add_transient('register_storage_B', shape=[1, schedule.thread_tile_n], dtype=dace.float64, storage=dace.StorageType.Register)
+    nested_sdfg.add_transient('register_storage_C', shape=[schedule.thread_tile_m, schedule.thread_tile_n], dtype=dace.float64, storage=dace.StorageType.Register)
 
 if args.split_k > 1:
+    helpers.print_info("Applying Split K...")
     nested_sdfg.add_transient('partial_split_k_output', shape=[M, N, args.split_k], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
     partial_split_k_output = nested_state.add_access('partial_split_k_output')
+    # nested_sdfg.add_transient('accumulator', shape=[1], dtype=dace.float64, storage=dace.StorageType.Register)
+    # accumulator = nested_state.add_access('accumulator')
+    # accumulator.setzero = True
 
 
 shared_memory_A = nested_state.add_access('shared_memory_A')
@@ -311,10 +322,9 @@ sdfg.add_constant('size_warp_tile_m', schedule.warp_tile_m)
 sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
 sdfg.add_constant('size_thread_tile_m', schedule.thread_tile_m)
 sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
+sdfg.add_constant('SPLIT_K', args.split_k)
 nested_sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 nested_sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
-nested_sdfg.add_constant('size_K_tile', schedule.load_k)
-nested_sdfg.add_constant('size_K_split', int(K_example / args.split_k))
 nested_sdfg.add_constant('num_thread_blocks_m', int((M_example / schedule.thread_block_tile_m + args.swizzle_thread_blocks - 1) // args.swizzle_thread_blocks))
 nested_sdfg.add_constant('num_thread_blocks_n', args.swizzle_thread_blocks * int(N_example / schedule.thread_block_tile_n))
 nested_sdfg.add_constant('num_K_tiles', int(K_example / (schedule.load_k * args.split_k)))
@@ -325,26 +335,27 @@ nested_sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
 # nested_sdfg.add_constant('size_thread_tile_k', schedule.thread_tile_k) # = size_K_tile
 nested_sdfg.add_constant('warp_width', math.ceil(schedule.warp_tile_n / schedule.thread_tile_n))
 nested_sdfg.add_constant('warp_height', math.ceil(schedule.warp_tile_m / schedule.thread_tile_m))
+nested_sdfg.add_constant('size_K_tile', schedule.load_k)
+nested_sdfg.add_constant('size_K_split', int(K_example / args.split_k))
 nested_sdfg.add_constant('SWIZZLE', args.swizzle_thread_blocks)
 nested_sdfg.add_constant('SPLIT_K', args.split_k)
 
-if args.vectorization:
-    tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a': dace.vector(dace.float64, 2), '__b': dace.vector(dace.float64, 2)}, {'__out': dace.float64}, '__out = (__a * __b)')
-else:
-    tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a', '__b'}, {'__out'}, '__out = (__a * __b)')
+tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a', '__b'}, {'__out'}, '__out = (__a * __b)')
 
-if args.split_k > 1:
-    split_k_map_entry, split_k_map_exit = nested_state.add_map(
-        'Split_K',
-        dict(split_k_idx='0:SPLIT_K'),
-        schedule=dace.dtypes.ScheduleType.Sequential)
 
 # This map creates threadblocks
-thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
-        'Thread_block_grid',
-        dict(thread_block_i='0:num_thread_blocks_m', thread_block_j='0:num_thread_blocks_n'),
-        # schedule=dace.dtypes.ScheduleType.Default)
-        schedule=dace.dtypes.ScheduleType.GPU_Device)
+if args.split_k > 1:
+    thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
+            'Thread_block_grid',
+            dict(thread_block_i='0:num_thread_blocks_m', thread_block_j='0:num_thread_blocks_n', thread_block_k='0:SPLIT_K'),
+            # schedule=dace.dtypes.ScheduleType.Default)
+            schedule=dace.dtypes.ScheduleType.GPU_Device)
+else:
+    thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
+            'Thread_block_grid',
+            dict(thread_block_i='0:num_thread_blocks_m', thread_block_j='0:num_thread_blocks_n'),
+            # schedule=dace.dtypes.ScheduleType.Default)
+            schedule=dace.dtypes.ScheduleType.GPU_Device)
 
 K_tile_map_entry, K_tile_map_exit = nested_state.add_map(
         'K_tile',
@@ -383,9 +394,9 @@ if args.split_k == 1:
     '(thread_block_i*SWIZZLE + (thread_block_j % SWIZZLE))*size_thread_block_tile_m:(thread_block_i*SWIZZLE + (thread_block_j % SWIZZLE))*size_thread_block_tile_m+size_thread_block_tile_m, k_tile*size_K_tile:k_tile*size_K_tile + size_K_tile'
     ))
 else:
-    nested_state.add_memlet_path(_A, split_k_map_entry, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data,
-    'thread_block_i*size_thread_block_tile_m:thread_block_i*size_thread_block_tile_m+size_thread_block_tile_m, (size_K_split*split_k_idx) + k_tile*size_K_tile:(size_K_split*split_k_idx) + k_tile*size_K_tile+size_K_tile' if args.swizzle_thread_blocks == 1 else
-    '(thread_block_i*SWIZZLE + (thread_block_j % SWIZZLE))*size_thread_block_tile_m:(thread_block_i*SWIZZLE + (thread_block_j % SWIZZLE))*size_thread_block_tile_m+size_thread_block_tile_m, (size_K_split*split_k_idx) + k_tile*size_K_tile:(size_K_split*split_k_idx) + k_tile*size_K_tile + size_K_tile'
+    nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data,
+    'thread_block_i*size_thread_block_tile_m:thread_block_i*size_thread_block_tile_m+size_thread_block_tile_m, (thread_block_k*size_K_split) + k_tile*size_K_tile:(thread_block_k*size_K_split) + k_tile*size_K_tile+size_K_tile' if args.swizzle_thread_blocks == 1 else
+    '(thread_block_i*SWIZZLE + (thread_block_j % SWIZZLE))*size_thread_block_tile_m:(thread_block_i*SWIZZLE + (thread_block_j % SWIZZLE))*size_thread_block_tile_m+size_thread_block_tile_m, (thread_block_k*size_K_split) + k_tile*size_K_tile:(thread_block_k*size_K_split) + k_tile*size_K_tile + size_K_tile'
     ))
 # shared_memory_A -> register_storage_A
 nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, # load size_thread_tile_m elements into register storage
@@ -409,9 +420,9 @@ if args.split_k == 1:
     'k_tile*size_K_tile:k_tile*size_K_tile + size_K_tile, (thread_block_j // SWIZZLE)*size_thread_block_tile_n:(thread_block_j // SWIZZLE)*size_thread_block_tile_n + size_thread_block_tile_n'
     ))
 else:
-    nested_state.add_memlet_path(_B, split_k_map_entry, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_B, memlet=dace.Memlet.simple(_B.data,
-    '(size_K_split*split_k_idx) + k_tile*size_K_tile:(size_K_split*split_k_idx) + k_tile*size_K_tile + size_K_tile, thread_block_j*size_thread_block_tile_n:thread_block_j*size_thread_block_tile_n+size_thread_block_tile_n'  if args.swizzle_thread_blocks == 1 else
-    '(size_K_split*split_k_idx) + k_tile*size_K_tile:(size_K_split*split_k_idx) + k_tile*size_K_tile + size_K_tile, (thread_block_j // SWIZZLE)*size_thread_block_tile_n:(thread_block_j // SWIZZLE)*size_thread_block_tile_n + size_thread_block_tile_n'
+    nested_state.add_memlet_path(_B, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_B, memlet=dace.Memlet.simple(_B.data,
+    '(thread_block_k*size_K_split) + k_tile*size_K_tile:(thread_block_k*size_K_split) + k_tile*size_K_tile + size_K_tile, thread_block_j*size_thread_block_tile_n:thread_block_j*size_thread_block_tile_n+size_thread_block_tile_n'  if args.swizzle_thread_blocks == 1 else
+    '(thread_block_k*size_K_split) + k_tile*size_K_tile:(thread_block_k*size_K_split) + k_tile*size_K_tile + size_K_tile, (thread_block_j // SWIZZLE)*size_thread_block_tile_n:(thread_block_j // SWIZZLE)*size_thread_block_tile_n + size_thread_block_tile_n'
     ))
 # shared_memory_B -> register_storage_B
 nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, # load size_thread_tile_n elements into register storage
@@ -425,9 +436,6 @@ nested_state.add_memlet_path(register_storage_B,
                         tasklet,
                         dst_conn='__b',
                         memlet=dace.Memlet(f"{register_storage_B.data}[0, j]"))
-                        # if not args.vectorization else dace.Memlet(f"{register_storage_B.data}[0, j:j+2]"))
-                        # memlet=dace.Memlet(data=register_storage_B.data,
-                        # subset="0:0, j:j" if not args.vectorization else "0:0, j:j+2"))
 
 ####################################################################################################################
 ### Data Movement: output
@@ -462,6 +470,9 @@ else:
     helpers.print_error("Invalid Swizzle case!", False)
     exit(1)
 
+if args.split_k > 1:
+    subset += ', thread_block_k'
+
 nested_state.add_memlet_path(tasklet,
                         thread_map_exit,
                         thread_K_map_exit,
@@ -494,27 +505,56 @@ else:
                             wcr='(lambda x, y: (x + y))',
                             ))
                             # wcr_nonatomic=True)) # needed so we have a non-atomic accumulate accross thread blocks
-    
+
+    # Reduce the split k
+    tasklet = nested_state.add_tasklet('reduce_split_k', ['__in'], ['__out'], '__out = __in')
+
+    reduction_entry, reduction_exit = nested_state.add_map(
+            'reduction_map',
+            dict(i='0:M', j='0:N'),
+            schedule=dace.dtypes.ScheduleType.GPU_Device)
+
+    reduce_split_k_entry, reduce_split_k_exit = nested_state.add_map(
+            'reduce_split_k',
+            dict(k ='0:SPLIT_K'),
+            schedule=dace.dtypes.ScheduleType.Sequential)
+
     nested_state.add_memlet_path(partial_split_k_output,
-                            split_k_map_exit,
+                            reduction_entry,
+                            reduce_split_k_entry,
+                            tasklet,
+                            dst_conn='__in',
+                            # memlet=dace.Memlet(data=partial_split_k_output.data, subset="0:M, 0:N, 0:SPLIT_K"))
+                            # memlet=dace.Memlet(f"{partial_split_k_output.data}[i, j, k]"))
+                            memlet=dace.Memlet("partial_split_k_output[i, j, k]"))
+
+    nested_state.add_memlet_path(tasklet,
+                            reduce_split_k_exit,
+                            reduction_exit,
                             A_matmul_B_nested_state,
-                            memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]", wcr='(lambda x, y: (x + y))', wcr_nonatomic=True))
-    
-    # AccumulateTransient.apply_to(nested_state.parent, map_exit=thread_block_grid_map_exit, outer_map_exit=split_k_map_exit)
+                            src_conn='__out',
+                            # memlet=dace.Memlet(data=A_matmul_B_nested_state.data, subset="0:M, 0:N", wcr="lambda a, b: a + b"))
+                            memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]", wcr='(lambda x, y: (x + y))'))
 
+                            # accumulator,
 
+    # nested_state.add_memlet_path(accumulator,
+    #                         reduction_exit,
+    #                         A_matmul_B_nested_state,
+    #                         memlet=dace.Memlet(A_matmul_B_nested_state.data, subset="tile_i:tile_i+8, tile_j:tile_j+8"))
+        
 if args.double_buffering:
     helpers.print_info("Applying Double Buffering...", False)
     DoubleBuffering.apply_to(nested_state.parent, _map_entry=K_tile_map_entry, _transient=shared_memory_A)
 
 nested_sdfg.fill_scope_connectors()
 sdfg.fill_scope_connectors()
-sdfg.save('sdfg_api.sdfg')
+sdfg.save('sdfg_api_v2.sdfg')
 nested_sdfg.validate()
 sdfg.validate()
 
 sdfg.arg_names = ['A', 'B', 'C', 'alpha', 'beta']
-sdfg.save('sdfg_api.sdfg')
+sdfg.save('sdfg_api_v2.sdfg')
 csdfg = sdfg.compile()
 
 for i in range(args.repetitions):

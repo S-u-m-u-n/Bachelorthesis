@@ -6,13 +6,12 @@
 - Check with cudamemcheck if there is a race condition!
 
 
-
 ---------------------------------------------------------------------------
 - Check assembly and compare vectorization vs without vectorization:
-        cuobjdump -sass .dacecache/gemm/build/libgemm.so > assembly_non_vectorized.txt
-        cuobjdump -sass .dacecache/gemm/build/libgemm.so > assembly_vectorized.txt
+        - cuobjdump -sass .dacecache/gemm/build/libgemm.so > assembly_non_vectorized.txt
+        - cuobjdump -sass .dacecache/gemm/build/libgemm.so > assembly_vectorized.txt
 >>> Done, apparently no difference in Assembly... why not??
->>> vectorization doesn't have an effect on loads from local storage 
+        => vectorization doesn't have an effect on loads from local storage! 
 - Try to vectorize the global memory to shared memory loads!
 
 
@@ -32,17 +31,18 @@
 ---------------------------------------------------------------------------
 - Implement Thread Block Swizzling
 >>> Done.
->>> Still need to check cases where the swizzled grid has a different number of blocks than the original grid.
-- Can check L2 performance counters via script to see if swizzling thread blocks helps
-
-
-
+- Do we need to check cases where the swizzled grid has a different number of blocks than the original grid, i.e. if SWIZZLE doesn't evenly divide Grid_y?
+- Can check L2 performance counters with nvprof to see if swizzling thread blocks helps L2 cache
 ---------------------------------------------------------------------------
 - Check in Neville's thesis how close he gets to cuBLAS
->>> For 1024x1024x1024 and other common cases he lies in the middle of cuBLAS and CUTLASS (see page 55 in his thesis)
+>>> For 1024x1024x1024 and other common cases he lies in the middle of cuBLAS and CUTLASS (see p. 55)
 ---------------------------------------------------------------------------
 - Implement Split K
->>>
+        - Check how Neville implemented it:
+        >>> He created a 3-dimensional thread block grid (see p.61-62)
+                Two possible implementations?
+                A) Launch a kernel for each split, accumulate the result of the individual kernels
+                B) Launch a single kernel, but with a third dimension of size split_k, accumulate the result along the third dimension
 
 
 
