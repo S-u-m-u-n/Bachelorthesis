@@ -324,9 +324,9 @@ sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
 sdfg.add_constant('size_K_tile', schedule.load_k)
 # sdfg.add_constant('num_thread_blocks_m', int(M_example / schedule.thread_block_tile_m) if not args.swizzle_thread_blocks else int((M_example / schedule.thread_block_tile_m + 2 - 1) / 2))
-sdfg.add_constant('num_thread_blocks_m', int((M_example / schedule.thread_block_tile_m + args.swizzle_thread_blocks - 1) // args.swizzle_thread_blocks))
+sdfg.add_constant('num_thread_blocks_m', int((M_example // schedule.thread_block_tile_m + args.swizzle_thread_blocks - 1) // args.swizzle_thread_blocks))
 # sdfg.add_constant('num_thread_blocks_n', int(N_example / schedule.thread_block_tile_n) if not args.swizzle_thread_blocks else 2*int(N_example / schedule.thread_block_tile_n))
-sdfg.add_constant('num_thread_blocks_n', args.swizzle_thread_blocks * int(N_example / schedule.thread_block_tile_n))
+sdfg.add_constant('num_thread_blocks_n', args.swizzle_thread_blocks * int(N_example // schedule.thread_block_tile_n))
 sdfg.add_constant('num_K_tiles', int(K_example / schedule.load_k))
 sdfg.add_constant('size_warp_tile_m', schedule.warp_tile_m)
 sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
@@ -335,8 +335,8 @@ sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
 sdfg.add_constant('SPLIT_K', args.split_k)
 nested_sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 nested_sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
-nested_sdfg.add_constant('num_thread_blocks_m', int((M_example / schedule.thread_block_tile_m + args.swizzle_thread_blocks - 1) // args.swizzle_thread_blocks))
-nested_sdfg.add_constant('num_thread_blocks_n', args.swizzle_thread_blocks * int(N_example / schedule.thread_block_tile_n))
+nested_sdfg.add_constant('num_thread_blocks_m', int((M_example // schedule.thread_block_tile_m + args.swizzle_thread_blocks - 1) // args.swizzle_thread_blocks))
+nested_sdfg.add_constant('num_thread_blocks_n', args.swizzle_thread_blocks * int(N_example // schedule.thread_block_tile_n))
 nested_sdfg.add_constant('num_K_tiles', int(K_example / (schedule.load_k * args.split_k)))
 nested_sdfg.add_constant('size_warp_tile_m', schedule.warp_tile_m)
 nested_sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
@@ -483,8 +483,8 @@ if args.split_k == 1:
                                 data=A_matmul_B_nested_state.data,
                                 subset= subset,
                                 wcr='(lambda x, y: (x + y))',
-                                wcr_nonatomic=wcr_no_conflicts)
-                            ) # needed so we have a non-atomic accumulate accross thread blocks
+                                wcr_nonatomic=wcr_no_conflicts) # needed so we have a non-atomic accumulate accross thread blocks
+                            )
 else:
     nested_state.add_memlet_path(register_storage_C,
                             thread_tile_map_exit,
@@ -495,8 +495,8 @@ else:
                                 data=partial_split_k_output.data,
                                 subset= subset,
                                 wcr='(lambda x, y: (x + y))',
-                                wcr_nonatomic=wcr_no_conflicts)
-                            ) # needed so we have a non-atomic accumulate accross thread blocks
+                                wcr_nonatomic=wcr_no_conflicts) # needed so we have a non-atomic accumulate accross thread blocks
+                            )
 
     # Reduce the split k
     tasklet = nested_state.add_tasklet('reduce_split_k', ['__in'], ['__out'], '__out = __in')
