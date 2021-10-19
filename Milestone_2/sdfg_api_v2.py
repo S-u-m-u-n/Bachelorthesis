@@ -448,7 +448,11 @@ nested_state.add_memlet_path(tasklet,
                         thread_K_map_exit,
                         register_storage_C,
                         src_conn='__out',
-                        memlet=dace.Memlet(f"{register_storage_C.data}[i, j]", wcr='(lambda x, y: (x + y))'))
+                        memlet=dace.Memlet(
+                            f"{register_storage_C.data}[i, j]",
+                            wcr='(lambda x, y: (x + y))',
+                            wcr_nonatomic=wcr_no_conflicts)
+                        )
 
 # register_storage_C -> A_matmul_B_nested_state (= result that will be transferred to outer sdfg)
 wcr_no_conflicts = False 
