@@ -120,10 +120,24 @@ if args.test == 4:
     split_k_40 = read_nvprof_data(path + "/split_k_40.csv")
 
     cublas_df = read_nvprof_data(base_path + "cublas.csv")
-    combined_df_db = pd.concat([split_k_1, split_k_2, split_k_4, split_k_5, split_k_8, split_k_10, split_k_16, split_k_20, split_k_40, cublas_df], axis=1)
-    combined_df_db.columns = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "cublas"]
-    fig_db = plt.figure()
-    sns.violinplot(data=combined_df_db).set(xticklabels=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "cuBLAS"], ylabel="Runtime [ms]", title="Split K performance: M = 256, N = 256, K = 10240", xlabel="Split K") # , xlabel=""
-    fig_db.savefig(path + "/comparison.png")
+    combined_df = pd.concat([split_k_1, split_k_2, split_k_4, split_k_5, split_k_8, split_k_10, split_k_16, split_k_20, split_k_40, cublas_df], axis=1)
+    combined_df.columns = ["1", "2","4", "5", "8", "10", "16", "20", "40", "cublas"]
+    fig = plt.figure()
+    sns.violinplot(data=combined_df).set(xticklabels=["1", "2","4", "5", "8", "10", "16", "20", "40", "cuBLAS"], ylabel="Runtime [ms]", title="Split K performance: M = 256, N = 256, K = 10240", xlabel="Split K") # , xlabel=""
+    fig.savefig(path + "/comparison.png")
+
+    # fig2, (sk1, sk2, sk4, sk5, sk8, sk10, sk16, sk20, sk40, cublas) = plt.subplots(1, 10, constrained_layout=True, sharey=True)
+    # sk1.plot(split_k_1)
+    # sk2.plot(split_k_2)
+    # sk4.plot(split_k_4)
+    # sk5.plot(split_k_5)
+    # sk8.plot(split_k_8)
+    # sk10.plot(split_k_10)
+    # sk16.plot(split_k_16)
+    # sk20.plot(split_k_20)
+    # sk40.plot(split_k_40)
+    # cublas.plot(cublas_df)
+    # fig2.savefig(path + "/comparison2.png")
+
 
 helpers.print_success("Performance plots created.", False)

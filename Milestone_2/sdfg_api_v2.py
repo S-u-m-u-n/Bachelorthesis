@@ -77,8 +77,8 @@ args = parser.parse_args()
 if args.verbose:
     helpers.print_info("Program launched with the following arguments: " + str(args), args.colorless)
 
-# schedule = Schedule(load_k=1, thread_tile_m=1, thread_tile_n=1, thread_tile_k=1, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=16, thread_block_tile_n=8)
-schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
+schedule = Schedule(load_k=1, thread_tile_m=1, thread_tile_n=1, thread_tile_k=1, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=16, thread_block_tile_n=8)
+# schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
 
 M = dace.symbol('M')
 N = dace.symbol('N')
@@ -332,7 +332,7 @@ sdfg.add_constant('size_warp_tile_m', schedule.warp_tile_m)
 sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
 sdfg.add_constant('size_thread_tile_m', schedule.thread_tile_m)
 sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
-sdfg.add_constant('SPLIT_K', args.split_k)
+sdfg.add_constant('SPLIT_K', args.split_k) # TODO: might need to split an additional time if Split k doesn't divide K!!!
 nested_sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 nested_sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
 nested_sdfg.add_constant('num_thread_blocks_m', int((M_example // schedule.thread_block_tile_m + args.swizzle_thread_blocks - 1) // args.swizzle_thread_blocks))
@@ -348,7 +348,7 @@ nested_sdfg.add_constant('warp_height', math.ceil(schedule.warp_tile_m / schedul
 nested_sdfg.add_constant('size_K_tile', schedule.load_k)
 nested_sdfg.add_constant('size_K_split', int(K_example / args.split_k))
 nested_sdfg.add_constant('SWIZZLE', args.swizzle_thread_blocks)
-nested_sdfg.add_constant('SPLIT_K', args.split_k)
+nested_sdfg.add_constant('SPLIT_K', args.split_k) # TODO: might need to split an additional time if Split k doesn't divide K!!!
 
 num_threads_per_threadblock = (schedule.thread_block_tile_m // schedule.thread_tile_m) * (schedule.thread_block_tile_n // schedule.thread_tile_n)
 
