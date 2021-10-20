@@ -15,7 +15,7 @@ args = parser.parse_args()
 helpers.print_info("Creating performance plots...", False)
 
 def read_nvprof_data(path_to_csv):
-    df = pd.read_csv(path_to_csv).filter(['Duration', 'Name']).iloc[1:]
+    df = pd.read_csv(path_to_csv, skiprows=3).filter(['Duration', 'Name']).iloc[1:]
     return df[df['Name'].str.contains("Thread_block_grid|dgemm")].filter(['Duration']).reset_index(drop=True).apply(pd.to_numeric, errors='coerce')
 
 ### (1024 x 1024) x (1024 x 1024)
@@ -98,11 +98,32 @@ if args.test == 3:
     split_k_15 = read_nvprof_data(path + "/split_k_15.csv")
     split_k_16 = read_nvprof_data(path + "/split_k_16.csv")
 
-    cublas_df = read_nvprof_data("./performance_test_results/1024_8192_1024/cublas.csv")
+    cublas_df = read_nvprof_data(base_path + "cublas.csv")
     combined_df_db = pd.concat([split_k_1, split_k_2, split_k_3, split_k_4, split_k_5, split_k_6, split_k_7, split_k_8, split_k_9, split_k_10, split_k_11, split_k_12, split_k_13, split_k_14, split_k_15, split_k_16, cublas_df], axis=1)
     combined_df_db.columns = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "cublas"]
     fig_db = plt.figure()
     sns.violinplot(data=combined_df_db).set(xticklabels=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "cuBLAS"], ylabel="Runtime [ms]", title="Split K performance: M = 1024, N = 1024, K = 8192", xlabel="Split K") # , xlabel=""
-    fig_db.savefig(path + "/1024_8192_1024_comparison_db.png")
+    fig_db.savefig(path + "/comparison.png")
+
+### (256 x 10240) x (10240 x 256)
+if args.test == 4:
+    base_path = "./performance_test_results/256_10240_256/"
+    path = base_path + str(args.path)
+    split_k_1 = read_nvprof_data(path + "/split_k_1.csv")
+    split_k_2 = read_nvprof_data(path + "/split_k_2.csv")
+    split_k_4 = read_nvprof_data(path + "/split_k_4.csv")
+    split_k_5 = read_nvprof_data(path + "/split_k_5.csv")
+    split_k_8 = read_nvprof_data(path + "/split_k_8.csv")
+    split_k_10 = read_nvprof_data(path + "/split_k_10.csv")
+    split_k_16 = read_nvprof_data(path + "/split_k_16.csv")
+    split_k_20 = read_nvprof_data(path + "/split_k_20.csv")
+    split_k_40 = read_nvprof_data(path + "/split_k_40.csv")
+
+    cublas_df = read_nvprof_data(base_path + "cublas.csv")
+    combined_df_db = pd.concat([split_k_1, split_k_2, split_k_4, split_k_5, split_k_8, split_k_10, split_k_16, split_k_20, split_k_40, cublas_df], axis=1)
+    combined_df_db.columns = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "cublas"]
+    fig_db = plt.figure()
+    sns.violinplot(data=combined_df_db).set(xticklabels=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "cuBLAS"], ylabel="Runtime [ms]", title="Split K performance: M = 256, N = 256, K = 10240", xlabel="Split K") # , xlabel=""
+    fig_db.savefig(path + "/comparison.png")
 
 helpers.print_success("Performance plots created.", False)

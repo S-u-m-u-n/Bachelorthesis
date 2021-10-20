@@ -1,6 +1,8 @@
 import subprocess
-from argparse import ArgumentParser
 import helpers
+import glob
+from argparse import ArgumentParser
+
 
 parser = ArgumentParser()
 parser.add_argument("-t", "--test", type=int, dest='test', nargs="?", required=True)
@@ -45,9 +47,9 @@ if args.test == 1:
     subprocess.run(nvprof_options + [path + "/double_buffering_vectorization_swizzled_threads_swizzled_thread_blocks.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-threads", "--swizzle-thread-blocks", "2"])
     subprocess.run(nvprof_options + [base_path + "cublas.csv"] + cublas_options)
     subprocess.run(nvprof_options + [base_path + "cutlass.csv"] + cutlass_options)
-    subprocess.run(["sed", "-i", "'1d;2d;3d'", base_path + "cublas.csv"]) # Delete first three lines, which are filled with nvprof information
-    subprocess.run(["sed", "-i", "'1d;2d;3d'", base_path + "cutlass.csv"]) # Delete first three lines, which are filled with nvprof information
-    subprocess.run(["sed", "-i", "'1d;2d;3d'", path + "/*.csv"]) # Delete first three lines, which are filled with nvprof information
+    # subprocess.run(["sed", "-i", "'1d;2d;3d'", base_path + "cublas.csv"]) # Delete first three lines, which are filled with nvprof information
+    # subprocess.run(["sed", "-i", "'1d;2d;3d'", base_path + "cutlass.csv"]) # Delete first three lines, which are filled with nvprof information
+    # subprocess.run(["sed", "-i", "'1d;2d;3d'", path + "/*.csv"]) # Delete first three lines, which are filled with nvprof information
 
 ### (4096 x 4096) x (4096 x 4096)
 if args.test == 2:
@@ -87,9 +89,9 @@ if args.test == 2:
     # subprocess.run(nvprof_options + ["./performance_test_results/4096_4096/cublas.csv", "python", "./cublas.py", "-M=4096", "-N=4096", "-K=4096"])
     # subprocess.run(["sed", "-i", "'1d;2d;3d'", "./performance_test_results/4096_4096/cublas.csv"]) # Delete first three lines, which are filled with nvprof information
     subprocess.run(nvprof_options + ["./performance_test_results/4096_4096/cutlass.csv", "/home/jacobsi/cutlass/build/tools/profiler/cutlass_profiler", "--verification-enabled=false", "--warmup-iterations=0" "--operation=Gemm", "--m=4096", "--n=4096", "--k=4096", "--cta_m=128", "--cta_n=64", "--A=f64:column", "--B=f64:column", "--profiling-iterations=" + str(args.repetitions - 1)])
-    subprocess.run(["sed", "-i", "'1d;2d;3d'", "./performance_test_results/4096_4096/cutlass.csv"]) # Delete first three lines, which are filled with nvprof information
+    # subprocess.run(["sed", "-i", "'1d;2d;3d'", "./performance_test_results/4096_4096/cutlass.csv"]) # Delete first three lines, which are filled with nvprof information
 
-    subprocess.run(["sed", "-i", "'1d;2d;3d'", "./performance_test_results/4096_4096/" + str(args.path) + "/*.csv"]) # Delete first three lines, which are filled with nvprof information
+    # subprocess.run(["sed", "-i", "'1d;2d;3d'", "./performance_test_results/4096_4096/" + str(args.path) + "/*.csv"]) # Delete first three lines, which are filled with nvprof information
 
 ## (1024 x 8192) x (8192 x 1024)
 if args.test == 3:
@@ -119,9 +121,9 @@ if args.test == 3:
     subprocess.run(nvprof_options + [path + "/split_k_16.csv"] + python_options + ["--split-k", "16"])
     subprocess.run(nvprof_options + [base_path + "cublas.csv"] + cublas_options)
     # subprocess.run(nvprof_options + [base_path + "cutlass.csv"] + cutlass_options)
-    subprocess.run(["sed", "-i", "'1d;2d;3d'", base_path + "cublas.csv"]) # Delete first three lines, which are filled with nvprof information
+    # subprocess.run(["sed", "-i", "'1d;2d;3d'", base_path + "cublas.csv"]) # Delete first three lines, which are filled with nvprof information
     # subprocess.run(["sed", "-i", "'1d;2d;3d'", base_path + "cutlass.csv"]) # Delete first three lines, which are filled with nvprof information
-    subprocess.run(["sed", "-i", "'1d;2d;3d'", path + "/*.csv"]) # Delete first three lines, which are filled with nvprof information
+    # subprocess.run(["sed", "-i", "'1d;2d;3d'", path + "/*.csv"]) # Delete first three lines, which are filled with nvprof information
 
 ## (256 x 10240) x (10240 x 256)
 if args.test == 4:
@@ -184,8 +186,9 @@ if args.test == 4:
     # subprocess.run(nvprof_options + [path + "/split_k_48.csv"] + python_options + ["--split-k", "48"])
     subprocess.run(nvprof_options + [base_path + "cublas.csv"] + cublas_options)
     # subprocess.run(nvprof_options + [base_path + "cutlass.csv"] + cutlass_options)
-    subprocess.run(["sed", "-i", "'1d;2d;3d'", base_path + "cublas.csv"]) # Delete first three lines, which are filled with nvprof information
+    # subprocess.run(["sed", "-i", "'1d;2d;3d'", base_path + "cublas.csv"]) # Delete first three lines, which are filled with nvprof information
     # subprocess.run(["sed", "-i", "'1d;2d;3d'", base_path + "cutlass.csv"]) # Delete first three lines, which are filled with nvprof information
-    subprocess.run(["sed", "-i", "'1d;2d;3d'", path + "/*.csv"]) # Delete first three lines, which are filled with nvprof information
+    # files = glob.glob(path + "/*.csv")
+    # subprocess.run(["sed", "-i", "1d;2d;3d"] + files) # Delete first three lines, which are filled with nvprof information
 
 helpers.print_success("Performance tests finished.", False)
