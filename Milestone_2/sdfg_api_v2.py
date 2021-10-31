@@ -77,8 +77,8 @@ args = parser.parse_args()
 if args.verbose:
     helpers.print_info("Program launched with the following arguments: " + str(args), args.colorless)
 
-schedule = Schedule(load_k=1, thread_tile_m=1, thread_tile_n=1, thread_tile_k=1, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=16, thread_block_tile_n=8)
-# schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
+# schedule = Schedule(load_k=1, thread_tile_m=1, thread_tile_n=1, thread_tile_k=1, warp_tile_m=8, warp_tile_n=4, thread_block_tile_m=16, thread_block_tile_n=8)
+schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
 
 M = dace.symbol('M')
 N = dace.symbol('N')
@@ -291,8 +291,8 @@ nested_initstate.add_memlet_path(tasklet,
 if args.vectorization:
     sdfg.add_constant('VECLEN', 2)
     nested_sdfg.add_constant('VECLEN', 2)
-    nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k // 2], dtype=dace.vector(dace.float64, 2), storage=dace.StorageType.GPU_Shared)
-    nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n // 2], dtype=dace.vector(dace.float64, 2), storage=dace.StorageType.GPU_Shared)
+    nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
+    nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
 else:
     nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
     nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
@@ -303,7 +303,7 @@ nested_sdfg.add_transient('register_storage_C', shape=[schedule.thread_tile_m, s
 
 if args.split_k > 1:
     # helpers.print_info("Applying Split K...")
-    nested_sdfg.add_transient('partial_split_k_output', shape=[M, N, args.split_k], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
+    nested_sdfg.add_transient('partial_split_k_output', shape=[args.split_k, M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
     partial_split_k_output = nested_state.add_access('partial_split_k_output')
     nested_sdfg.add_transient('accumulator', shape=[1, 1], dtype=dace.float64, storage=dace.StorageType.Register) # TODO: what size should this local storage be?? Doesn't seem to have an effect on performance now.
     accumulator = nested_state.add_access('accumulator')
@@ -332,7 +332,7 @@ sdfg.add_constant('size_warp_tile_m', schedule.warp_tile_m)
 sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
 sdfg.add_constant('size_thread_tile_m', schedule.thread_tile_m)
 sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
-sdfg.add_constant('SPLIT_K', args.split_k) # TODO: might need to split an additional time if Split k doesn't divide K!!!
+sdfg.add_constant('SPLIT_K', args.split_k)
 nested_sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 nested_sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
 nested_sdfg.add_constant('num_thread_blocks_m', int((M_example // schedule.thread_block_tile_m + args.swizzle_thread_blocks - 1) // args.swizzle_thread_blocks))
@@ -348,7 +348,7 @@ nested_sdfg.add_constant('warp_height', math.ceil(schedule.warp_tile_m / schedul
 nested_sdfg.add_constant('size_K_tile', schedule.load_k)
 nested_sdfg.add_constant('size_K_split', int(K_example / args.split_k))
 nested_sdfg.add_constant('SWIZZLE', args.swizzle_thread_blocks)
-nested_sdfg.add_constant('SPLIT_K', args.split_k) # TODO: might need to split an additional time if Split k doesn't divide K!!!
+nested_sdfg.add_constant('SPLIT_K', args.split_k)
 
 num_threads_per_threadblock = (schedule.thread_block_tile_m // schedule.thread_tile_m) * (schedule.thread_block_tile_n // schedule.thread_tile_n)
 
@@ -455,7 +455,7 @@ nested_state.add_memlet_path(register_storage_B,
 subset = thread_block_i_idx + ' + ' + thread_i_idx + ':' + thread_block_i_idx + ' + ' + thread_i_idx + ' + size_thread_tile_m, ' + thread_block_j_idx + ' + ' + thread_j_idx + ':' + thread_block_j_idx + ' + ' + thread_j_idx + ' + size_thread_tile_n'
 
 if args.split_k > 1:
-    subset += ', thread_block_k'
+    subset = 'thread_block_k, ' + subset
 
 wcr_no_conflicts = False 
 if num_threads_per_threadblock == 32 or args.double_buffering:
@@ -536,7 +536,8 @@ else:
                             reduction_exit,
                             A_matmul_B_nested_state,
                             # memlet=dace.Memlet(A_matmul_B_nested_state.data, subset="tile_i:tile_i+8, tile_j:tile_j+8"))
-                            memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]", wcr='(lambda x, y: (x + y))'))
+                            # memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]", wcr='(lambda x, y: (x + y))', wcr_nonatomic=True))
+                            memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]"))
         
 if args.double_buffering:
     helpers.print_info("Applying Double Buffering...", False)

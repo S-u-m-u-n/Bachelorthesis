@@ -11,6 +11,10 @@ Seems to be a STS / LDS problem?
 https://stackoverflow.com/questions/48086305/race-condition-in-cuda-kernel in answer 1.?
 
 
+                while state_dfg.entry_node():
+                    if inner_schedule.map == dtypes.ScheduleType.Sequential:
+                        continue
+
 
 ---------------------------------------------------------------------------
 - Check assembly and compare vectorization vs without vectorization:
@@ -51,6 +55,7 @@ https://stackoverflow.com/questions/48086305/race-condition-in-cuda-kernel in an
                 B) Launch a single kernel, but with a third dimension of size split_k, accumulate the result along the third dimension
 
 
+A short question regarding the Split K reduction: I have added a small register storage (called "accumulator") of size 1x1 where each thread stores the reduced value of the k dimension. I've checked with Neville's thesis and he doesn't seem to use local storage for the split k reduction. Compared to cuBLAS my split k reduction takes about 0.008ms on average, whereas cuBlas needs about 0.0072ms on average. Do you think the register storage is worth it like this?
 
 ---------------------------------------------------------------------------
 - Add testcases from Neville and plot performance
