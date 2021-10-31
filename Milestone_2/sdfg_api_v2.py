@@ -491,12 +491,13 @@ else:
                             K_tile_map_exit,
                             thread_block_grid_map_exit,
                             partial_split_k_output,
-                            memlet=dace.Memlet(
-                                data=partial_split_k_output.data,
-                                subset= subset,
-                                wcr='(lambda x, y: (x + y))',
-                                wcr_nonatomic=wcr_no_conflicts) # needed so we have a non-atomic accumulate accross thread blocks
-                            )
+                            # memlet=dace.Memlet(
+                            #     data=partial_split_k_output.data,
+                            #     subset= subset,
+                            #     wcr='(lambda x, y: (x + y))',
+                            #     wcr_nonatomic=wcr_no_conflicts) # needed so we have a non-atomic accumulate accross thread blocks
+                            # )
+                            memlet=dace.Memlet(data=partial_split_k_output.data, subset=subset)
 
     # Reduce the split k
     tasklet = nested_state.add_tasklet('reduce_split_k', ['__in'], ['__out'], '__out = __in')
