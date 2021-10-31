@@ -495,7 +495,7 @@ else:
                                 data=partial_split_k_output.data,
                                 subset= subset,
                                 wcr='(lambda x, y: (x + y))',
-                                wcr_nonatomic=True) # needed so we have a non-atomic accumulate accross thread blocks
+                                wcr_nonatomic=wcr_no_conflicts) # needed so we have a non-atomic accumulate accross thread blocks
                             )
                             # memlet=dace.Memlet(data=partial_split_k_output.data, subset=subset))
 
@@ -524,14 +524,8 @@ else:
     nested_state.add_memlet_path(tasklet,
                             reduce_split_k_exit,
                             accumulator,
-                            # reduction_exit,
-                            # A_matmul_B_nested_state,
                             src_conn='__out',
-                            # memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]", wcr='(lambda x, y: (x + y))'))
                             memlet=dace.Memlet(f"{accumulator.data}[i, j]", wcr='(lambda x, y: (x + y))'))
-                            # memlet=dace.Memlet(accumulator.data, wcr='(lambda x, y: (x + y))'))
-
-                            # accumulator,
 
     nested_state.add_memlet_path(accumulator,
                             reduction_exit,
