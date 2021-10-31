@@ -518,7 +518,7 @@ else:
                             dst_conn='__in',
                             # memlet=dace.Memlet(data=partial_split_k_output.data, subset="0:M, 0:N, 0:SPLIT_K"))
                             # memlet=dace.Memlet(f"{partial_split_k_output.data}[i, j, k]"))
-                            memlet=dace.Memlet("partial_split_k_output[i, j, k]"))
+                            memlet=dace.Memlet("partial_split_k_output[k, i, j]"))
 
     nested_state.add_memlet_path(tasklet,
                             reduce_split_k_exit,
