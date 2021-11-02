@@ -192,3 +192,20 @@ if args.test == 4:
     # subprocess.run(["sed", "-i", "1d;2d;3d"] + files) # Delete first three lines, which are filled with nvprof information
 
 helpers.print_success("Performance tests finished.", False)
+
+### (1024 x 1024) x (1024 x 1024)
+if args.test == 5:
+    helpers.print_info("=" * 20, False)
+    helpers.print_info("===== (1024 x 1024) x (1024 x 1024)", False)
+    helpers.print_info("=" * 20, False)
+    python_options += ["-M=1024", "-N=1024", "-K=1024"]
+    cublas_options += ["-M=1024", "-N=1024", "-K=1024"]
+    cutlass_options += ["--m=1024", "--n=1024", "--k=1024"]
+    base_path = "./performance_test_results/1024_1024_1024_isolated_optimizations/"
+    path = base_path + str(args.path)
+    subprocess.run(["mkdir", "-p", path])
+    subprocess.run(nvprof_options + [path + "/unoptimized.csv"] + python_options)
+    subprocess.run(nvprof_options + [path + "/swizzled_threads.csv"] + python_options + ["--swizzle-threads"])
+    subprocess.run(nvprof_options + [path + "/swizzled_thread_blocks.csv"] + python_options + ["--swizzle-thread-blocks", "2"])
+    subprocess.run(nvprof_options + [path + "/double_buffering.csv"] + python_options + ["--double-buffering"])
+    
