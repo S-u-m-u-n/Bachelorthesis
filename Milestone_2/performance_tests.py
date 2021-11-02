@@ -30,23 +30,23 @@ if args.test == 1:
     path = base_path + str(args.path)
     subprocess.run(["mkdir", "-p", path])
     subprocess.run(nvprof_options + [path + "/unoptimized.csv"] + python_options)
-    subprocess.run(nvprof_options + [path + "/vectorization.csv"] + python_options + ["--vectorization"])
+    # subprocess.run(nvprof_options + [path + "/vectorization.csv"] + python_options + ["--vectorization"])
     subprocess.run(nvprof_options + [path + "/swizzled_threads.csv"] + python_options + ["--swizzle-threads"])
     subprocess.run(nvprof_options + [path + "/swizzled_thread_blocks.csv"] + python_options + ["--swizzle-thread-blocks", "2"])
     subprocess.run(nvprof_options + [path + "/swizzled_threads_swizzled_thread_blocks.csv"] + python_options + ["--swizzle-threads", "--swizzle-thread-blocks", "2"])
-    subprocess.run(nvprof_options + [path + "/vectorization_swizzled_threads.csv"] + python_options + ["--vectorization", "--swizzle-threads"])
-    subprocess.run(nvprof_options + [path + "/vectorization_swizzled_thread_blocks.csv"] + python_options + ["--vectorization", "--swizzle-thread-blocks", "2"])
-    subprocess.run(nvprof_options + [path + "/vectorization_swizzled_threads_swizzled_thread_blocks.csv"] + python_options + ["--vectorization", "--swizzle-threads", "--swizzle-thread-blocks", "2"])
+    # subprocess.run(nvprof_options + [path + "/vectorization_swizzled_threads.csv"] + python_options + ["--vectorization", "--swizzle-threads"])
+    # subprocess.run(nvprof_options + [path + "/vectorization_swizzled_thread_blocks.csv"] + python_options + ["--vectorization", "--swizzle-thread-blocks", "2"])
+    # subprocess.run(nvprof_options + [path + "/vectorization_swizzled_threads_swizzled_thread_blocks.csv"] + python_options + ["--vectorization", "--swizzle-threads", "--swizzle-thread-blocks", "2"])
     subprocess.run(nvprof_options + [path + "/double_buffering.csv"] + python_options + ["--double-buffering"])
-    subprocess.run(nvprof_options + [path + "/double_buffering_vectorization.csv"] + python_options + ["--double-buffering", "--vectorization"])
+    # subprocess.run(nvprof_options + [path + "/double_buffering_vectorization.csv"] + python_options + ["--double-buffering", "--vectorization"])
     subprocess.run(nvprof_options + [path + "/double_buffering_swizzled_threads.csv"] + python_options + ["--double-buffering", "--swizzle-threads"])
     subprocess.run(nvprof_options + [path + "/double_buffering_swizzled_thread_blocks.csv"] + python_options + ["--swizzle-thread-blocks", "2"])
     subprocess.run(nvprof_options + [path + "/double_buffering_swizzled_threads_swizzled_thread_blocks.csv"] + python_options + ["--swizzle-threads", "--swizzle-thread-blocks", "2"])
-    subprocess.run(nvprof_options + [path + "/double_buffering_vectorization_swizzled_threads.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-threads"])
-    subprocess.run(nvprof_options + [path + "/double_buffering_vectorization_swizzled_thread_blocks.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-thread-blocks", "2"])
-    subprocess.run(nvprof_options + [path + "/double_buffering_vectorization_swizzled_threads_swizzled_thread_blocks.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-threads", "--swizzle-thread-blocks", "2"])
+    # subprocess.run(nvprof_options + [path + "/double_buffering_vectorization_swizzled_threads.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-threads"])
+    # subprocess.run(nvprof_options + [path + "/double_buffering_vectorization_swizzled_thread_blocks.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-thread-blocks", "2"])
+    # subprocess.run(nvprof_options + [path + "/double_buffering_vectorization_swizzled_threads_swizzled_thread_blocks.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-threads", "--swizzle-thread-blocks", "2"])
     subprocess.run(nvprof_options + [base_path + "cublas.csv"] + cublas_options)
-    subprocess.run(nvprof_options + [base_path + "cutlass.csv"] + cutlass_options)
+    # subprocess.run(nvprof_options + [base_path + "cutlass.csv"] + cutlass_options)
     # subprocess.run(["sed", "-i", "'1d;2d;3d'", base_path + "cublas.csv"]) # Delete first three lines, which are filled with nvprof information
     # subprocess.run(["sed", "-i", "'1d;2d;3d'", base_path + "cutlass.csv"]) # Delete first three lines, which are filled with nvprof information
     # subprocess.run(["sed", "-i", "'1d;2d;3d'", path + "/*.csv"]) # Delete first three lines, which are filled with nvprof information
@@ -191,8 +191,6 @@ if args.test == 4:
     # files = glob.glob(path + "/*.csv")
     # subprocess.run(["sed", "-i", "1d;2d;3d"] + files) # Delete first three lines, which are filled with nvprof information
 
-helpers.print_success("Performance tests finished.", False)
-
 ### (1024 x 1024) x (1024 x 1024)
 if args.test == 5:
     helpers.print_info("=" * 20, False)
@@ -208,4 +206,5 @@ if args.test == 5:
     subprocess.run(nvprof_options + [path + "/swizzled_threads.csv"] + python_options + ["--swizzle-threads"])
     subprocess.run(nvprof_options + [path + "/swizzled_thread_blocks.csv"] + python_options + ["--swizzle-thread-blocks", "2"])
     subprocess.run(nvprof_options + [path + "/double_buffering.csv"] + python_options + ["--double-buffering"])
-    
+
+helpers.print_success("Performance tests finished.", False)

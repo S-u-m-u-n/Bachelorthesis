@@ -140,4 +140,30 @@ if args.test == 4:
     # fig2.savefig(path + "/comparison2.png")
 
 
+### (1024 x 1024) x (1024 x 1024)
+if args.test == 5:
+    ### Without Double Buffering
+    unoptimized_df = read_nvprof_data("./performance_test_results/1024_1024_1024_isolated_optimizations/" + str(args.path) + "/unoptimized.csv")
+    st_df = read_nvprof_data("./performance_test_results/1024_1024_1024_isolated_optimizations/" + str(args.path) + "/swizzled_threads.csv")
+    stb_df = read_nvprof_data("./performance_test_results/1024_1024_1024_isolated_optimizations/" + str(args.path) + "/swizzled_thread_blocks.csv")
+    db_df = read_nvprof_data("./performance_test_results/1024_1024_1024_isolated_optimizations/" + str(args.path) + "/double_buffering.csv") / 1000
+
+    swizzle_threads = pd.concat([unoptimized_df, st_df], axis=1)
+    swizzle_threads.columns = ["u", "st"]
+    fig_swizzle_threads = plt.figure()
+    sns.violinplot(data=swizzle_threads).set(xticklabels=["Unoptimized", "Swizzled Threads"], ylabel="Runtime [ms]", title="M = 1024, N = 1024, K = 1024") # , xlabel=""
+    fig_swizzle_threads.savefig("./performance_test_results/1024_1024_1024_isolated_optimizations/" + str(args.path) + "/1024_1024_1024_isolated_optimizations_swizzle_threads.png")
+    
+    swizzle_thread_blocks = pd.concat([unoptimized_df, stb_df], axis=1)
+    swizzle_thread_blocks.columns = ["u", "stb"]
+    fig_swizzle_thread_blocks = plt.figure()
+    sns.violinplot(data=swizzle_thread_blocks).set(xticklabels=["Unoptimized", "Swizzled Thread Blocks"], ylabel="Runtime [ms]", title="M = 1024, N = 1024, K = 1024") # , xlabel=""
+    fig_swizzle_thread_blocks.savefig("./performance_test_results/1024_1024_1024_isolated_optimizations/" + str(args.path) + "/1024_1024_1024_isolated_optimizations_swizzle_thread_blocks.png")
+
+    db = pd.concat([unoptimized_df, db_df], axis=1)
+    db.columns = ["u", "df"]
+    fig_db = plt.figure()
+    sns.violinplot(data=db).set(xticklabels=["Unoptimized", "Double Buffering"], ylabel="Runtime [ms]", title="M = 1024, N = 1024, K = 1024") # , xlabel=""
+    fig_db.savefig("./performance_test_results/1024_1024_1024_isolated_optimizations/" + str(args.path) + "/1024_1024_1024_isolated_optimizations_db.png")
+
 helpers.print_success("Performance plots created.", False)
