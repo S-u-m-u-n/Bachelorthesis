@@ -41,7 +41,7 @@ parser.add_argument("--version",
 dace: Transform `matmul` to a reasonably-optimized version for GPU;
 cublas: Run `matmul` with the CUBLAS library node implementation.''')
 parser.add_argument('-p', '--precision',
-                    type=int
+                    type=int,
                     dest='precision',
                     choices=[32, 64],
                     default=64,
