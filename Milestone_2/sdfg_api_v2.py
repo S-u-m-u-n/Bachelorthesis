@@ -41,10 +41,11 @@ parser.add_argument("--version",
 dace: Transform `matmul` to a reasonably-optimized version for GPU;
 cublas: Run `matmul` with the CUBLAS library node implementation.''')
 parser.add_argument('-p', '--precision',
+                    type=int
                     dest='precision',
-                    choices=['16', '32', '64', '128'],
-                    default='64',
-                    help="Specify bit precision (16, 32, 64 or 128) - currently unsupported.")
+                    choices=[32, 64],
+                    default=64,
+                    help="Specify floating precision (32 or 64)")
 parser.add_argument('--verify',
                     dest='verify',
                     help="Verify results. Default: False",
@@ -59,7 +60,7 @@ parser.add_argument('--split-k', type=int, dest='split_k', nargs="?", default=1)
 parser.add_argument('--swizzle-thread-blocks', type=int, dest='swizzle_thread_blocks', nargs="?", default=1)
 parser.add_argument('--swizzle-threads',
                     dest='swizzle_threads',
-                    help="Use swizzle on the threads",
+                    help="Swizzle the threads",
                     action="store_true",
                     default=False)
 parser.add_argument('--vectorization',
@@ -77,6 +78,13 @@ args = parser.parse_args()
 if args.verbose:
     helpers.print_info("Program launched with the following arguments: " + str(args), args.colorless)
 
+if args.precision == 32:
+    dtype = dace.float32
+    ndtype = np.float32
+else:
+    dtype = dace.float64
+    ndtype = np.float64
+
 # schedule = Schedule(load_k=1, thread_tile_m=1, thread_tile_n=1, thread_tile_k=1, warp_tile_m=8, warp_tile_n=4, thread_block_tile_m=16, thread_block_tile_n=8)
 schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
 
@@ -93,40 +101,40 @@ sdfg = dace.SDFG('gemm')
 state = sdfg.add_state(label='gemm_state')
 nested_sdfg = dace.SDFG('nested_gemm')
 
-if args.vectorization:
-    sdfg.add_array('A', shape=[M, K // 2], dtype=dace.vector(dace.float64, 2))
-    sdfg.add_array('B', shape=[K, N // 2], dtype=dace.vector(dace.float64, 2))
-else:
-    sdfg.add_array('A', shape=[M, K], dtype=dace.float64)
-    sdfg.add_array('B', shape=[K, N], dtype=dace.float64)
+# if args.vectorization:
+    # sdfg.add_array('A', shape=[M, K // 2], dtype=dace.vector(dace.float64, 2))
+    # sdfg.add_array('B', shape=[K, N // 2], dtype=dace.vector(dace.float64, 2))
+# else:
+sdfg.add_array('A', shape=[M, K], dtype=dtype)
+sdfg.add_array('B', shape=[K, N], dtype=dtype)
 
-sdfg.add_array('C', shape=[M, N], dtype=dace.float64)
+sdfg.add_array('C', shape=[M, N], dtype=dtype)
 A_in = state.add_read('A')
 B_in = state.add_read('B')
 C_in = state.add_read('C')
 C_out = state.add_write('C')
 
-if args.vectorization:
-    sdfg.add_transient('gpu_A', shape=[M, K // 2], dtype=dace.vector(dace.float64, 2), storage=dace.StorageType.GPU_Global)
-    sdfg.add_transient('gpu_B', shape=[K, N // 2], dtype=dace.vector(dace.float64, 2), storage=dace.StorageType.GPU_Global)
-else:
-    sdfg.add_transient('gpu_A', shape=[M, K], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
-    sdfg.add_transient('gpu_B', shape=[K, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
+# if args.vectorization:
+    # sdfg.add_transient('gpu_A', shape=[M, K // 2], dtype=dace.vector(dace.float64, 2), storage=dace.StorageType.GPU_Global)
+    # sdfg.add_transient('gpu_B', shape=[K, N // 2], dtype=dace.vector(dace.float64, 2), storage=dace.StorageType.GPU_Global)
+# else:
+sdfg.add_transient('gpu_A', shape=[M, K], dtype=dtype, storage=dace.StorageType.GPU_Global)
+sdfg.add_transient('gpu_B', shape=[K, N], dtype=dtype, storage=dace.StorageType.GPU_Global)
 
-sdfg.add_transient('gpu_C', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
-sdfg.add_transient('gpu_result', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
+sdfg.add_transient('gpu_C', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global)
+sdfg.add_transient('gpu_result', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global)
 
 gpu_A = state.add_access('gpu_A')
 gpu_B = state.add_access('gpu_B')
 gpu_C = state.add_access('gpu_C')
 gpu_result = state.add_access('gpu_result')
 
-sdfg.add_constant('alpha', 1.0)
-sdfg.add_constant('beta', 1.0)
+sdfg.add_constant('alpha', args.alpha)
+sdfg.add_constant('beta', args.beta)
 
-sdfg.add_transient('C_times_beta', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
-sdfg.add_transient('A_matmul_B', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
-sdfg.add_transient('A_matmul_B_times_alpha', shape=[M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
+sdfg.add_transient('C_times_beta', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
+sdfg.add_transient('A_matmul_B', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
+sdfg.add_transient('A_matmul_B_times_alpha', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
 
 C_times_beta = state.add_write('C_times_beta')
 A_matmul_B = state.add_write('A_matmul_B')
@@ -134,12 +142,12 @@ A_matmul_B_times_alpha = state.add_write('A_matmul_B_times_alpha')
 
 #########################################################
 # Connect arrays to GPU transient and the GPU result transient to host array
-if args.vectorization:
-    state.add_edge(A_in, None, gpu_A, None, memlet=dace.Memlet.simple(A_in.data, '0:M, 0:K//2'))
-    state.add_edge(B_in, None, gpu_B, None, memlet=dace.Memlet.simple(B_in.data, '0:K, 0:N//2'))
-else:
-    state.add_edge(A_in, None, gpu_A, None, memlet=dace.Memlet.simple(A_in.data, '0:M, 0:K'))
-    state.add_edge(B_in, None, gpu_B, None, memlet=dace.Memlet.simple(B_in.data, '0:K, 0:N'))
+# if args.vectorization:
+    # state.add_edge(A_in, None, gpu_A, None, memlet=dace.Memlet.simple(A_in.data, '0:M, 0:K//2'))
+    # state.add_edge(B_in, None, gpu_B, None, memlet=dace.Memlet.simple(B_in.data, '0:K, 0:N//2'))
+# else:
+state.add_edge(A_in, None, gpu_A, None, memlet=dace.Memlet.simple(A_in.data, '0:M, 0:K'))
+state.add_edge(B_in, None, gpu_B, None, memlet=dace.Memlet.simple(B_in.data, '0:K, 0:N'))
 
 state.add_edge(C_in, None, gpu_C, None, memlet=dace.Memlet.simple(C_in.data, '0:M, 0:N'))
 state.add_edge(gpu_result, None, C_out, None, memlet=dace.Memlet.simple(gpu_result.data, '0:M, 0:N'))
@@ -289,23 +297,27 @@ nested_initstate.add_memlet_path(tasklet,
 #########################################################
 ### matmul state
 if args.vectorization:
-    sdfg.add_constant('VECLEN', 2)
-    nested_sdfg.add_constant('VECLEN', 2)
-    nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
-    nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
+    if args.precision == 32:
+        veclen = 4
+    else:
+        veclen = 2
+    sdfg.add_constant('VECLEN', veclen)
+    nested_sdfg.add_constant('VECLEN', veclen)
+    nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
+    nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
 else:
-    nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
-    nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dace.float64, storage=dace.StorageType.GPU_Shared)
+    nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared)
+    nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dtype, storage=dace.StorageType.GPU_Shared)
 
-nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m, 1], dtype=dace.float64, storage=dace.StorageType.Register)
-nested_sdfg.add_transient('register_storage_B', shape=[1, schedule.thread_tile_n], dtype=dace.float64, storage=dace.StorageType.Register)
-nested_sdfg.add_transient('register_storage_C', shape=[schedule.thread_tile_m, schedule.thread_tile_n], dtype=dace.float64, storage=dace.StorageType.Register)
+nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m, 1], dtype=dtype, storage=dace.StorageType.Register)
+nested_sdfg.add_transient('register_storage_B', shape=[1, schedule.thread_tile_n], dtype=dtype, storage=dace.StorageType.Register)
+nested_sdfg.add_transient('register_storage_C', shape=[schedule.thread_tile_m, schedule.thread_tile_n], dtype=dtype, storage=dace.StorageType.Register)
 
 if args.split_k > 1:
     # helpers.print_info("Applying Split K...")
-    nested_sdfg.add_transient('partial_split_k_output', shape=[args.split_k, M, N], dtype=dace.float64, storage=dace.StorageType.GPU_Global)
+    nested_sdfg.add_transient('partial_split_k_output', shape=[args.split_k, M, N], dtype=dtype, storage=dace.StorageType.GPU_Global)
     partial_split_k_output = nested_state.add_access('partial_split_k_output')
-    nested_sdfg.add_transient('accumulator', shape=[1, 1], dtype=dace.float64, storage=dace.StorageType.Register) # TODO: what size should this local storage be?? Doesn't seem to have an effect on performance now.
+    nested_sdfg.add_transient('accumulator', shape=[1, 1], dtype=dtype, storage=dace.StorageType.Register) # TODO: what size should this local storage be?? Doesn't seem to have an effect on performance like this
     accumulator = nested_state.add_access('accumulator')
     accumulator.setzero = True
 
@@ -549,9 +561,9 @@ sdfg.save('sdfg_api_v2.sdfg')
 csdfg = sdfg.compile()
 
 for i in range(args.repetitions):
-    A = np.random.rand(M_example, K_example).astype(np.float64)
-    B = np.random.rand(K_example, N_example).astype(np.float64)
-    C = np.zeros((M_example, N_example)).astype(np.float64)
+    A = np.random.rand(M_example, K_example).astype(ndtype)
+    B = np.random.rand(K_example, N_example).astype(ndtype)
+    C = np.zeros((M_example, N_example)).astype(ndtype)
 
     # helpers.print_info("Running sdfg...", False)
     csdfg(A=A, B=B, C=C, alpha=alpha, beta=beta, M=M_example, N=N_example, K=K_example)
@@ -559,10 +571,10 @@ for i in range(args.repetitions):
     if args.verify:
         helpers.print_info("Verifying results...", False)
         
-        def matmul(A: dace.float64[M, K], B: dace.float64[K, N], C: dace.float64[M, N], alpha: dace.float64, beta: dace.float64):
+        def matmul(A: dtype[M, K], B: dtype[K, N], C: dtype[M, N], alpha: dtype, beta: dtype):
             return alpha * (A @ B) + beta * C
 
-        C_init = np.zeros((M_example, N_example)).astype(np.float64)
+        C_init = np.zeros((M_example, N_example)).astype(ndtype)
         C_correct = matmul(A=A, B=B, C=C_init, alpha=alpha, beta=beta)
         # print(C)
         # print('--')
@@ -574,33 +586,33 @@ for i in range(args.repetitions):
         else:
             helpers.print_error("The SDFG is incorrect!", False)
 
-        # Can replace this with np.allclose(A, B)
-        def areSame(A,B):
-            for i in range(M_example):
-                for j in range(N_example):
-                    diff = math.fabs(A[i][j] - B[i][j])
-                    if (diff > 0.000001):
-                        helpers.print_error("Error at position (" + str(i) + ", " + str(j) + "): matrices are not equal! Difference is: " + str(diff), False)
-                        helpers.print_error(str(B[i][j]) + " should be " + str(A[i][j]), False)
-                        print()
-                        return False
-            return True
+        # # Can replace this with np.allclose(A, B)
+        # def areSame(A,B):
+        #     for i in range(M_example):
+        #         for j in range(N_example):
+        #             diff = math.fabs(A[i][j] - B[i][j])
+        #             if (diff > 0.000001):
+        #                 helpers.print_error("Error at position (" + str(i) + ", " + str(j) + "): matrices are not equal! Difference is: " + str(diff), False)
+        #                 helpers.print_error(str(B[i][j]) + " should be " + str(A[i][j]), False)
+        #                 print()
+        #                 return False
+        #     return True
 
-        helpers.print_info("Correct result: ", False)
-        for i in range(16):
-            for j in range(16):
-                print("%.2f" % C_correct[i][j], end=" ")
-            print()
+        # helpers.print_info("Correct result: ", False)
+        # for i in range(16):
+        #     for j in range(16):
+        #         print("%.2f" % C_correct[i][j], end=" ")
+        #     print()
 
-        print()
-        print()
-        helpers.print_info("SDFG result: ", False)
-        for i in range(16):
-            for j in range(16):
-                print("%.2f" % C[i][j], end=" ")
-            print()
+        # print()
+        # print()
+        # helpers.print_info("SDFG result: ", False)
+        # for i in range(16):
+        #     for j in range(16):
+        #         print("%.2f" % C[i][j], end=" ")
+        #     print()
 
-        if areSame(C_correct, C):
-            helpers.print_success("The SDFG is correct!", False)
-        else:
-            helpers.print_error("The SDFG is incorrect!", False)
+        # if areSame(C_correct, C):
+        #     helpers.print_success("The SDFG is correct!", False)
+        # else:
+        #     helpers.print_error("The SDFG is incorrect!", False)

@@ -23,15 +23,14 @@ https://stackoverflow.com/questions/48086305/race-condition-in-cuda-kernel in an
 >>> Done, apparently no difference in Assembly... why not??
         => vectorization doesn't have an effect on loads from local storage! 
 - Try to vectorize the global memory to shared memory loads!
-
-
+- dace::vec<double, 2>
 
 ---------------------------------------------------------------------------
 - Add CUTLASS performance for benchmarking. Check out https://developer.nvidia.com/blog/cutlass-linear-algebra-cuda/
 >>> Done.
 >>> Column-Major (nn) vs. (tt) Row-Major?
 >>> Using 9 results in 10 iterations... why?
->>> Warmup iterations? --warmup-iterations: at least 1. Better: 10 iterations.
+>>> Warmup iterations? --warmup-iterations: at least 1. Better: 10 warmup iterations plus 100 test iterations.
 
 => Use --profiling-iterations=100
 => Compare Column-Major vs Row-Major!
