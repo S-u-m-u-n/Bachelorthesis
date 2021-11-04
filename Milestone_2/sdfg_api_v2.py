@@ -264,15 +264,15 @@ desc_res.transient = False
 desc_res.storage = dace.StorageType.Default
 desc_res.lifetime = dace.AllocationLifetime.Scope
 
-input_A = nested_sdfg.add_datadesc('input_A', desc_a)
-input_B = nested_sdfg.add_datadesc('input_B', desc_b)
-output = nested_sdfg.add_datadesc('output', desc_res)
+input_A_nested = nested_sdfg.add_datadesc('input_A', desc_a)
+input_B_nested = nested_sdfg.add_datadesc('input_B', desc_b)
+output_nested = nested_sdfg.add_datadesc('output', desc_res)
 
-_A = nested_state.add_read(input_A)
-_B = nested_state.add_read(input_B)
+_A = nested_state.add_read(input_A_nested)
+_B = nested_state.add_read(input_B_nested)
 # A_matmul_B_nested_initstate = nested_initstate.add_write(output)
-A_matmul_B_nested_initstate = nested_initstate.add_access(output)
-A_matmul_B_nested_state = nested_state.add_write(output)
+A_matmul_B_nested_initstate = nested_initstate.add_access(output_nested)
+A_matmul_B_nested_state = nested_state.add_write(output_nested)
 # A_matmul_B_nested_state = nested_state.add_access(output)
 
 #########################################################
@@ -317,7 +317,7 @@ if args.split_k > 1:
     # helpers.print_info("Applying Split K...")
     nested_sdfg.add_transient('partial_split_k_output', shape=[args.split_k, M, N], dtype=dtype, storage=dace.StorageType.GPU_Global)
     partial_split_k_output = nested_state.add_access('partial_split_k_output')
-    nested_sdfg.add_transient('accumulator', shape=[1, 1], dtype=dtype, storage=dace.StorageType.Register) # TODO: what size should this local storage be?? Doesn't seem to have an effect on performance like this
+    nested_sdfg.add_transient('accumulator', shape=[2], dtype=dtype, storage=dace.StorageType.Register) # TODO: what size should this local storage be?? Doesn't seem to have an effect on performance like this
     accumulator = nested_state.add_access('accumulator')
     accumulator.setzero = True
 
@@ -512,11 +512,12 @@ else:
                             # memlet=dace.Memlet(data=partial_split_k_output.data, subset=subset))
 
     # Reduce the split k
-    tasklet = nested_state.add_tasklet('reduce_split_k', ['__in'], ['__out'], '__out = __in')
+    tasklet = nested_state.add_tasklet('reduce_split_k', ['__in'], ['__out'], '''__out[0] = __in[0]
+__out[1] = __in[1]''')
 
     reduction_entry, reduction_exit = nested_state.add_map(
             'reduction_map',
-            dict(i='0:M', j='0:N'),
+            dict(i='0:M', j='0:N:2'),
             schedule=dace.dtypes.ScheduleType.GPU_Device)
 
     reduce_split_k_entry, reduce_split_k_exit = nested_state.add_map(
@@ -531,20 +532,20 @@ else:
                             dst_conn='__in',
                             # memlet=dace.Memlet(data=partial_split_k_output.data, subset="0:M, 0:N, 0:SPLIT_K"))
                             # memlet=dace.Memlet(f"{partial_split_k_output.data}[i, j, k]"))
-                            memlet=dace.Memlet("partial_split_k_output[k, i, j]"))
+                            memlet=dace.Memlet("partial_split_k_output[k, i, j:j+2]"))
 
     nested_state.add_memlet_path(tasklet,
                             reduce_split_k_exit,
                             accumulator,
                             src_conn='__out',
-                            memlet=dace.Memlet(f"{accumulator.data}[i, j]", wcr='(lambda x, y: (x + y))'))
+                            memlet=dace.Memlet(f"{accumulator.data}[0:2]", wcr='(lambda x, y: (x + y))'))
 
     nested_state.add_memlet_path(accumulator,
                             reduction_exit,
                             A_matmul_B_nested_state,
                             # memlet=dace.Memlet(A_matmul_B_nested_state.data, subset="tile_i:tile_i+8, tile_j:tile_j+8"))
                             # memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]", wcr='(lambda x, y: (x + y))', wcr_nonatomic=True))
-                            memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]"))
+                            memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j:j+2]"))
         
 if args.double_buffering:
     helpers.print_info("Applying Double Buffering...", False)

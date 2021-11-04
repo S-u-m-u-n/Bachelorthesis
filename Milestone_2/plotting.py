@@ -10,6 +10,7 @@ sns.set_theme(style="whitegrid")
 parser = ArgumentParser()
 parser.add_argument("-t", "--test", type=int, dest='test', nargs="?", required=True)
 parser.add_argument("-p", "--path", type=str, dest='path', nargs="?", required=True)
+parser.add_argument('--precision', type=int, dest='precision', choices=[32, 64], default=64, help="Specify floating precision (32 or 64)")
 args = parser.parse_args()
 
 helpers.print_info("Creating performance plots...", False)
@@ -30,7 +31,7 @@ def read_nvprof_data(path_to_csv):
 
 ### (1024 x 1024) x (1024 x 1024)
 if args.test == 1:
-    base_path = "./performance_test_results/1024_1024_1024/"
+    base_path = "./performance_test_results/1024_1024_1024" + str(args.precision) + "bit/"
     path = base_path + str(args.path) +'/'
     ### Without Double Buffering
     unoptimized_df = read_nvprof_data(path + "unoptimized.csv")
@@ -65,7 +66,7 @@ if args.test == 1:
 
 ### (4096 x 4096) x (4096 x 4096)
 if args.test == 2:
-    base_path = "./performance_test_results/4096_4096_4096/"
+    base_path = "./performance_test_results/4096_4096_4096" + str(args.precision) + "bit/"
     path = base_path + str(args.path) +'/'
     ### Without Double Buffering
     unoptimized_df = read_nvprof_data(path + "unoptimized.csv")
@@ -93,7 +94,7 @@ if args.test == 2:
 
 ### (1024 x 8192) x (8192 x 1024)
 if args.test == 3:
-    base_path = "./performance_test_results/1024_8192_1024/"
+    base_path = "./performance_test_results/1024_8192_1024" + str(args.precision) + "bit/"
     path = base_path + str(args.path) +'/'
     split_k_1 = read_nvprof_data(path + "split_k_1.csv")
     split_k_2 = read_nvprof_data(path + "split_k_2.csv")
@@ -121,7 +122,7 @@ if args.test == 3:
 
 ### (256 x 10240) x (10240 x 256)
 if args.test == 4:
-    base_path = "./performance_test_results/256_10240_256/"
+    base_path = "./performance_test_results/256_10240_256" + str(args.precision) + "bit/"
     path = base_path + str(args.path) +'/'
     split_k_1 = read_nvprof_data(path + "split_k_1.csv")
     split_k_2 = read_nvprof_data(path + "split_k_2.csv")
@@ -156,7 +157,7 @@ if args.test == 4:
 
 ### (1024 x 1024) x (1024 x 1024)
 if args.test == 5:
-    base_path = "./performance_test_results/1024_1024_1024_isolated_optimizations/"
+    base_path = "./performance_test_results/1024_1024_1024_isolated_optimizations" + str(args.precision) + "bit/"
     path = base_path + str(args.path) +'/'
     ### Without Double Buffering
     unoptimized_df = read_nvprof_data(path + "unoptimized.csv")
