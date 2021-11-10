@@ -225,12 +225,12 @@ state.add_memlet_path(tasklet,
 # Create nested sdfg
 nested_sdfg_node = state.add_nested_sdfg(nested_sdfg, state, {'input_A', 'input_B'}, {'output'}, schedule=dace.ScheduleType.GPU_Default, symbol_mapping={"K": "K", "M": "M", "N": "N"})
 
-if args.vectorization:
-    state.add_edge(gpu_A, None, nested_sdfg_node, 'input_A', memlet=dace.Memlet.simple(gpu_A.data, '0:M, 0:K//2'))
-    state.add_edge(gpu_B, None, nested_sdfg_node, 'input_B', memlet=dace.Memlet.simple(gpu_B.data, '0:K, 0:N//2'))
-else:
-    state.add_edge(gpu_A, None, nested_sdfg_node, 'input_A', memlet=dace.Memlet.simple(gpu_A.data, '0:M, 0:K'))
-    state.add_edge(gpu_B, None, nested_sdfg_node, 'input_B', memlet=dace.Memlet.simple(gpu_B.data, '0:K, 0:N'))
+# if args.vectorization:
+    # state.add_edge(gpu_A, None, nested_sdfg_node, 'input_A', memlet=dace.Memlet.simple(gpu_A.data, '0:M, 0:K//2'))
+    # state.add_edge(gpu_B, None, nested_sdfg_node, 'input_B', memlet=dace.Memlet.simple(gpu_B.data, '0:K, 0:N//2'))
+# else:
+state.add_edge(gpu_A, None, nested_sdfg_node, 'input_A', memlet=dace.Memlet.simple(gpu_A.data, '0:M, 0:K'))
+state.add_edge(gpu_B, None, nested_sdfg_node, 'input_B', memlet=dace.Memlet.simple(gpu_B.data, '0:K, 0:N'))
 
 state.add_edge(nested_sdfg_node, 'output', A_matmul_B, None, memlet=dace.Memlet.simple(A_matmul_B.data, '0:M, 0:N'))
 
@@ -303,11 +303,11 @@ if args.vectorization:
         veclen = 2
     sdfg.add_constant('VECLEN', veclen)
     nested_sdfg.add_constant('VECLEN', veclen)
-    nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
-    nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
-else:
-    nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared)
-    nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dtype, storage=dace.StorageType.GPU_Shared)
+#     nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
+#     nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
+# else:
+nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared)
+nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dtype, storage=dace.StorageType.GPU_Shared)
 
 nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m, 1], dtype=dtype, storage=dace.StorageType.Register)
 nested_sdfg.add_transient('register_storage_B', shape=[1, schedule.thread_tile_n], dtype=dtype, storage=dace.StorageType.Register)
@@ -413,11 +413,11 @@ else:
     k_tile_range = '(thread_block_k*size_K_split) + k_tile*size_K_tile:(thread_block_k*size_K_split) + k_tile*size_K_tile + size_K_tile'
 
 ### Vectorization subset
-if not args.vectorization:
-    vec_adjust = ''
-else:
-    helpers.print_info("Applying Vectorization...", False)
-    vec_adjust = '// 2'
+# if not args.vectorization:
+vec_adjust = ''
+# else:
+    # helpers.print_info("Applying Vectorization...", False)
+    # vec_adjust = '// VECLEN'
 
 ### Swizzle threads subset
 if not args.swizzle_threads:
@@ -434,7 +434,7 @@ else:
 ####################################################################################################################
 ### Data Movement: _A
 # _A -> shared_memory_A
-nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, thread_block_i_idx + ':' + thread_block_i_idx + '+size_thread_block_tile_m, ' + k_tile_range + vec_adjust))
+nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, thread_block_i_idx + ':' + thread_block_i_idx + '+size_thread_block_tile_m, ' + 'k_tile*size_K_tile' + vec_adjust + ':(k_tile*size_K_tile+size_K_tile)' + vec_adjust))
 
 # shared_memory_A -> register_storage_A (load size_thread_tile_m elements into register storage)
 nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, thread_i_idx + ':' + thread_i_idx + '+size_thread_tile_m, k'))
@@ -449,7 +449,7 @@ nested_state.add_memlet_path(register_storage_A,
 ####################################################################################################################
 ### Data Movement: _B
 # _B -> shared_memory_B
-nested_state.add_memlet_path(_B, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_B, memlet=dace.Memlet.simple(_B.data, k_tile_range + ', ' + thread_block_j_idx + ':' + thread_block_j_idx + '+size_thread_block_tile_n' + vec_adjust))
+nested_state.add_memlet_path(_B, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_B, memlet=dace.Memlet.simple(_B.data, k_tile_range + ', ' + thread_block_j_idx  + vec_adjust + ':(' + thread_block_j_idx + '+size_thread_block_tile_n)' + vec_adjust))
 
 # shared_memory_B -> register_storage_B (load size_thread_tile_n elements into register storage)
 nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, 'k, ' + thread_j_idx + ':' + thread_j_idx + '+size_thread_tile_n'))
@@ -524,6 +524,8 @@ __out[1] = __in[1]''')
             'reduce_split_k',
             dict(k ='0:SPLIT_K'),
             schedule=dace.dtypes.ScheduleType.Sequential)
+
+    # TODO: We could use Vectorization.apply_to() here
 
     nested_state.add_memlet_path(partial_split_k_output,
                             reduction_entry,
