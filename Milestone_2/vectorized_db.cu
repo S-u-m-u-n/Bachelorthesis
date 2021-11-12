@@ -4,12 +4,13 @@
 
 constexpr double alpha = 1;
 constexpr double beta = 1;
+constexpr long long VECLEN = 2;
 constexpr long long size_thread_block_tile_m = 128;
 constexpr long long size_thread_block_tile_n = 64;
 constexpr long long size_K_tile = 8;
-constexpr long long num_thread_blocks_m = 8;
-constexpr long long num_thread_blocks_n = 16;
-constexpr long long num_K_tiles = 128;
+constexpr long long num_thread_blocks_m = 32;
+constexpr long long num_thread_blocks_n = 64;
+constexpr long long num_K_tiles = 512;
 constexpr long long size_warp_tile_m = 64;
 constexpr long long size_warp_tile_n = 32;
 constexpr long long size_thread_tile_m = 8;
@@ -22,6 +23,209 @@ struct gemm_t {
 
 DACE_EXPORTED int __dace_init_cuda(gemm_t *__state, int K, int M, int N);
 DACE_EXPORTED void __dace_exit_cuda(gemm_t *__state);
+
+DACE_DFI void nested_nested_state_1_1_5(const dace::vec<double, 2> *input_A,
+                                        const dace::vec<double, 2> *input_B,
+                                        double *output, int K, int M, int N) {
+  constexpr double alpha = 1;
+  constexpr double beta = 1;
+  constexpr long long VECLEN = 2;
+  constexpr long long size_thread_block_tile_m = 128;
+  constexpr long long size_thread_block_tile_n = 64;
+  constexpr long long size_K_tile = 8;
+  constexpr long long num_thread_blocks_m = 32;
+  constexpr long long num_thread_blocks_n = 64;
+  constexpr long long num_K_tiles = 512;
+  constexpr long long size_warp_tile_m = 64;
+  constexpr long long size_warp_tile_n = 32;
+  constexpr long long size_thread_tile_m = 8;
+  constexpr long long size_thread_tile_n = 8;
+  constexpr long long SPLIT_K = 1;
+  constexpr long long warp_width = 4;
+  constexpr long long warp_height = 8;
+  constexpr long long size_K_split = 4096;
+  constexpr long long SWIZZLE = 1;
+  double register_storage_B[8] DACE_ALIGN(64);
+  double register_storage_C[64] DACE_ALIGN(64) = {0};
+  __shared__ double shared_memory_B[1024];
+  __shared__ double shared_memory_A[2048];
+  double register_storage_A[8] DACE_ALIGN(64);
+  long long k_tile;
+
+  {
+
+#pragma omp parallel sections
+    {
+#pragma omp section
+      {
+        dace::GlobalToShared2D<
+            dace::vec<double, 2>,
+            max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)),
+            max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1,
+            size_thread_block_tile_m, size_K_tile / 2, 8 / 2, 1, true>(
+            input_A, K / 2, 1, (dace::vec<double, 2> *)shared_memory_A);
+      } // End omp section
+#pragma omp section
+      {
+        dace::GlobalToShared2D<
+            dace::vec<double, 2>,
+            max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)),
+            max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1,
+            size_K_tile, size_thread_block_tile_n / 2, 64 / 2, 1, true>(
+            input_B, N / 2, 1, (dace::vec<double, 2> *)shared_memory_B);
+      } // End omp section
+    }   // End omp sections
+  }
+
+  for (k_tile = 0; (k_tile < (num_K_tiles - 1)); k_tile = k_tile + 1) {
+    {
+
+#pragma omp parallel sections
+      {
+#pragma omp section
+        {
+          {
+            {
+              {
+                __syncthreads();
+                int thread_j = (threadIdx.x * size_thread_tile_n);
+                int thread_i = (threadIdx.y * size_thread_tile_m);
+                if (thread_j < size_thread_block_tile_n) {
+                  if (thread_i < size_thread_block_tile_m) {
+                    {
+                      for (auto k = 0; k < size_K_tile; k += 1) {
+
+                        dace::CopyND<double, 1, false, size_thread_tile_m>::
+                            template ConstDst<1>::Copy(
+                                shared_memory_A + ((k + (8 * thread_i)) +
+                                                   (1024 * (k_tile % 2))),
+                                register_storage_A, 8);
+
+                        dace::CopyND<double, 1, false, size_thread_tile_n>::
+                            template ConstDst<1>::Copy(
+                                shared_memory_B + (((64 * k) + thread_j) +
+                                                   (512 * (k_tile % 2))),
+                                register_storage_B, 1);
+                        {
+#pragma unroll
+                          for (auto i = 0; i < size_thread_tile_m; i += 1) {
+#pragma unroll
+                            for (auto j = 0; j < size_thread_tile_n; j += 1) {
+                              {
+                                double __a = register_storage_A[i];
+                                double __b = register_storage_B[j];
+                                double __out;
+
+                                ///////////////////
+                                // Tasklet code (matrix_multiplication)
+                                __out = (__a * __b);
+                                ///////////////////
+
+                                dace::wcr_fixed<
+                                    dace::ReductionType::Sum,
+                                    double>::reduce(register_storage_C +
+                                                        ((8 * i) + j),
+                                                    __out);
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } // End omp section
+#pragma omp section
+        {
+          dace::GlobalToShared2D<
+              dace::vec<double, 2>,
+              max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)),
+              max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1,
+              size_thread_block_tile_m, size_K_tile / 2, 8 / 2, 1, true>(
+              input_A + (size_K_tile * (k_tile + 1)) / 2, K / 2, 1,
+              ((dace::vec<double, 2> *)shared_memory_A) +
+                  (1024 * ((k_tile + 1) % 2)) / 2);
+        } // End omp section
+#pragma omp section
+        {
+          dace::GlobalToShared2D<
+              dace::vec<double, 2>,
+              max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)),
+              max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1,
+              size_K_tile, size_thread_block_tile_n / 2, 64 / 2, 1, true>(
+              input_B + ((N * size_K_tile) * (k_tile + 1)) / 2, N / 2, 1,
+              ((dace::vec<double, 2> *)shared_memory_B) +
+                  (512 * ((k_tile + 1) % 2)) / 2);
+        } // End omp section
+      }   // End omp sections
+    }
+  }
+  {
+
+    {
+      {
+        {
+          __syncthreads();
+          int thread_j = (threadIdx.x * size_thread_tile_n);
+          int thread_i = (threadIdx.y * size_thread_tile_m);
+          if (thread_j < size_thread_block_tile_n) {
+            if (thread_i < size_thread_block_tile_m) {
+              {
+                for (auto k = 0; k < size_K_tile; k += 1) {
+
+                  dace::CopyND<double, 1, false, size_thread_tile_m>::
+                      template ConstDst<1>::Copy(
+                          shared_memory_A +
+                              ((k + (8 * thread_i)) + (1024 * (k_tile % 2))),
+                          register_storage_A, 8);
+
+                  dace::CopyND<double, 1, false, size_thread_tile_n>::
+                      template ConstDst<1>::Copy(
+                          shared_memory_B +
+                              (((64 * k) + thread_j) + (512 * (k_tile % 2))),
+                          register_storage_B, 1);
+                  {
+#pragma unroll
+                    for (auto i = 0; i < size_thread_tile_m; i += 1) {
+#pragma unroll
+                      for (auto j = 0; j < size_thread_tile_n; j += 1) {
+                        {
+                          double __a = register_storage_A[i];
+                          double __b = register_storage_B[j];
+                          double __out;
+
+                          ///////////////////
+                          // Tasklet code (matrix_multiplication)
+                          __out = (__a * __b);
+                          ///////////////////
+
+                          dace::wcr_fixed<dace::ReductionType::Sum,
+                                          double>::reduce(register_storage_C +
+                                                              ((8 * i) + j),
+                                                          __out);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+
+              dace::CopyND<double, 1, false, size_thread_tile_m,
+                           size_thread_tile_n>::template ConstSrc<8, 1>::
+                  Accumulate(
+                      register_storage_C, output + ((N * thread_i) + thread_j),
+                      [](const double &x, const double &y) { return (x + y); },
+                      N, 1);
+            }
+          }
+        }
+      }
+    }
+  }
+}
 
 int __dace_init_cuda(gemm_t *__state, int K, int M, int N) {
   int count;
@@ -42,14 +246,14 @@ int __dace_init_cuda(gemm_t *__state, int K, int M, int N) {
   cudaMalloc((void **)&dev_X, 1);
   cudaFree(dev_X);
 
-  __state->gpu_context = new dace::cuda::Context(3, 5);
+  __state->gpu_context = new dace::cuda::Context(3, 3);
 
   // Create cuda streams and events
   for (int i = 0; i < 3; ++i) {
     cudaStreamCreateWithFlags(&__state->gpu_context->streams[i],
                               cudaStreamNonBlocking);
   }
-  for (int i = 0; i < 5; ++i) {
+  for (int i = 0; i < 3; ++i) {
     cudaEventCreateWithFlags(&__state->gpu_context->events[i],
                              cudaEventDisableTiming);
   }
@@ -63,7 +267,7 @@ void __dace_exit_cuda(gemm_t *__state) {
   for (int i = 0; i < 3; ++i) {
     cudaStreamDestroy(__state->gpu_context->streams[i]);
   }
-  for (int i = 0; i < 5; ++i) {
+  for (int i = 0; i < 3; ++i) {
     cudaEventDestroy(__state->gpu_context->events[i]);
   }
 
@@ -72,11 +276,12 @@ void __dace_exit_cuda(gemm_t *__state) {
 
 __global__ void initialize_matmul_result_1_0_1(double *__restrict__ output,
                                                int M, int N) {
+  constexpr long long VECLEN = 2;
   constexpr long long size_thread_block_tile_m = 128;
   constexpr long long size_thread_block_tile_n = 64;
-  constexpr long long num_thread_blocks_m = 8;
-  constexpr long long num_thread_blocks_n = 16;
-  constexpr long long num_K_tiles = 128;
+  constexpr long long num_thread_blocks_m = 32;
+  constexpr long long num_thread_blocks_n = 64;
+  constexpr long long num_K_tiles = 512;
   constexpr long long size_warp_tile_m = 64;
   constexpr long long size_warp_tile_n = 32;
   constexpr long long size_thread_tile_m = 8;
@@ -84,7 +289,7 @@ __global__ void initialize_matmul_result_1_0_1(double *__restrict__ output,
   constexpr long long warp_width = 4;
   constexpr long long warp_height = 8;
   constexpr long long size_K_tile = 8;
-  constexpr long long size_K_split = 1024;
+  constexpr long long size_K_split = 4096;
   constexpr long long SWIZZLE = 1;
   constexpr long long SPLIT_K = 1;
   {
@@ -123,14 +328,15 @@ void __dace_runkernel_initialize_matmul_result_1_0_1(
                    __state->gpu_context->streams[0]);
 }
 __global__ void
-Thread_block_grid_1_1_9(const dace::vec<double, 2> *__restrict__ input_A,
+Thread_block_grid_1_1_3(const dace::vec<double, 2> *__restrict__ input_A,
                         const dace::vec<double, 2> *__restrict__ input_B,
                         double *__restrict__ output, int K, int M, int N) {
+  constexpr long long VECLEN = 2;
   constexpr long long size_thread_block_tile_m = 128;
   constexpr long long size_thread_block_tile_n = 64;
-  constexpr long long num_thread_blocks_m = 8;
-  constexpr long long num_thread_blocks_n = 16;
-  constexpr long long num_K_tiles = 128;
+  constexpr long long num_thread_blocks_m = 32;
+  constexpr long long num_thread_blocks_n = 64;
+  constexpr long long num_K_tiles = 512;
   constexpr long long size_warp_tile_m = 64;
   constexpr long long size_warp_tile_n = 32;
   constexpr long long size_thread_tile_m = 8;
@@ -138,142 +344,55 @@ Thread_block_grid_1_1_9(const dace::vec<double, 2> *__restrict__ input_A,
   constexpr long long warp_width = 4;
   constexpr long long warp_height = 8;
   constexpr long long size_K_tile = 8;
-  constexpr long long size_K_split = 1024;
+  constexpr long long size_K_split = 4096;
   constexpr long long SWIZZLE = 1;
   constexpr long long SPLIT_K = 1;
   {
     {
       int thread_block_j = blockIdx.x;
       int thread_block_i = blockIdx.y;
-      {
-        for (auto k_tile = 0; k_tile < num_K_tiles; k_tile += 1) {
-          __shared__ double shared_memory_A[1024];
-          __shared__ double shared_memory_B[512];
-          dace::GlobalToShared2D<
-              dace::vec<double, 2>,
-              max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)),
-              max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1,
-              size_thread_block_tile_m, size_K_tile / 2, 8 / 2, 1, true>(
-              input_A + (((K * size_thread_block_tile_m) * thread_block_i) +
-                         (k_tile * size_K_tile)) /
-                            2,
-              K / 2, 1, (dace::vec<double, 2> *)shared_memory_A);
-          dace::GlobalToShared2D<
-              dace::vec<double, 2>,
-              max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)),
-              max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1,
-              size_K_tile, size_thread_block_tile_n / 2, 64 / 2, 1, true>(
-              input_B + (((N * k_tile) * size_K_tile) +
-                         (size_thread_block_tile_n * thread_block_j)) /
-                            2,
-              N / 2, 1, (dace::vec<double, 2> *)shared_memory_B);
-          {
-            {
-              {
-                double register_storage_C[64] DACE_ALIGN(64) = {0};
-                __syncthreads();
-                int thread_j = (threadIdx.x * size_thread_tile_n);
-                int thread_i = (threadIdx.y * size_thread_tile_m);
-                if (thread_j < size_thread_block_tile_n) {
-                  if (thread_i < size_thread_block_tile_m) {
-                    {
-                      for (auto k = 0; k < size_K_tile; k += 1) {
-                        double register_storage_A[8] DACE_ALIGN(64);
-                        double register_storage_B[8] DACE_ALIGN(64);
-
-                        dace::CopyND<double, 1, false, size_thread_tile_m>::
-                            template ConstDst<1>::Copy(shared_memory_A +
-                                                           (k + (8 * thread_i)),
-                                                       register_storage_A, 8);
-
-                        dace::CopyND<double, 1, false, size_thread_tile_n>::
-                            template ConstDst<1>::Copy(
-                                shared_memory_B + ((64 * k) + thread_j),
-                                register_storage_B, 1);
-                        {
-#pragma unroll
-                          for (auto i = 0; i < size_thread_tile_m; i += 1) {
-#pragma unroll
-                            for (auto j = 0; j < size_thread_tile_n; j += 1) {
-                              {
-                                double __a = register_storage_A[i];
-                                double __b = register_storage_B[j];
-                                double __out;
-
-                                ///////////////////
-                                // Tasklet code (matrix_multiplication)
-                                __out = (__a * __b);
-                                ///////////////////
-
-                                dace::wcr_fixed<
-                                    dace::ReductionType::Sum,
-                                    double>::reduce(register_storage_C +
-                                                        ((8 * i) + j),
-                                                    __out);
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-
-                    dace::CopyND<double, 1, false, size_thread_tile_m,
-                                 size_thread_tile_n>::template ConstSrc<8, 1>::
-                        Accumulate_atomic(
-                            register_storage_C,
-                            output +
-                                (((N * ((size_thread_block_tile_m *
-                                         thread_block_i) +
-                                        thread_i)) +
-                                  (size_thread_block_tile_n * thread_block_j)) +
-                                 thread_j),
-                            [](const double &x, const double &y) {
-                              return (x + y);
-                            },
-                            N, 1);
-                  }
-                }
-              }
-            }
-          }
-          __syncthreads();
-        }
-      }
+      nested_nested_state_1_1_5(
+          &input_A[((K * size_thread_block_tile_m) * thread_block_i) / 2],
+          &input_B[(size_thread_block_tile_n * thread_block_j) / 2],
+          &output[(((N * size_thread_block_tile_m) * thread_block_i) +
+                   (size_thread_block_tile_n * thread_block_j))],
+          K, M, N);
     }
   }
 }
 
-DACE_EXPORTED void __dace_runkernel_Thread_block_grid_1_1_9(
+DACE_EXPORTED void __dace_runkernel_Thread_block_grid_1_1_3(
     gemm_t *__state, const double *__restrict__ input_A,
     const double *__restrict__ input_B, double *__restrict__ output, int K,
     int M, int N);
-void __dace_runkernel_Thread_block_grid_1_1_9(
+void __dace_runkernel_Thread_block_grid_1_1_3(
     gemm_t *__state, const double *__restrict__ input_A,
     const double *__restrict__ input_B, double *__restrict__ output, int K,
     int M, int N) {
 
-  void *Thread_block_grid_1_1_9_args[] = {(void *)&input_A, (void *)&input_B,
+  void *Thread_block_grid_1_1_3_args[] = {(void *)&input_A, (void *)&input_B,
                                           (void *)&output,  (void *)&K,
                                           (void *)&M,       (void *)&N};
   cudaLaunchKernel(
-      (void *)Thread_block_grid_1_1_9,
+      (void *)Thread_block_grid_1_1_3,
       dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1),
            1),
       dim3(max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)),
            max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1),
-      Thread_block_grid_1_1_9_args, 0, __state->gpu_context->streams[0]);
+      Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
 }
 __global__ void multiply_matrix_with_constant_0_0_14(
     const double *__restrict__ A_matmul_B,
     double *__restrict__ A_matmul_B_times_alpha, int M, int N) {
   constexpr double alpha = 1;
   constexpr double beta = 1;
+  constexpr long long VECLEN = 2;
   constexpr long long size_thread_block_tile_m = 128;
   constexpr long long size_thread_block_tile_n = 64;
   constexpr long long size_K_tile = 8;
-  constexpr long long num_thread_blocks_m = 8;
-  constexpr long long num_thread_blocks_n = 16;
-  constexpr long long num_K_tiles = 128;
+  constexpr long long num_thread_blocks_m = 32;
+  constexpr long long num_thread_blocks_n = 64;
+  constexpr long long num_K_tiles = 512;
   constexpr long long size_warp_tile_m = 64;
   constexpr long long size_warp_tile_n = 32;
   constexpr long long size_thread_tile_m = 8;
@@ -324,12 +443,13 @@ multiply_matrix_with_constant_0_0_11(double *__restrict__ C_times_beta,
                                      int N) {
   constexpr double alpha = 1;
   constexpr double beta = 1;
+  constexpr long long VECLEN = 2;
   constexpr long long size_thread_block_tile_m = 128;
   constexpr long long size_thread_block_tile_n = 64;
   constexpr long long size_K_tile = 8;
-  constexpr long long num_thread_blocks_m = 8;
-  constexpr long long num_thread_blocks_n = 16;
-  constexpr long long num_K_tiles = 128;
+  constexpr long long num_thread_blocks_m = 32;
+  constexpr long long num_thread_blocks_n = 64;
+  constexpr long long num_K_tiles = 512;
   constexpr long long size_warp_tile_m = 64;
   constexpr long long size_warp_tile_n = 32;
   constexpr long long size_thread_tile_m = 8;
@@ -379,12 +499,13 @@ add_matrices_0_0_17(const double *__restrict__ A_matmul_B_times_alpha,
                     double *__restrict__ gpu_result, int M, int N) {
   constexpr double alpha = 1;
   constexpr double beta = 1;
+  constexpr long long VECLEN = 2;
   constexpr long long size_thread_block_tile_m = 128;
   constexpr long long size_thread_block_tile_n = 64;
   constexpr long long size_K_tile = 8;
-  constexpr long long num_thread_blocks_m = 8;
-  constexpr long long num_thread_blocks_n = 16;
-  constexpr long long num_K_tiles = 128;
+  constexpr long long num_thread_blocks_m = 32;
+  constexpr long long num_thread_blocks_n = 64;
+  constexpr long long num_K_tiles = 512;
   constexpr long long size_warp_tile_m = 64;
   constexpr long long size_warp_tile_n = 32;
   constexpr long long size_thread_tile_m = 8;

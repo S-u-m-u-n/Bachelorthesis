@@ -7,8 +7,6 @@ M = dace.symbol('M')
 N = dace.symbol('N')
 K = dace.symbol('K')
 
-
-
 parser = ArgumentParser()
 parser.add_argument("-M", type=int, dest='M', nargs="?", default=640)
 parser.add_argument("-K", type=int, dest='K', nargs="?", default=640)
@@ -24,7 +22,6 @@ parser.add_argument('-p', '--precision',
                     help="Specify floating precision (32 or 64)")
 args = parser.parse_args()
 
-
 if args.precision == 32:
     dtype = dace.float32
     ndtype = np.float32
@@ -32,7 +29,7 @@ else:
     dtype = dace.float64
     ndtype = np.float64
 
-M=np.int32(args.M)
+M = np.int32(args.M)
 N=np.int32(args.N)
 K=np.int32(args.K)
 alpha = ndtype(args.alpha)

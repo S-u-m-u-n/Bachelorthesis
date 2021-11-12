@@ -34,12 +34,6 @@ parser.add_argument("-N", type=int, dest='N', nargs="?", default=640)
 parser.add_argument("--alpha", type=np.float64, dest='alpha', nargs="?", default=1.0)
 parser.add_argument("--beta", type=np.float64, dest='beta', nargs="?", default=1.0)
 parser.add_argument("-r", "--repetitions", type=int, dest='repetitions', nargs="?", default=1)
-parser.add_argument("--version",
-                    choices=['dace' 'cublas'],
-                    default='dace',
-                    help='''Different available versions:
-dace: Transform `matmul` to a reasonably-optimized version for GPU;
-cublas: Run `matmul` with the CUBLAS library node implementation.''')
 parser.add_argument('-p', '--precision',
                     type=int,
                     dest='precision',
@@ -81,9 +75,15 @@ if args.verbose:
 if args.precision == 32:
     dtype = dace.float32
     ndtype = np.float32
+    veclen = 4
 else:
     dtype = dace.float64
     ndtype = np.float64
+    veclen = 2
+
+sdfg.add_constant('VECLEN', veclen)
+nested_sdfg.add_constant('VECLEN', veclen)
+
 
 # schedule = Schedule(load_k=1, thread_tile_m=1, thread_tile_n=1, thread_tile_k=1, warp_tile_m=8, warp_tile_n=4, thread_block_tile_m=16, thread_block_tile_n=8)
 schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
@@ -296,13 +296,8 @@ nested_initstate.add_memlet_path(tasklet,
 
 #########################################################
 ### matmul state
-if args.vectorization:
-    if args.precision == 32:
-        veclen = 4
-    else:
-        veclen = 2
-    sdfg.add_constant('VECLEN', veclen)
-    nested_sdfg.add_constant('VECLEN', veclen)
+
+# if args.vectorization:
 #     nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
 #     nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
 # else:
@@ -517,15 +512,14 @@ __out[1] = __in[1]''')
 
     reduction_entry, reduction_exit = nested_state.add_map(
             'reduction_map',
-            dict(i='0:M', j='0:N:2'),
+            dict(i='0:M', j='0:N'),
+            # dict(i='0:M', j='0:N:2'),
             schedule=dace.dtypes.ScheduleType.GPU_Device)
 
     reduce_split_k_entry, reduce_split_k_exit = nested_state.add_map(
             'reduce_split_k',
             dict(k ='0:SPLIT_K'),
             schedule=dace.dtypes.ScheduleType.Sequential)
-
-    # TODO: We could use Vectorization.apply_to() here
 
     nested_state.add_memlet_path(partial_split_k_output,
                             reduction_entry,
@@ -534,20 +528,34 @@ __out[1] = __in[1]''')
                             dst_conn='__in',
                             # memlet=dace.Memlet(data=partial_split_k_output.data, subset="0:M, 0:N, 0:SPLIT_K"))
                             # memlet=dace.Memlet(f"{partial_split_k_output.data}[i, j, k]"))
-                            memlet=dace.Memlet("partial_split_k_output[k, i, j:j+2]"))
+                            memlet=dace.Memlet("partial_split_k_output[k, i, j]"))
+                            # memlet=dace.Memlet("partial_split_k_output[k, i, j:j+2]"))
 
     nested_state.add_memlet_path(tasklet,
                             reduce_split_k_exit,
                             accumulator,
                             src_conn='__out',
-                            memlet=dace.Memlet(f"{accumulator.data}[0:2]", wcr='(lambda x, y: (x + y))'))
+                            memlet=dace.Memlet(f"{accumulator.data}[0:1]", wcr='(lambda x, y: (x + y))'))
+                            # memlet=dace.Memlet(f"{accumulator.data}[0:2]", wcr='(lambda x, y: (x + y))'))
 
     nested_state.add_memlet_path(accumulator,
                             reduction_exit,
                             A_matmul_B_nested_state,
                             # memlet=dace.Memlet(A_matmul_B_nested_state.data, subset="tile_i:tile_i+8, tile_j:tile_j+8"))
                             # memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]", wcr='(lambda x, y: (x + y))', wcr_nonatomic=True))
-                            memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j:j+2]"))
+                            memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]"))
+                            # memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j:j+2]"))
+
+    # TODO: We could use Vectorization.apply_to() here
+    Vectorization.apply_to(nested_state.parent,
+                dict(vector_len=veclen, preamble=False, postamble=False),
+                _map_entry=reduction_entry,
+                _tasklet=tasklet,
+                _map_exit=reduction_exit)
+
+                # _map_entry=entry,
+                # _tasklet=state.out_edges(entry)[0].dst,
+                # _map_exit=state.exit_node(entry))
         
 if args.double_buffering:
     helpers.print_info("Applying Double Buffering...", False)
