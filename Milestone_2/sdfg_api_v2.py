@@ -76,7 +76,7 @@ if args.precision == 32:
     dtype = dace.float32
     ndtype = np.float32
     veclen = 4
-    schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, thread_tile_k=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=16)
+    schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, thread_tile_k=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=64)
 
 else:
     dtype = dace.float64
