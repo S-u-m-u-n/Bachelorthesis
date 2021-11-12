@@ -42,6 +42,7 @@ if args.test == 1:
     subprocess.run(nvprof_options + [path + "double_buffering_swizzled_threads.csv"] + python_options + ["--double-buffering", "--swizzle-threads"])
     subprocess.run(nvprof_options + [path + "double_buffering_swizzled_thread_blocks.csv"] + python_options + ["--swizzle-thread-blocks", "2"])
     subprocess.run(nvprof_options + [path + "double_buffering_swizzled_threads_swizzled_thread_blocks.csv"] + python_options + ["--swizzle-threads", "--swizzle-thread-blocks", "2"])
+    
     # subprocess.run(nvprof_options + [path + "double_buffering_vectorization.csv"] + python_options + ["--double-buffering", "--vectorization"])
     # subprocess.run(nvprof_options + [path + "double_buffering_vectorization_swizzled_threads.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-threads"])
     # subprocess.run(nvprof_options + [path + "double_buffering_vectorization_swizzled_thread_blocks.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-thread-blocks", "2"])
