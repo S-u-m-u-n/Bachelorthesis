@@ -76,17 +76,20 @@ if args.precision == 32:
     dtype = dace.float32
     ndtype = np.float32
     veclen = 4
+    schedule = Schedule(load_k=8, thread_tile_m=4, thread_tile_n=4, thread_tile_k=8, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=128, thread_block_tile_n=32)
+
 else:
     dtype = dace.float64
     ndtype = np.float64
     veclen = 2
+    schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
+
 
 sdfg.add_constant('VECLEN', veclen)
 nested_sdfg.add_constant('VECLEN', veclen)
 
 
 # schedule = Schedule(load_k=1, thread_tile_m=1, thread_tile_n=1, thread_tile_k=1, warp_tile_m=8, warp_tile_n=4, thread_block_tile_m=16, thread_block_tile_n=8)
-schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
 
 M = dace.symbol('M')
 N = dace.symbol('N')
