@@ -27,7 +27,7 @@ if args.test == 1:
     python_options += ["-M=1024", "-N=1024", "-K=1024"]
     cublas_options += ["-M=1024", "-N=1024", "-K=1024"]
     cutlass_options += ["--m=1024", "--n=1024", "--k=1024"]
-    base_path = "./performance_test_results/1024_1024_1024" + str(args.precision) + "bit/"
+    base_path = "./performance_test_results/1024_1024_1024_" + str(args.precision) + "bit/"
     path = base_path + str(args.path) +'/'
     subprocess.run(["mkdir", "-p", path])
     subprocess.run(nvprof_options + [path + "unoptimized.csv"] + python_options)
@@ -57,7 +57,7 @@ if args.test == 2:
     python_options += ["-M=4096", "-N=4096", "-K=4096"]
     cublas_options += ["-M=4096", "-N=4096", "-K=4096"]
     cutlass_options += ["--m=4096", "--n=4096", "--k=4096"]
-    base_path = "./performance_test_results/4096_4096_4096" + str(args.precision) + "bit/"
+    base_path = "./performance_test_results/4096_4096_4096_" + str(args.precision) + "bit/"
     path = base_path + str(args.path) +'/'
     subprocess.run(["mkdir", "-p", path])
     subprocess.run(nvprof_options + [path + "unoptimized.csv"] + python_options)
@@ -87,7 +87,7 @@ if args.test == 3:
     helpers.print_info("=" * 20, False)
     python_options += ["-M=1024", "-N=1024", "-K=8192", "--double-buffering", "--swizzle-threads", "--swizzle-thread-blocks", "2"]
     cublas_options += ["-M=1024", "-N=1024", "-K=8192"]
-    base_path = "./performance_test_results/1024_8192_1024" + str(args.precision) + "bit/"
+    base_path = "./performance_test_results/1024_8192_1024_" + str(args.precision) + "bit/"
     path = base_path + str(args.path) +'/'
     subprocess.run(["mkdir", "-p", path])
     subprocess.run(nvprof_options + [path + "split_k_1.csv"] + python_options)
@@ -120,7 +120,7 @@ if args.test == 4:
     python_options += ["-M=256", "-N=256", "-K=10240", "--double-buffering", "--swizzle-threads", "--swizzle-thread-blocks", "2"]
     cublas_options += ["-M=256", "-N=256", "-K=10240"]
     # cutlass_options += ["--m=256", "--n=256", "--k=10240"]
-    base_path = "./performance_test_results/256_10240_256" + str(args.precision) + "bit/"
+    base_path = "./performance_test_results/256_256_10240_" + str(args.precision) + "bit/"
     path = base_path + str(args.path) +'/'
     subprocess.run(["mkdir", "-p", path])
     subprocess.run(nvprof_options + [path + "split_k_1.csv"] + python_options)
@@ -186,7 +186,7 @@ if args.test == 5:
     python_options += ["-M=1024", "-N=1024", "-K=1024"]
     cublas_options += ["-M=1024", "-N=1024", "-K=1024"]
     cutlass_options += ["--m=1024", "--n=1024", "--k=1024"]
-    base_path = "./performance_test_results/1024_1024_1024_isolated_optimizations" + str(args.precision) + "bit/"
+    base_path = "./performance_test_results/1024_1024_1024_isolated_optimizations_" + str(args.precision) + "bit/"
     path = base_path + str(args.path) +'/'
     subprocess.run(["mkdir", "-p", path])
     subprocess.run(nvprof_options + [path + "unoptimized.csv"] + python_options)
