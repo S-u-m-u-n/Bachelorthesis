@@ -85,9 +85,6 @@ else:
     schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
 
 
-sdfg.add_constant('VECLEN', veclen)
-nested_sdfg.add_constant('VECLEN', veclen)
-
 
 # schedule = Schedule(load_k=1, thread_tile_m=1, thread_tile_n=1, thread_tile_k=1, warp_tile_m=8, warp_tile_n=4, thread_block_tile_m=16, thread_block_tile_n=8)
 
@@ -103,6 +100,8 @@ beta = args.beta
 sdfg = dace.SDFG('gemm')
 state = sdfg.add_state(label='gemm_state')
 nested_sdfg = dace.SDFG('nested_gemm')
+sdfg.add_constant('VECLEN', veclen)
+nested_sdfg.add_constant('VECLEN', veclen)
 
 # if args.vectorization:
     # sdfg.add_array('A', shape=[M, K // 2], dtype=dace.vector(dace.float64, 2))
