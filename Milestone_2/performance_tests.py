@@ -13,11 +13,17 @@ args = parser.parse_args()
 helpers.print_info("Running performance tests...", False)
 
 nvprof_options = ["nvprof", "--print-gpu-trace", "--csv", "--log-file"]
+# nvprof --print-gpu-trace --csv --log-file vectorized_64_db_st.csv
 python_options = ["python", "./sdfg_api_v2.py", "--precision=" + str(args.precision), "--repetitions=" + str(args.repetitions)]
 cublas_options = ["python", "./cublas.py", "--precision=" + str(args.precision), "--repetitions=" + str(args.repetitions)]
 
-cutlass_options = ["/home/jacobsi/cutlass/build/tools/profiler/cutlass_profiler", "--verification-enabled=false", "--warmup-iterations=0", "--operation=gemm", "--cta_m=128", "--cta_n=64", "--A=f64:column", "--B=f64:column", "--profiling-iterations=" + str(args.repetitions - 1)]
+cutlass_options = ["/home/jacobsi/cutlass/build/tools/profiler/cutlass_profiler", "--verification-enabled=false", "--warmup-iterations=0", "--operation=gemm", "--profiling-iterations=" + str(args.repetitions - 1)]
 # nvprof --print-gpu-trace --csv --log-file cutlass_test.csv /home/jacobsi/cutlass/build/tools/profiler/cutlass_profiler --verification-enabled=false --warmup-iterations=0 --operation=gemm --m=1024 --n=1024 --k=1024 --cta_m=128 --cta_n=64 --A=f64:column --B=f64:column --profiling-iterations=10
+if args.precision == 64:
+    cutlass_options += ["--cta_m=128", "--cta_n=64", "--A=f64:column", "--B=f64:column"]
+else:
+    cutlass_options += ["--cta_m=64", "--cta_n=64", "--A=f32:column", "--B=f32:column"]
+
 
 ### (1024 x 1024) x (1024 x 1024)
 if args.test == 1:

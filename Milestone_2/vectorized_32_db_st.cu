@@ -45,9 +45,9 @@ DACE_DFI void nested_nested_state_1_1_5(const dace::vec<float, 4> * input_A, con
     constexpr long long warp_height = 8;
     constexpr long long size_K_split = 4096;
     constexpr long long SWIZZLE = 1;
-    float register_storage_B[4]  DACE_ALIGN(64);
-    float register_storage_C[16]  DACE_ALIGN(64) = {0};
     __shared__ float shared_memory_A[512];
+    float register_storage_C[16]  DACE_ALIGN(64) = {0};
+    float register_storage_B[4]  DACE_ALIGN(64);
     float register_storage_A[4]  DACE_ALIGN(64);
     __shared__ float shared_memory_B[512];
     long long k_tile;
@@ -121,11 +121,11 @@ DACE_DFI void nested_nested_state_1_1_5(const dace::vec<float, 4> * input_A, con
                 } // End omp section
                 #pragma omp section
                 {
-                    dace::GlobalToShared2D<dace::vec<float, 4>, max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)), max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1, size_thread_block_tile_m, size_K_tile / 4, 4 / 4, 1, true>(input_A + (size_K_tile * (k_tile + 1)) / 4, K / 4, 1, ((dace::vec<float, 4> *) shared_memory_A) + (256 * ((k_tile + 1) % 2)) / 4);
+                    dace::GlobalToShared2D<dace::vec<float, 4>, max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)), max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1, size_thread_block_tile_m, size_K_tile / 4, 4 / 4, 1, true>(input_A + (size_K_tile * (k_tile + 1)) / 4, K / 4, 1, ((dace::vec<float, 4> *)shared_memory_A) + (256 * ((k_tile + 1) % 2)) / 4);
                 } // End omp section
                 #pragma omp section
                 {
-                    dace::GlobalToShared2D<dace::vec<float, 4>, max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)), max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1, size_K_tile, size_thread_block_tile_n / 4, 64 / 4, 1, true>(input_B + ((N * size_K_tile) * (k_tile + 1)) / 4, N / 4, 1, ((dace::vec<float, 4> *) shared_memory_B) + (256 * ((k_tile + 1) % 2)) / 4);
+                    dace::GlobalToShared2D<dace::vec<float, 4>, max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)), max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1, size_K_tile, size_thread_block_tile_n / 4, 64 / 4, 1, true>(input_B + ((N * size_K_tile) * (k_tile + 1)) / 4, N / 4, 1, ((dace::vec<float, 4> *)shared_memory_B) + (256 * ((k_tile + 1) % 2)) / 4);
                 } // End omp section
             } // End omp sections
 

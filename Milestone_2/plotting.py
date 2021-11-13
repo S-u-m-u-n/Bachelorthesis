@@ -24,14 +24,14 @@ def read_nvprof_data(path_to_csv):
     # if (df[1])
     df = df.filter(['Duration', 'Name']).iloc[1:]
 
-    df = df[df['Name'].str.contains("Thread_block_grid|dgemm")].filter(['Duration']).reset_index(drop=True).apply(pd.to_numeric, errors='coerce')
+    df = df[df['Name'].str.contains("Thread_block_grid|dgemm")].filter(['Duration']).reset_index(drop=True).apply(pd.to_numeric, errors='coerce').iloc[1:, :]
     if flag:
         df /= 1000
     return df
 
 ### (1024 x 1024) x (1024 x 1024)
 if args.test == 1:
-    base_path = "./performance_test_results/1024_1024_1024" + str(args.precision) + "bit/"
+    base_path = "./performance_test_results/1024_1024_1024_" + str(args.precision) + "bit/"
     path = base_path + str(args.path) +'/'
     ### Without Double Buffering
     unoptimized_df = read_nvprof_data(path + "unoptimized.csv")
@@ -53,12 +53,13 @@ if args.test == 1:
     db_st_df = read_nvprof_data(path + "double_buffering_swizzled_threads.csv")
     db_stb_df = read_nvprof_data(path + "double_buffering_swizzled_thread_blocks.csv")
     db_st_stb_df = read_nvprof_data(path + "double_buffering_swizzled_threads_swizzled_thread_blocks.csv")
+
     # db_v_st_df = read_nvprof_data(path + "double_buffering_vectorization_swizzled_threads.csv")
     # db_v_stb_df = read_nvprof_data(path + "double_buffering_vectorization_swizzled_thread_blocks.csv")
     # db_v_st_stb_df = read_nvprof_data(path + "double_buffering_vectorization_swizzled_threads_swizzled_thread_blocks.csv")
-    # cutlass_df = read_nvprof_data(base_path + "cutlass.csv")
+    cutlass_df = read_nvprof_data(base_path + "cutlass.csv")
     cublas_df = read_nvprof_data(base_path + "cublas.csv")
-    combined_df_db = pd.concat([db_df, db_st_df, db_stb_df, db_st_stb_df, cublas_df], axis=1)
+    combined_df_db = pd.concat([db_df, db_st_df, db_stb_df, db_st_stb_df, cutlass, cublas_df], axis=1)
     combined_df_db.columns = ["db", "db+st", "db+stb", "db+st+stb", "cublas"]
     fig_db = plt.figure()
     sns.violinplot(data=combined_df_db).set(xticklabels=["DB", "DB+ST", "DB+STB", "DB+ST+STB", "cuBLAS"], ylabel="Runtime [ms]", title="M = 1024, N = 1024, K = 1024 with double buffering") # , xlabel=""
@@ -66,7 +67,7 @@ if args.test == 1:
 
 ### (4096 x 4096) x (4096 x 4096)
 if args.test == 2:
-    base_path = "./performance_test_results/4096_4096_4096" + str(args.precision) + "bit/"
+    base_path = "./performance_test_results/4096_4096_4096_" + str(args.precision) + "bit/"
     path = base_path + str(args.path) +'/'
     ### Without Double Buffering
     unoptimized_df = read_nvprof_data(path + "unoptimized.csv")
@@ -81,15 +82,17 @@ if args.test == 2:
     fig.savefig(path + "4096_4096_comparison.png")
     ### With Double Buffering
     db_df = read_nvprof_data(path + "double_buffering.csv")
-    db_v_df = read_nvprof_data(path + "double_buffering_vectorization.csv")
     db_st_df = read_nvprof_data(path + "double_buffering_swizzled_threads.csv")
+    db_stb_df = read_nvprof_data(path + "double_buffering_swizzled_thread_blocks.csv")
+    db_st_stb_df = read_nvprof_data(path + "double_buffering_swizzled_threads_swizzled_thread_blocks.csv")
     db_v_st_df = read_nvprof_data(path + "double_buffering_vectorization_swizzled_threads.csv")
+    db_v_st_stb_df = read_nvprof_data(path + "double_buffering_vectorization_swizzled_threads_swizzled_thread_blocks.csv")
     cutlass_df = read_nvprof_data(base_path + "cutlass.csv")
     cublas_df = read_nvprof_data(base_path + "cublas.csv")
-    combined_df_db = pd.concat([db_df, db_v_df, db_st_df, db_v_st_df, cutlass_df, cublas_df], axis=1)
+    combined_df_db = pd.concat([db_df, db_st_df, db_stb_df, db_st_stb_df, db_v_st_df, db_v_st_stb_df, cutlass_df, cublas_df], axis=1)
     combined_df_db.columns = ["db", "db_v", "db_st", "db_v_st", "cutlass", "cublas"]
     fig_db = plt.figure()
-    sns.violinplot(data=combined_df_db).set(xticklabels=["DB", "DB+V", "DB+ST", "DB+V+ST", "CUTLASS", "cuBLAS"], ylabel="Runtime [ms]", title="M = 4096, N = 4096, K = 4096 with double buffering") # , xlabel=""
+    sns.violinplot(data=combined_df_db).set(xticklabels=["DB", "DB+ST", "DB+STB", "DB+V+ST", "CUTLASS", "cuBLAS"], ylabel="Runtime [ms]", title="M = 4096, N = 4096, K = 4096 with double buffering") # , xlabel=""
     fig_db.savefig(path + "4096_4096_4096_comparison_db.png")
 
 ### (1024 x 8192) x (8192 x 1024)

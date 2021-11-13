@@ -8,9 +8,9 @@ constexpr double beta = 1;
 constexpr long long size_thread_block_tile_m = 128;
 constexpr long long size_thread_block_tile_n = 64;
 constexpr long long size_K_tile = 8;
-constexpr long long num_thread_blocks_m = 16;
-constexpr long long num_thread_blocks_n = 128;
-constexpr long long num_K_tiles = 512;
+constexpr long long num_thread_blocks_m = 8;
+constexpr long long num_thread_blocks_n = 16;
+constexpr long long num_K_tiles = 128;
 constexpr long long size_warp_tile_m = 64;
 constexpr long long size_warp_tile_n = 32;
 constexpr long long size_thread_tile_m = 8;
@@ -33,9 +33,9 @@ DACE_DFI void nested_nested_state_1_1_5(const dace::vec<double, 2> * input_A, co
     constexpr long long size_thread_block_tile_m = 128;
     constexpr long long size_thread_block_tile_n = 64;
     constexpr long long size_K_tile = 8;
-    constexpr long long num_thread_blocks_m = 16;
-    constexpr long long num_thread_blocks_n = 128;
-    constexpr long long num_K_tiles = 512;
+    constexpr long long num_thread_blocks_m = 8;
+    constexpr long long num_thread_blocks_n = 16;
+    constexpr long long num_K_tiles = 128;
     constexpr long long size_warp_tile_m = 64;
     constexpr long long size_warp_tile_n = 32;
     constexpr long long size_thread_tile_m = 8;
@@ -43,13 +43,13 @@ DACE_DFI void nested_nested_state_1_1_5(const dace::vec<double, 2> * input_A, co
     constexpr long long SPLIT_K = 1;
     constexpr long long warp_width = 4;
     constexpr long long warp_height = 8;
-    constexpr long long size_K_split = 4096;
-    constexpr long long SWIZZLE = 2;
-    __shared__ double shared_memory_A[2048];
+    constexpr long long size_K_split = 1024;
+    constexpr long long SWIZZLE = 1;
     double register_storage_C[64]  DACE_ALIGN(64) = {0};
+    double register_storage_A[8]  DACE_ALIGN(64);
+    __shared__ double shared_memory_A[2048];
     __shared__ double shared_memory_B[1024];
     double register_storage_B[8]  DACE_ALIGN(64);
-    double register_storage_A[8]  DACE_ALIGN(64);
     long long k_tile;
 
     {
@@ -58,11 +58,11 @@ DACE_DFI void nested_nested_state_1_1_5(const dace::vec<double, 2> * input_A, co
         {
             #pragma omp section
             {
-                dace::GlobalToShared2D<dace::vec<double, 2>, max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)), max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1, size_thread_block_tile_m, size_K_tile / 2, 8 / 2, 1, true>(input_A, K / 2, 1, (dace::vec<double, 2> *)shared_memory_A);
+                dace::GlobalToShared2D<dace::vec<double, 2>, max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)), max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1, size_thread_block_tile_m, size_K_tile / 2, 8 / 2, 1, true>(input_A, K / 2, 1, (dace::vec<double, 2> *) shared_memory_A);
             } // End omp section
             #pragma omp section
             {
-                dace::GlobalToShared2D<dace::vec<double, 2>, max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)), max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1, size_K_tile, size_thread_block_tile_n / 2, 64 / 2, 1, true>(input_B, N / 2, 1, (dace::vec<double, 2> *)shared_memory_B);
+                dace::GlobalToShared2D<dace::vec<double, 2>, max(1, int_ceil(size_thread_block_tile_n, size_thread_tile_n)), max(1, int_ceil(size_thread_block_tile_m, size_thread_tile_m)), 1, size_K_tile, size_thread_block_tile_n / 2, 64 / 2, 1, true>(input_B, N / 2, 1, (dace::vec<double, 2> *) shared_memory_B);
             } // End omp section
         } // End omp sections
 
@@ -87,10 +87,10 @@ DACE_DFI void nested_nested_state_1_1_5(const dace::vec<double, 2> * input_A, co
                                             for (auto k = 0; k < size_K_tile; k += 1) {
 
                                                 dace::CopyND<double, 1, false, size_thread_tile_m>::template ConstDst<1>::Copy(
-                                                shared_memory_A + (((k + ((8 * size_thread_tile_m) * bitwise_and(right_shift((((thread_j % size_warp_tile_n) / size_thread_tile_n) + ((warp_width * (thread_i % size_warp_tile_m)) / size_thread_tile_m)), 1), (warp_height - 1)))) + ((8 * size_warp_tile_m) * (thread_i / size_warp_tile_m))) + (1024 * (k_tile % 2))), register_storage_A, 8);
+                                                shared_memory_A + ((k + (8 * thread_i)) + (1024 * (k_tile % 2))), register_storage_A, 8);
 
                                                 dace::CopyND<double, 1, false, size_thread_tile_n>::template ConstDst<1>::Copy(
-                                                shared_memory_B + ((((64 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((((thread_j % size_warp_tile_n) / size_thread_tile_n) + ((warp_width * (thread_i % size_warp_tile_m)) / size_thread_tile_m)), ((warp_height * warp_width) / 2)), (warp_width - 1)), bitwise_and((((thread_j % size_warp_tile_n) / size_thread_tile_n) + ((warp_width * (thread_i % size_warp_tile_m)) / size_thread_tile_m)), 1)))) + (size_warp_tile_n * (thread_j / size_warp_tile_n))) + (512 * (k_tile % 2))), register_storage_B, 1);
+                                                shared_memory_B + (((64 * k) + thread_j) + (512 * (k_tile % 2))), register_storage_B, 1);
                                                 {
                                                     #pragma unroll
                                                     for (auto i = 0; i < size_thread_tile_m; i += 1) {
@@ -146,10 +146,10 @@ DACE_DFI void nested_nested_state_1_1_5(const dace::vec<double, 2> * input_A, co
                                 for (auto k = 0; k < size_K_tile; k += 1) {
 
                                     dace::CopyND<double, 1, false, size_thread_tile_m>::template ConstDst<1>::Copy(
-                                    shared_memory_A + (((k + ((8 * size_thread_tile_m) * bitwise_and(right_shift((((thread_j % size_warp_tile_n) / size_thread_tile_n) + ((warp_width * (thread_i % size_warp_tile_m)) / size_thread_tile_m)), 1), (warp_height - 1)))) + ((8 * size_warp_tile_m) * (thread_i / size_warp_tile_m))) + (1024 * (k_tile % 2))), register_storage_A, 8);
+                                    shared_memory_A + ((k + (8 * thread_i)) + (1024 * (k_tile % 2))), register_storage_A, 8);
 
                                     dace::CopyND<double, 1, false, size_thread_tile_n>::template ConstDst<1>::Copy(
-                                    shared_memory_B + ((((64 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((((thread_j % size_warp_tile_n) / size_thread_tile_n) + ((warp_width * (thread_i % size_warp_tile_m)) / size_thread_tile_m)), ((warp_height * warp_width) / 2)), (warp_width - 1)), bitwise_and((((thread_j % size_warp_tile_n) / size_thread_tile_n) + ((warp_width * (thread_i % size_warp_tile_m)) / size_thread_tile_m)), 1)))) + (size_warp_tile_n * (thread_j / size_warp_tile_n))) + (512 * (k_tile % 2))), register_storage_B, 1);
+                                    shared_memory_B + (((64 * k) + thread_j) + (512 * (k_tile % 2))), register_storage_B, 1);
                                     {
                                         #pragma unroll
                                         for (auto i = 0; i < size_thread_tile_m; i += 1) {
@@ -174,7 +174,7 @@ DACE_DFI void nested_nested_state_1_1_5(const dace::vec<double, 2> * input_A, co
                             }
 
                             dace::CopyND<double, 1, false, size_thread_tile_m, size_thread_tile_n>::template ConstSrc<8, 1>::Accumulate(
-                            register_storage_C, output + ((((N * ((((- size_thread_tile_m) * bitwise_and(right_shift(0, 1), (warp_height - 1))) + (size_thread_tile_m * bitwise_and(right_shift((((thread_j % size_warp_tile_n) / size_thread_tile_n) + ((warp_width * (thread_i % size_warp_tile_m)) / size_thread_tile_m)), 1), (warp_height - 1)))) + (size_warp_tile_m * (thread_i / size_warp_tile_m)))) - (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, ((warp_height * warp_width) / 2)), (warp_width - 1)), bitwise_and(0, 1)))) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((((thread_j % size_warp_tile_n) / size_thread_tile_n) + ((warp_width * (thread_i % size_warp_tile_m)) / size_thread_tile_m)), ((warp_height * warp_width) / 2)), (warp_width - 1)), bitwise_and((((thread_j % size_warp_tile_n) / size_thread_tile_n) + ((warp_width * (thread_i % size_warp_tile_m)) / size_thread_tile_m)), 1)))) + (size_warp_tile_n * (thread_j / size_warp_tile_n))), [] (const double& x, const double& y) { return (x + y); }, N, 1);
+                            register_storage_C, output + ((N * thread_i) + thread_j), [] (const double& x, const double& y) { return (x + y); }, N, 1);
                         }
                     }
                 }
@@ -241,9 +241,9 @@ __global__ void initialize_matmul_result_1_0_1(double * __restrict__ output, int
     constexpr long long VECLEN = 2;
     constexpr long long size_thread_block_tile_m = 128;
     constexpr long long size_thread_block_tile_n = 64;
-    constexpr long long num_thread_blocks_m = 16;
-    constexpr long long num_thread_blocks_n = 128;
-    constexpr long long num_K_tiles = 512;
+    constexpr long long num_thread_blocks_m = 8;
+    constexpr long long num_thread_blocks_n = 16;
+    constexpr long long num_K_tiles = 128;
     constexpr long long size_warp_tile_m = 64;
     constexpr long long size_warp_tile_n = 32;
     constexpr long long size_thread_tile_m = 8;
@@ -251,8 +251,8 @@ __global__ void initialize_matmul_result_1_0_1(double * __restrict__ output, int
     constexpr long long warp_width = 4;
     constexpr long long warp_height = 8;
     constexpr long long size_K_tile = 8;
-    constexpr long long size_K_split = 4096;
-    constexpr long long SWIZZLE = 2;
+    constexpr long long size_K_split = 1024;
+    constexpr long long SWIZZLE = 1;
     constexpr long long SPLIT_K = 1;
     {
         {
@@ -288,9 +288,9 @@ __global__ void Thread_block_grid_1_1_3(const dace::vec<double, 2> * __restrict_
     constexpr long long VECLEN = 2;
     constexpr long long size_thread_block_tile_m = 128;
     constexpr long long size_thread_block_tile_n = 64;
-    constexpr long long num_thread_blocks_m = 16;
-    constexpr long long num_thread_blocks_n = 128;
-    constexpr long long num_K_tiles = 512;
+    constexpr long long num_thread_blocks_m = 8;
+    constexpr long long num_thread_blocks_n = 16;
+    constexpr long long num_K_tiles = 128;
     constexpr long long size_warp_tile_m = 64;
     constexpr long long size_warp_tile_n = 32;
     constexpr long long size_thread_tile_m = 8;
@@ -298,14 +298,14 @@ __global__ void Thread_block_grid_1_1_3(const dace::vec<double, 2> * __restrict_
     constexpr long long warp_width = 4;
     constexpr long long warp_height = 8;
     constexpr long long size_K_tile = 8;
-    constexpr long long size_K_split = 4096;
-    constexpr long long SWIZZLE = 2;
+    constexpr long long size_K_split = 1024;
+    constexpr long long SWIZZLE = 1;
     constexpr long long SPLIT_K = 1;
     {
         {
             int thread_block_j = blockIdx.x;
             int thread_block_i = blockIdx.y;
-            nested_nested_state_1_1_5(&input_A[((K * size_thread_block_tile_m) * ((SWIZZLE * thread_block_i) + (thread_block_j % SWIZZLE))) / 2], &input_B[(size_thread_block_tile_n * (thread_block_j / SWIZZLE)) / 2], &output[(((N * ((size_thread_block_tile_m * ((SWIZZLE * thread_block_i) + (thread_block_j % SWIZZLE))) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * (thread_block_j / SWIZZLE))) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, ((warp_height * warp_width) / 2)), (warp_width - 1)), bitwise_and(0, 1))))], K, M, N);
+            nested_nested_state_1_1_5(&input_A[((K * size_thread_block_tile_m) * thread_block_i) / 2], &input_B[(size_thread_block_tile_n * thread_block_j) / 2], &output[(((N * size_thread_block_tile_m) * thread_block_i) + (size_thread_block_tile_n * thread_block_j))], K, M, N);
         }
     }
 }
@@ -325,9 +325,9 @@ __global__ void multiply_matrix_with_constant_0_0_14(const double * __restrict__
     constexpr long long size_thread_block_tile_m = 128;
     constexpr long long size_thread_block_tile_n = 64;
     constexpr long long size_K_tile = 8;
-    constexpr long long num_thread_blocks_m = 16;
-    constexpr long long num_thread_blocks_n = 128;
-    constexpr long long num_K_tiles = 512;
+    constexpr long long num_thread_blocks_m = 8;
+    constexpr long long num_thread_blocks_n = 16;
+    constexpr long long num_K_tiles = 128;
     constexpr long long size_warp_tile_m = 64;
     constexpr long long size_warp_tile_n = 32;
     constexpr long long size_thread_tile_m = 8;
@@ -371,9 +371,9 @@ __global__ void multiply_matrix_with_constant_0_0_11(double * __restrict__ C_tim
     constexpr long long size_thread_block_tile_m = 128;
     constexpr long long size_thread_block_tile_n = 64;
     constexpr long long size_K_tile = 8;
-    constexpr long long num_thread_blocks_m = 16;
-    constexpr long long num_thread_blocks_n = 128;
-    constexpr long long num_K_tiles = 512;
+    constexpr long long num_thread_blocks_m = 8;
+    constexpr long long num_thread_blocks_n = 16;
+    constexpr long long num_K_tiles = 128;
     constexpr long long size_warp_tile_m = 64;
     constexpr long long size_warp_tile_n = 32;
     constexpr long long size_thread_tile_m = 8;
@@ -417,9 +417,9 @@ __global__ void add_matrices_0_0_17(const double * __restrict__ A_matmul_B_times
     constexpr long long size_thread_block_tile_m = 128;
     constexpr long long size_thread_block_tile_n = 64;
     constexpr long long size_K_tile = 8;
-    constexpr long long num_thread_blocks_m = 16;
-    constexpr long long num_thread_blocks_n = 128;
-    constexpr long long num_K_tiles = 512;
+    constexpr long long num_thread_blocks_m = 8;
+    constexpr long long num_thread_blocks_n = 16;
+    constexpr long long num_K_tiles = 128;
     constexpr long long size_warp_tile_m = 64;
     constexpr long long size_warp_tile_n = 32;
     constexpr long long size_thread_tile_m = 8;
@@ -457,3 +457,4 @@ void __dace_runkernel_add_matrices_0_0_17(gemm_t *__state, const double * __rest
     void  *add_matrices_0_0_17_args[] = { (void *)&A_matmul_B_times_alpha, (void *)&C_times_beta, (void *)&gpu_result, (void *)&M, (void *)&N };
     cudaLaunchKernel((void*)add_matrices_0_0_17, dim3(int_ceil(int_ceil(N, 1), 32), int_ceil(int_ceil(M, 1), 1), int_ceil(1, 1)), dim3(32, 1, 1), add_matrices_0_0_17_args, 0, __state->gpu_context->streams[0]);
 }
+

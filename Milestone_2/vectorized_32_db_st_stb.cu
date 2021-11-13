@@ -457,4 +457,3 @@ void __dace_runkernel_add_matrices_0_0_17(gemm_t *__state, const float * __restr
     void  *add_matrices_0_0_17_args[] = { (void *)&A_matmul_B_times_alpha, (void *)&C_times_beta, (void *)&gpu_result, (void *)&M, (void *)&N };
     cudaLaunchKernel((void*)add_matrices_0_0_17, dim3(int_ceil(int_ceil(N, 1), 32), int_ceil(int_ceil(M, 1), 1), int_ceil(1, 1)), dim3(32, 1, 1), add_matrices_0_0_17_args, 0, __state->gpu_context->streams[0]);
 }
-
