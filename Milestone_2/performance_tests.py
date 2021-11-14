@@ -86,7 +86,6 @@ if args.test == 2:
     # subprocess.run(nvprof_options + [base_path + "cublas.csv"] + cublas_options)
     # subprocess.run(nvprof_options + [base_path + "cutlass.csv"] + cutlass_options)
    
-
 ## (1024 x 8192) x (8192 x 1024)
 if args.test == 3:
     helpers.print_info("=" * 20, False)
