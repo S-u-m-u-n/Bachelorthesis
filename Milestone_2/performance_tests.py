@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 
 parser = ArgumentParser()
 parser.add_argument("-t", "--test", type=int, dest='test', nargs="?", required=True)
-parser.add_argument("-r", "--repetitions", type=int, dest='repetitions', nargs="?", default=10)
+parser.add_argument("-r", "--repetitions", type=int, dest='repetitions', nargs="?", default=11)
 parser.add_argument("-p", "--path", type=str, dest='path', nargs="?", required=True)
 parser.add_argument('--precision', type=int, dest='precision', choices=[32, 64], required=True, help="Specify floating precision (32 or 64)")
 args = parser.parse_args()
@@ -136,6 +136,7 @@ if args.test == 4:
     path = base_path + str(args.path) +'/'
     subprocess.run(["mkdir", "-p", path])
     subprocess.run(nvprof_options + [path + "split_k_1.csv"] + python_options)
+    python_options += ["--split-k-3d"]
     subprocess.run(nvprof_options + [path + "split_k_2.csv"] + python_options + ["--split-k", "2"])
     # subprocess.run(nvprof_options + [path + "split_k_3.csv"] + python_options + ["--split-k", "3"])
     subprocess.run(nvprof_options + [path + "split_k_4.csv"] + python_options + ["--split-k", "4"])
