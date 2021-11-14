@@ -129,7 +129,8 @@ if args.test == 4:
     helpers.print_info("=" * 20, False)
     helpers.print_info("===== (256 x 10240) x (10240 x 256)", False)
     helpers.print_info("=" * 20, False)
-    python_options += ["-M=256", "-N=256", "-K=10240", "--double-buffering", "--swizzle-threads", "--swizzle-thread-blocks", "2"]
+    python_options += ["-M=256", "-N=256", "-K=10240", "--double-buffering", "--swizzle-threads"]
+    # python_options += ["-M=256", "-N=256", "-K=10240", "--double-buffering", "--swizzle-threads", "--swizzle-thread-blocks", "2"]
     cublas_options += ["-M=256", "-N=256", "-K=10240"]
     # cutlass_options += ["--m=256", "--n=256", "--k=10240"]
     base_path = "./performance_test_results/256_256_10240_" + str(args.precision) + "bit/"
