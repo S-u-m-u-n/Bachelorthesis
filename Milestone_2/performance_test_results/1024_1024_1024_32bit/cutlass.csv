@@ -1,0 +1,19 @@
+==90071== NVPROF is profiling process 90071, command: /home/jacobsi/cutlass/build/tools/profiler/cutlass_profiler --verification-enabled=false --warmup-iterations=0 --operation=gemm --profiling-iterations=9 --cta_m=64 --cta_n=64 --A=f32:column --B=f32:column --m=1024 --n=1024 --k=1024
+==90071== Profiling application: /home/jacobsi/cutlass/build/tools/profiler/cutlass_profiler --verification-enabled=false --warmup-iterations=0 --operation=gemm --profiling-iterations=9 --cta_m=64 --cta_n=64 --A=f32:column --B=f32:column --m=1024 --n=1024 --k=1024
+==90071== Profiling result:
+"Start","Duration","Grid X","Grid Y","Grid Z","Block X","Block Y","Block Z","Registers Per Thread","Static SMem","Dynamic SMem","Size","Throughput","SrcMemType","DstMemType","Device","Context","Stream","Name","Correlation_ID"
+s,us,,,,,,,,B,KB,MB,GB/s,,,,,,,
+0.518002,178.398000,160,1,1,128,1,1,32,0,0.000000,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","void cutlass::reference::device::kernel::BlockForEach<float, cutlass::reference::device::detail::RandomUniformFunc<float>>(float*, unsigned long, floatParams)",442
+0.518223,195.805000,160,1,1,128,1,1,32,0,0.000000,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","void cutlass::reference::device::kernel::BlockForEach<float, cutlass::reference::device::detail::RandomUniformFunc<float>>(float*, unsigned long, floatParams)",451
+0.518425,196.606000,160,1,1,128,1,1,32,0,0.000000,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","void cutlass::reference::device::kernel::BlockForEach<float, cutlass::reference::device::detail::RandomUniformFunc<float>>(float*, unsigned long, floatParams)",460
+0.518809,25.215000,,,,,,,,,,8.000000,309.835415,"Device","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","7","[CUDA memcpy DtoD]",463
+1.762823,286.844000,128,2,1,64,1,1,213,0,8.250000,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","void cutlass::Kernel<cutlass_simt_sgemm_64x64_8x2_nn_align1>(cutlass_simt_sgemm_64x64_8x2_nn_align1Params)",1241
+1.813267,276.508000,128,2,1,64,1,1,213,0,8.250000,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","void cutlass::Kernel<cutlass_simt_sgemm_64x64_8x2_nn_align1>(cutlass_simt_sgemm_64x64_8x2_nn_align1Params)",1247
+1.813545,276.765000,128,2,1,64,1,1,213,0,8.250000,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","void cutlass::Kernel<cutlass_simt_sgemm_64x64_8x2_nn_align1>(cutlass_simt_sgemm_64x64_8x2_nn_align1Params)",1249
+1.813822,277.437000,128,2,1,64,1,1,213,0,8.250000,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","void cutlass::Kernel<cutlass_simt_sgemm_64x64_8x2_nn_align1>(cutlass_simt_sgemm_64x64_8x2_nn_align1Params)",1251
+1.814101,278.461000,128,2,1,64,1,1,213,0,8.250000,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","void cutlass::Kernel<cutlass_simt_sgemm_64x64_8x2_nn_align1>(cutlass_simt_sgemm_64x64_8x2_nn_align1Params)",1253
+1.814380,276.765000,128,2,1,64,1,1,213,0,8.250000,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","void cutlass::Kernel<cutlass_simt_sgemm_64x64_8x2_nn_align1>(cutlass_simt_sgemm_64x64_8x2_nn_align1Params)",1255
+1.814658,276.764000,128,2,1,64,1,1,213,0,8.250000,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","void cutlass::Kernel<cutlass_simt_sgemm_64x64_8x2_nn_align1>(cutlass_simt_sgemm_64x64_8x2_nn_align1Params)",1257
+1.814936,275.325000,128,2,1,64,1,1,213,0,8.250000,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","void cutlass::Kernel<cutlass_simt_sgemm_64x64_8x2_nn_align1>(cutlass_simt_sgemm_64x64_8x2_nn_align1Params)",1259
+1.815212,279.677000,128,2,1,64,1,1,213,0,8.250000,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","void cutlass::Kernel<cutlass_simt_sgemm_64x64_8x2_nn_align1>(cutlass_simt_sgemm_64x64_8x2_nn_align1Params)",1261
+1.815493,278.461000,128,2,1,64,1,1,213,0,8.250000,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","void cutlass::Kernel<cutlass_simt_sgemm_64x64_8x2_nn_align1>(cutlass_simt_sgemm_64x64_8x2_nn_align1Params)",1263

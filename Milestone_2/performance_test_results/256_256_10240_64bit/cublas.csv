@@ -1,0 +1,68 @@
+==103566== NVPROF is profiling process 103566, command: python ./cublas.py --precision=64 --repetitions=11 -M=256 -N=256 -K=10240
+==103566== Profiling application: python ./cublas.py --precision=64 --repetitions=11 -M=256 -N=256 -K=10240
+==103566== Profiling result:
+"Start","Duration","Grid X","Grid Y","Grid Z","Block X","Block Y","Block Z","Registers Per Thread","Static SMem","Dynamic SMem","Size","Throughput","SrcMemType","DstMemType","Device","Context","Stream","Name","Correlation_ID"
+s,ms,,,,,,,,KB,B,MB,GB/s,,,,,,,
+0.549181,5.896981,,,,,,,,,,20.000000,3.312076,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",443
+0.555630,3.269527,,,,,,,,,,20.000000,5.973723,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",444
+0.934485,0.001728,,,,,,,,,,0.000015,0.008623,"Device",,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","[CUDA memset]",2043
+0.934513,0.001376,,,,,,,,,,0.000002,0.001354,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","7","[CUDA memcpy HtoD]",2045
+0.934523,0.001376,,,,,,,,,,0.000004,0.002707,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","7","[CUDA memcpy HtoD]",2047
+0.934532,0.001344,,,,,,,,,,0.000008,0.005544,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","7","[CUDA memcpy HtoD]",2049
+0.934543,0.001344,,,,,,,,,,0.000008,0.005544,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","7","[CUDA memcpy HtoD]",2051
+0.934552,0.001344,,,,,,,,,,0.000015,0.011087,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","7","[CUDA memcpy HtoD]",2053
+0.934559,0.001344,,,,,,,,,,0.000015,0.011087,"Device",,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","[CUDA memset]",2055
+0.934565,0.001344,,,,,,,,,,0.000015,0.011087,"Device",,"NVIDIA Tesla V100-PCIE-32GB (0)","1","7","[CUDA memset]",2057
+0.935228,0.294876,2,4,8,128,1,1,234,24.500000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","volta_dgemm_128x64_nn",2062
+0.935524,0.007360,8,16,1,32,16,1,32,0.000000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","void splitKreduce_kernel<double, double, double, double, bool=1, bool=0>(cublasSplitKParams<double>, double const *, double const *, double*, double const *, double const *, double const *, void*, long, double*, int*)",2064
+0.935539,0.041631,,,,,,,,,,0.500000,11.728790,"Device","Pageable","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2070
+1.060958,2.401506,,,,,,,,,,20.000000,8.132917,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2078
+1.063415,2.160869,,,,,,,,,,20.000000,9.038609,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2079
+1.065642,0.285757,2,4,8,128,1,1,234,24.500000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","volta_dgemm_128x64_nn",2086
+1.065929,0.007199,8,16,1,32,16,1,32,0.000000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","void splitKreduce_kernel<double, double, double, double, bool=1, bool=0>(cublasSplitKParams<double>, double const *, double const *, double*, double const *, double const *, double const *, void*, long, double*, int*)",2088
+1.065943,0.040992,,,,,,,,,,0.500000,11.911623,"Device","Pageable","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2094
+1.114228,2.156549,,,,,,,,,,20.000000,9.056715,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2102
+1.116492,2.140645,,,,,,,,,,20.000000,9.124002,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2103
+1.118695,0.286428,2,4,8,128,1,1,234,24.500000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","volta_dgemm_128x64_nn",2110
+1.118983,0.006752,8,16,1,32,16,1,32,0.000000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","void splitKreduce_kernel<double, double, double, double, bool=1, bool=0>(cublasSplitKParams<double>, double const *, double const *, double*, double const *, double const *, double const *, void*, long, double*, int*)",2112
+1.118990,0.040864,,,,,,,,,,0.500000,11.948934,"Device","Pageable","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2118
+1.164464,2.132614,,,,,,,,,,20.000000,9.158362,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2126
+1.166638,2.005959,,,,,,,,,,20.000000,9.736615,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2127
+1.168705,0.286140,2,4,8,128,1,1,234,24.500000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","volta_dgemm_128x64_nn",2134
+1.168992,0.007072,8,16,1,32,16,1,32,0.000000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","void splitKreduce_kernel<double, double, double, double, bool=1, bool=0>(cublasSplitKParams<double>, double const *, double const *, double*, double const *, double const *, double const *, void*, long, double*, int*)",2136
+1.169000,0.040896,,,,,,,,,,0.500000,11.939585,"Device","Pageable","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2142
+1.214571,2.305667,,,,,,,,,,20.000000,8.470976,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2150
+1.216993,2.148997,,,,,,,,,,20.000000,9.088542,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2151
+1.219210,0.286268,2,4,8,128,1,1,234,24.500000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","volta_dgemm_128x64_nn",2158
+1.219497,0.007328,8,16,1,32,16,1,32,0.000000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","void splitKreduce_kernel<double, double, double, double, bool=1, bool=0>(cublasSplitKParams<double>, double const *, double const *, double*, double const *, double const *, double const *, void*, long, double*, int*)",2160
+1.219507,0.040927,,,,,,,,,,0.500000,11.930541,"Device","Pageable","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2166
+1.265590,2.138789,,,,,,,,,,20.000000,9.131920,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2174
+1.267776,2.161701,,,,,,,,,,20.000000,9.035130,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2175
+1.270005,0.286172,2,4,8,128,1,1,234,24.500000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","volta_dgemm_128x64_nn",2182
+1.270292,0.007040,8,16,1,32,16,1,32,0.000000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","void splitKreduce_kernel<double, double, double, double, bool=1, bool=0>(cublasSplitKParams<double>, double const *, double const *, double*, double const *, double const *, double const *, void*, long, double*, int*)",2184
+1.270306,0.041152,,,,,,,,,,0.500000,11.865310,"Device","Pageable","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2190
+1.321154,2.276772,,,,,,,,,,20.000000,8.578483,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2198
+1.323482,2.154245,,,,,,,,,,20.000000,9.066401,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2199
+1.325705,0.285916,2,4,8,128,1,1,234,24.500000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","volta_dgemm_128x64_nn",2206
+1.325992,0.006752,8,16,1,32,16,1,32,0.000000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","void splitKreduce_kernel<double, double, double, double, bool=1, bool=0>(cublasSplitKParams<double>, double const *, double const *, double*, double const *, double const *, double const *, void*, long, double*, int*)",2208
+1.326006,0.041120,,,,,,,,,,0.500000,11.874544,"Device","Pageable","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2214
+1.376418,2.161636,,,,,,,,,,20.000000,9.035402,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2222
+1.378713,17.463012,,,,,,,,,,20.000000,1.118435,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2223
+1.396402,0.285180,2,4,8,128,1,1,234,24.500000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","volta_dgemm_128x64_nn",2230
+1.396689,0.006944,8,16,1,32,16,1,32,0.000000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","void splitKreduce_kernel<double, double, double, double, bool=1, bool=0>(cublasSplitKParams<double>, double const *, double const *, double*, double const *, double const *, double const *, void*, long, double*, int*)",2232
+1.396698,0.041056,,,,,,,,,,0.500000,11.893055,"Device","Pageable","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2238
+1.472017,2.257507,,,,,,,,,,20.000000,8.651690,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2246
+1.474325,2.122405,,,,,,,,,,20.000000,9.202414,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2247
+1.476515,0.285916,2,4,8,128,1,1,234,24.500000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","volta_dgemm_128x64_nn",2254
+1.476802,0.007264,8,16,1,32,16,1,32,0.000000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","void splitKreduce_kernel<double, double, double, double, bool=1, bool=0>(cublasSplitKParams<double>, double const *, double const *, double*, double const *, double const *, double const *, void*, long, double*, int*)",2256
+1.476817,0.040863,,,,,,,,,,0.500000,11.949227,"Device","Pageable","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2262
+1.521804,2.146309,,,,,,,,,,20.000000,9.099925,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2270
+1.523996,2.010695,,,,,,,,,,20.000000,9.713681,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2271
+1.526074,0.285629,2,4,8,128,1,1,234,24.500000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","volta_dgemm_128x64_nn",2278
+1.526360,0.007104,8,16,1,32,16,1,32,0.000000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","void splitKreduce_kernel<double, double, double, double, bool=1, bool=0>(cublasSplitKParams<double>, double const *, double const *, double*, double const *, double const *, double const *, void*, long, double*, int*)",2280
+1.526374,0.040927,,,,,,,,,,0.500000,11.930541,"Device","Pageable","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2286
+1.575078,2.292355,,,,,,,,,,20.000000,8.520168,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2294
+1.577423,2.081414,,,,,,,,,,20.000000,9.383645,"Pageable","Device","NVIDIA Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2295
+1.579572,0.288157,2,4,8,128,1,1,234,24.500000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","volta_dgemm_128x64_nn",2302
+1.579861,0.006944,8,16,1,32,16,1,32,0.000000,0,,,,,"NVIDIA Tesla V100-PCIE-32GB (0)","1","16","void splitKreduce_kernel<double, double, double, double, bool=1, bool=0>(cublasSplitKParams<double>, double const *, double const *, double*, double const *, double const *, double const *, void*, long, double*, int*)",2304
+1.579876,0.040959,,,,,,,,,,0.500000,11.921220,"Device","Pageable","NVIDIA Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2310
