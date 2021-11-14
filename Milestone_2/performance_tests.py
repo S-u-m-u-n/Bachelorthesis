@@ -53,8 +53,8 @@ if args.test == 1:
     # subprocess.run(nvprof_options + [path + "double_buffering_vectorization_swizzled_threads.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-threads"])
     # subprocess.run(nvprof_options + [path + "double_buffering_vectorization_swizzled_thread_blocks.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-thread-blocks", "2"])
     # subprocess.run(nvprof_options + [path + "double_buffering_vectorization_swizzled_threads_swizzled_thread_blocks.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-threads", "--swizzle-thread-blocks", "2"])
-    subprocess.run(nvprof_options + [base_path + "cublas.csv"] + cublas_options)
-    subprocess.run(nvprof_options + [base_path + "cutlass.csv"] + cutlass_options)
+    # subprocess.run(nvprof_options + [base_path + "cublas.csv"] + cublas_options)
+    # subprocess.run(nvprof_options + [base_path + "cutlass.csv"] + cutlass_options)
 
 ### (4096 x 4096) x (4096 x 4096)
 if args.test == 2:
@@ -83,8 +83,8 @@ if args.test == 2:
     # subprocess.run(nvprof_options + [path + "double_buffering_vectorization_swizzled_threads.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-threads"])
     # subprocess.run(nvprof_options + [path + "double_buffering_vectorization_swizzled_thread_blocks.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-thread-blocks", "2"])
     # subprocess.run(nvprof_options + [path + "double_buffering_vectorization_swizzled_threads_swizzled_thread_blocks.csv"] + python_options + ["--double-buffering", "--vectorization", "--swizzle-threads", "--swizzle-thread-blocks", "2"])
-    subprocess.run(nvprof_options + [base_path + "cublas.csv"] + cublas_options)
-    subprocess.run(nvprof_options + [base_path + "cutlass.csv"] + cutlass_options)
+    # subprocess.run(nvprof_options + [base_path + "cublas.csv"] + cublas_options)
+    # subprocess.run(nvprof_options + [base_path + "cutlass.csv"] + cutlass_options)
    
 
 ## (1024 x 8192) x (8192 x 1024)
