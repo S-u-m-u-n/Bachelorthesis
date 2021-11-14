@@ -592,7 +592,7 @@
     "transformation_hist": [],
     "openmp_sections": true,
     "name": "nested_gemm",
-    "hash": "ad5795bdc2d07d3e4a0be0e88be98528a3ec6002986f1e1da8e44386b9e1b018"
+    "hash": "999aeb70e3052a83b44000e75e1fdcecdbad0b3fd37e4501b27a3dff93b5748a"
   },
   "nodes": [
     {
@@ -903,45 +903,41 @@
           2,
           3,
           11,
-          24
+          22
         ],
         "11": [
           12,
           13
         ],
         "13": [
+          5,
+          6,
           14,
           15
         ],
         "15": [
-          5,
-          6,
+          9,
           16,
           17
         ],
         "17": [
-          9,
+          7,
+          8,
           18,
           19
         ],
         "19": [
-          7,
-          8,
-          20,
-          21
-        ],
-        "21": [
           10,
-          22
+          20
+        ],
+        "22": [
+          4,
+          23,
+          24
         ],
         "24": [
-          4,
-          25,
-          26
-        ],
-        "26": [
-          23,
-          27
+          21,
+          25
         ]
       },
       "nodes": [
@@ -1052,8 +1048,8 @@
             "out_connectors": {}
           },
           "id": 4,
-          "scope_entry": "24",
-          "scope_exit": "25"
+          "scope_entry": "22",
+          "scope_exit": "23"
         },
         {
           "type": "AccessNode",
@@ -1074,8 +1070,8 @@
             "out_connectors": {}
           },
           "id": 5,
-          "scope_entry": "15",
-          "scope_exit": "16"
+          "scope_entry": "13",
+          "scope_exit": "14"
         },
         {
           "type": "AccessNode",
@@ -1096,8 +1092,8 @@
             "out_connectors": {}
           },
           "id": 6,
-          "scope_entry": "15",
-          "scope_exit": "16"
+          "scope_entry": "13",
+          "scope_exit": "14"
         },
         {
           "type": "AccessNode",
@@ -1107,8 +1103,8 @@
             "setzero": false,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 333,
-              "end_line": 333,
+              "start_line": 331,
+              "end_line": 331,
               "start_column": 0,
               "end_column": 0,
               "filename": "sdfg_api_v2.py"
@@ -1118,8 +1114,8 @@
             "out_connectors": {}
           },
           "id": 7,
-          "scope_entry": "19",
-          "scope_exit": "20"
+          "scope_entry": "17",
+          "scope_exit": "18"
         },
         {
           "type": "AccessNode",
@@ -1129,8 +1125,8 @@
             "setzero": false,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 334,
-              "end_line": 334,
+              "start_line": 332,
+              "end_line": 332,
               "start_column": 0,
               "end_column": 0,
               "filename": "sdfg_api_v2.py"
@@ -1140,8 +1136,8 @@
             "out_connectors": {}
           },
           "id": 8,
-          "scope_entry": "19",
-          "scope_exit": "20"
+          "scope_entry": "17",
+          "scope_exit": "18"
         },
         {
           "type": "AccessNode",
@@ -1151,8 +1147,8 @@
             "setzero": true,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 335,
-              "end_line": 335,
+              "start_line": 333,
+              "end_line": 333,
               "start_column": 0,
               "end_column": 0,
               "filename": "sdfg_api_v2.py"
@@ -1162,8 +1158,8 @@
             "out_connectors": {}
           },
           "id": 9,
-          "scope_entry": "17",
-          "scope_exit": "18"
+          "scope_entry": "15",
+          "scope_exit": "16"
         },
         {
           "type": "Tasklet",
@@ -1188,8 +1184,8 @@
             },
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 372,
-              "end_line": 372,
+              "start_line": 368,
+              "end_line": 368,
               "start_column": 0,
               "end_column": 0,
               "filename": "sdfg_api_v2.py"
@@ -1207,20 +1203,34 @@
             }
           },
           "id": 10,
-          "scope_entry": "21",
-          "scope_exit": "22"
+          "scope_entry": "19",
+          "scope_exit": "20"
         },
         {
           "type": "MapEntry",
-          "label": "Split_K[thread_block_k=0:SPLIT_K]",
+          "label": "Thread_block_grid[thread_block_i=0:num_thread_blocks_m, thread_block_j=0:num_thread_blocks_n, thread_block_k=0:SPLIT_K]",
           "attributes": {
-            "label": "Split_K",
+            "label": "Thread_block_grid",
             "params": [
+              "thread_block_i",
+              "thread_block_j",
               "thread_block_k"
             ],
             "range": {
               "type": "Range",
               "ranges": [
+                {
+                  "start": "0",
+                  "end": "num_thread_blocks_m - 1",
+                  "step": "1",
+                  "tile": "1"
+                },
+                {
+                  "start": "0",
+                  "end": "num_thread_blocks_n - 1",
+                  "step": "1",
+                  "tile": "1"
+                },
                 {
                   "start": "0",
                   "end": "SPLIT_K - 1",
@@ -1229,13 +1239,13 @@
                 }
               ]
             },
-            "schedule": "Sequential",
+            "schedule": "GPU_Device",
             "unroll": false,
             "collapse": 1,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 375,
-              "end_line": 375,
+              "start_line": 378,
+              "end_line": 378,
               "start_column": 0,
               "end_column": 0,
               "filename": "sdfg_api_v2.py"
@@ -1257,7 +1267,7 @@
         },
         {
           "type": "MapExit",
-          "label": "Split_K[thread_block_k=0:SPLIT_K]",
+          "label": "Thread_block_grid[thread_block_i=0:num_thread_blocks_m, thread_block_j=0:num_thread_blocks_n, thread_block_k=0:SPLIT_K]",
           "attributes": {
             "in_connectors": {
               "IN_partial_split_k_output": null
@@ -1269,73 +1279,6 @@
           "id": 12,
           "scope_entry": "11",
           "scope_exit": "12"
-        },
-        {
-          "type": "MapEntry",
-          "label": "Thread_block_grid[thread_block_i=0:num_thread_blocks_m, thread_block_j=0:num_thread_blocks_n]",
-          "attributes": {
-            "label": "Thread_block_grid",
-            "params": [
-              "thread_block_i",
-              "thread_block_j"
-            ],
-            "range": {
-              "type": "Range",
-              "ranges": [
-                {
-                  "start": "0",
-                  "end": "num_thread_blocks_m - 1",
-                  "step": "1",
-                  "tile": "1"
-                },
-                {
-                  "start": "0",
-                  "end": "num_thread_blocks_n - 1",
-                  "step": "1",
-                  "tile": "1"
-                }
-              ]
-            },
-            "schedule": "GPU_Device",
-            "unroll": false,
-            "collapse": 1,
-            "debuginfo": {
-              "type": "DebugInfo",
-              "start_line": 381,
-              "end_line": 381,
-              "start_column": 0,
-              "end_column": 0,
-              "filename": "sdfg_api_v2.py"
-            },
-            "is_collapsed": false,
-            "instrument": "No_Instrumentation",
-            "in_connectors": {
-              "IN_input_A": null,
-              "IN_input_B": null
-            },
-            "out_connectors": {
-              "OUT_input_A": null,
-              "OUT_input_B": null
-            }
-          },
-          "id": 13,
-          "scope_entry": "11",
-          "scope_exit": "14"
-        },
-        {
-          "type": "MapExit",
-          "label": "Thread_block_grid[thread_block_i=0:num_thread_blocks_m, thread_block_j=0:num_thread_blocks_n]",
-          "attributes": {
-            "in_connectors": {
-              "IN_partial_split_k_output": null
-            },
-            "out_connectors": {
-              "OUT_partial_split_k_output": null
-            }
-          },
-          "id": 14,
-          "scope_entry": "13",
-          "scope_exit": "14"
         },
         {
           "type": "MapEntry",
@@ -1361,8 +1304,8 @@
             "collapse": 1,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 387,
-              "end_line": 387,
+              "start_line": 384,
+              "end_line": 384,
               "start_column": 0,
               "end_column": 0,
               "filename": "sdfg_api_v2.py"
@@ -1378,9 +1321,9 @@
               "OUT_input_B": null
             }
           },
-          "id": 15,
-          "scope_entry": "13",
-          "scope_exit": "16"
+          "id": 13,
+          "scope_entry": "11",
+          "scope_exit": "14"
         },
         {
           "type": "MapExit",
@@ -1393,9 +1336,9 @@
               "OUT_partial_split_k_output": null
             }
           },
-          "id": 16,
-          "scope_entry": "15",
-          "scope_exit": "16"
+          "id": 14,
+          "scope_entry": "13",
+          "scope_exit": "14"
         },
         {
           "type": "MapEntry",
@@ -1428,8 +1371,8 @@
             "collapse": 1,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 393,
-              "end_line": 393,
+              "start_line": 390,
+              "end_line": 390,
               "start_column": 0,
               "end_column": 0,
               "filename": "sdfg_api_v2.py"
@@ -1445,9 +1388,9 @@
               "OUT_shared_memory_B": null
             }
           },
-          "id": 17,
-          "scope_entry": "15",
-          "scope_exit": "18"
+          "id": 15,
+          "scope_entry": "13",
+          "scope_exit": "16"
         },
         {
           "type": "MapExit",
@@ -1460,9 +1403,9 @@
               "OUT_partial_split_k_output": null
             }
           },
-          "id": 18,
-          "scope_entry": "17",
-          "scope_exit": "18"
+          "id": 16,
+          "scope_entry": "15",
+          "scope_exit": "16"
         },
         {
           "type": "MapEntry",
@@ -1488,8 +1431,8 @@
             "collapse": 1,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 398,
-              "end_line": 398,
+              "start_line": 395,
+              "end_line": 395,
               "start_column": 0,
               "end_column": 0,
               "filename": "sdfg_api_v2.py"
@@ -1505,9 +1448,9 @@
               "OUT_shared_memory_B": null
             }
           },
-          "id": 19,
-          "scope_entry": "17",
-          "scope_exit": "20"
+          "id": 17,
+          "scope_entry": "15",
+          "scope_exit": "18"
         },
         {
           "type": "MapExit",
@@ -1520,9 +1463,9 @@
               "OUT_register_storage_C": null
             }
           },
-          "id": 20,
-          "scope_entry": "19",
-          "scope_exit": "20"
+          "id": 18,
+          "scope_entry": "17",
+          "scope_exit": "18"
         },
         {
           "type": "MapEntry",
@@ -1555,8 +1498,8 @@
             "collapse": 1,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 403,
-              "end_line": 403,
+              "start_line": 400,
+              "end_line": 400,
               "start_column": 0,
               "end_column": 0,
               "filename": "sdfg_api_v2.py"
@@ -1572,9 +1515,9 @@
               "OUT_register_storage_B": null
             }
           },
-          "id": 21,
-          "scope_entry": "19",
-          "scope_exit": "22"
+          "id": 19,
+          "scope_entry": "17",
+          "scope_exit": "20"
         },
         {
           "type": "MapExit",
@@ -1587,9 +1530,9 @@
               "OUT_register_storage_C": null
             }
           },
-          "id": 22,
-          "scope_entry": "21",
-          "scope_exit": "22"
+          "id": 20,
+          "scope_entry": "19",
+          "scope_exit": "20"
         },
         {
           "type": "Tasklet",
@@ -1614,8 +1557,8 @@
             },
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 548,
-              "end_line": 548,
+              "start_line": 545,
+              "end_line": 545,
               "start_column": 0,
               "end_column": 0,
               "filename": "sdfg_api_v2.py"
@@ -1631,9 +1574,9 @@
               "__out": null
             }
           },
-          "id": 23,
-          "scope_entry": "26",
-          "scope_exit": "27"
+          "id": 21,
+          "scope_entry": "24",
+          "scope_exit": "25"
         },
         {
           "type": "MapEntry",
@@ -1666,8 +1609,8 @@
             "collapse": 1,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 551,
-              "end_line": 551,
+              "start_line": 548,
+              "end_line": 548,
               "start_column": 0,
               "end_column": 0,
               "filename": "sdfg_api_v2.py"
@@ -1681,9 +1624,9 @@
               "OUT_partial_split_k_output": null
             }
           },
-          "id": 24,
+          "id": 22,
           "scope_entry": null,
-          "scope_exit": "25"
+          "scope_exit": "23"
         },
         {
           "type": "MapExit",
@@ -1696,9 +1639,9 @@
               "OUT_output": null
             }
           },
-          "id": 25,
-          "scope_entry": "24",
-          "scope_exit": "25"
+          "id": 23,
+          "scope_entry": "22",
+          "scope_exit": "23"
         },
         {
           "type": "MapEntry",
@@ -1724,8 +1667,8 @@
             "collapse": 1,
             "debuginfo": {
               "type": "DebugInfo",
-              "start_line": 557,
-              "end_line": 557,
+              "start_line": 554,
+              "end_line": 554,
               "start_column": 0,
               "end_column": 0,
               "filename": "sdfg_api_v2.py"
@@ -1739,9 +1682,9 @@
               "OUT_partial_split_k_output": null
             }
           },
-          "id": 26,
-          "scope_entry": "24",
-          "scope_exit": "27"
+          "id": 24,
+          "scope_entry": "22",
+          "scope_exit": "25"
         },
         {
           "type": "MapExit",
@@ -1754,9 +1697,9 @@
               "OUT_accumulator": null
             }
           },
-          "id": 27,
-          "scope_entry": "26",
-          "scope_exit": "27"
+          "id": 25,
+          "scope_entry": "24",
+          "scope_exit": "25"
         }
       ],
       "edges": [
@@ -1930,7 +1873,7 @@
             }
           },
           "src": "4",
-          "dst": "25",
+          "dst": "23",
           "dst_connector": "IN_output",
           "src_connector": null
         },
@@ -2000,7 +1943,7 @@
             }
           },
           "src": "9",
-          "dst": "18",
+          "dst": "16",
           "dst_connector": "IN_partial_split_k_output",
           "src_connector": null
         },
@@ -2070,7 +2013,7 @@
             }
           },
           "src": "3",
-          "dst": "24",
+          "dst": "22",
           "dst_connector": "IN_partial_split_k_output",
           "src_connector": null
         },
@@ -2128,7 +2071,7 @@
             }
           },
           "src": "7",
-          "dst": "21",
+          "dst": "19",
           "dst_connector": "IN_register_storage_A",
           "src_connector": null
         },
@@ -2186,7 +2129,7 @@
             }
           },
           "src": "8",
-          "dst": "21",
+          "dst": "19",
           "dst_connector": "IN_register_storage_B",
           "src_connector": null
         },
@@ -2244,7 +2187,7 @@
             }
           },
           "src": "5",
-          "dst": "17",
+          "dst": "15",
           "dst_connector": "IN_shared_memory_A",
           "src_connector": null
         },
@@ -2302,7 +2245,7 @@
             }
           },
           "src": "6",
-          "dst": "17",
+          "dst": "15",
           "dst_connector": "IN_shared_memory_B",
           "src_connector": null
         },
@@ -2347,7 +2290,7 @@
               }
             }
           },
-          "src": "27",
+          "src": "25",
           "dst": "4",
           "dst_connector": null,
           "src_connector": "OUT_accumulator"
@@ -2405,67 +2348,9 @@
               }
             }
           },
-          "src": "15",
+          "src": "13",
           "dst": "5",
           "dst_connector": null,
-          "src_connector": "OUT_input_A"
-        },
-        {
-          "type": "MultiConnectorEdge",
-          "attributes": {
-            "data": {
-              "type": "Memlet",
-              "attributes": {
-                "volume": "num_K_tiles*num_thread_blocks_m*num_thread_blocks_n*size_K_tile*size_thread_block_tile_m",
-                "dynamic": false,
-                "subset": {
-                  "type": "Range",
-                  "ranges": [
-                    {
-                      "start": "0",
-                      "end": "num_thread_blocks_m*size_thread_block_tile_m - 1",
-                      "step": "1",
-                      "tile": "1"
-                    },
-                    {
-                      "start": "size_K_split*thread_block_k",
-                      "end": "num_K_tiles*size_K_tile + size_K_split*thread_block_k - 1",
-                      "step": "1",
-                      "tile": "1"
-                    }
-                  ]
-                },
-                "other_subset": null,
-                "data": "input_A",
-                "wcr": null,
-                "debuginfo": null,
-                "wcr_nonatomic": false,
-                "allow_oob": false,
-                "src_subset": {
-                  "type": "Range",
-                  "ranges": [
-                    {
-                      "start": "0",
-                      "end": "num_thread_blocks_m*size_thread_block_tile_m - 1",
-                      "step": "1",
-                      "tile": "1"
-                    },
-                    {
-                      "start": "size_K_split*thread_block_k",
-                      "end": "num_K_tiles*size_K_tile + size_K_split*thread_block_k - 1",
-                      "step": "1",
-                      "tile": "1"
-                    }
-                  ]
-                },
-                "dst_subset": null,
-                "num_accesses": "num_K_tiles*num_thread_blocks_m*num_thread_blocks_n*size_K_tile*size_thread_block_tile_m"
-              }
-            }
-          },
-          "src": "11",
-          "dst": "13",
-          "dst_connector": "IN_input_A",
           "src_connector": "OUT_input_A"
         },
         {
@@ -2521,8 +2406,8 @@
               }
             }
           },
-          "src": "13",
-          "dst": "15",
+          "src": "11",
+          "dst": "13",
           "dst_connector": "IN_input_A",
           "src_connector": "OUT_input_A"
         },
@@ -2579,67 +2464,9 @@
               }
             }
           },
-          "src": "15",
+          "src": "13",
           "dst": "6",
           "dst_connector": null,
-          "src_connector": "OUT_input_B"
-        },
-        {
-          "type": "MultiConnectorEdge",
-          "attributes": {
-            "data": {
-              "type": "Memlet",
-              "attributes": {
-                "volume": "num_K_tiles*num_thread_blocks_m*num_thread_blocks_n*size_K_tile*size_thread_block_tile_n",
-                "dynamic": false,
-                "subset": {
-                  "type": "Range",
-                  "ranges": [
-                    {
-                      "start": "size_K_split*thread_block_k",
-                      "end": "num_K_tiles*size_K_tile + size_K_split*thread_block_k - 1",
-                      "step": "1",
-                      "tile": "1"
-                    },
-                    {
-                      "start": "0",
-                      "end": "num_thread_blocks_n*size_thread_block_tile_n - 1",
-                      "step": "1",
-                      "tile": "1"
-                    }
-                  ]
-                },
-                "other_subset": null,
-                "data": "input_B",
-                "wcr": null,
-                "debuginfo": null,
-                "wcr_nonatomic": false,
-                "allow_oob": false,
-                "src_subset": {
-                  "type": "Range",
-                  "ranges": [
-                    {
-                      "start": "size_K_split*thread_block_k",
-                      "end": "num_K_tiles*size_K_tile + size_K_split*thread_block_k - 1",
-                      "step": "1",
-                      "tile": "1"
-                    },
-                    {
-                      "start": "0",
-                      "end": "num_thread_blocks_n*size_thread_block_tile_n - 1",
-                      "step": "1",
-                      "tile": "1"
-                    }
-                  ]
-                },
-                "dst_subset": null,
-                "num_accesses": "num_K_tiles*num_thread_blocks_m*num_thread_blocks_n*size_K_tile*size_thread_block_tile_n"
-              }
-            }
-          },
-          "src": "11",
-          "dst": "13",
-          "dst_connector": "IN_input_B",
           "src_connector": "OUT_input_B"
         },
         {
@@ -2695,8 +2522,8 @@
               }
             }
           },
-          "src": "13",
-          "dst": "15",
+          "src": "11",
+          "dst": "13",
           "dst_connector": "IN_input_B",
           "src_connector": "OUT_input_B"
         },
@@ -2753,7 +2580,7 @@
               }
             }
           },
-          "src": "25",
+          "src": "23",
           "dst": "2",
           "dst_connector": null,
           "src_connector": "OUT_output"
@@ -2778,14 +2605,14 @@
                     {
                       "start": "0",
                       "end": "num_thread_blocks_m*size_thread_block_tile_m - size_thread_block_tile_m + size_thread_tile_m*int_floor(size_thread_block_tile_m - 1, size_thread_tile_m) + size_thread_tile_m - 1",
-                      "step": "1",
-                      "tile": "1"
+                      "step": "size_thread_block_tile_m",
+                      "tile": "size_thread_tile_m*(int_floor(size_thread_block_tile_m - 1, size_thread_tile_m) + 1)"
                     },
                     {
                       "start": "0",
                       "end": "num_thread_blocks_n*size_thread_block_tile_n - size_thread_block_tile_n + size_thread_tile_n*int_floor(size_thread_block_tile_n - 1, size_thread_tile_n) + size_thread_tile_n - 1",
-                      "step": "1",
-                      "tile": "1"
+                      "step": "size_thread_block_tile_n",
+                      "tile": "size_thread_tile_n*(int_floor(size_thread_block_tile_n - 1, size_thread_tile_n) + 1)"
                     }
                   ]
                 },
@@ -2808,14 +2635,14 @@
                     {
                       "start": "0",
                       "end": "num_thread_blocks_m*size_thread_block_tile_m - size_thread_block_tile_m + size_thread_tile_m*int_floor(size_thread_block_tile_m - 1, size_thread_tile_m) + size_thread_tile_m - 1",
-                      "step": "1",
-                      "tile": "1"
+                      "step": "size_thread_block_tile_m",
+                      "tile": "size_thread_tile_m*(int_floor(size_thread_block_tile_m - 1, size_thread_tile_m) + 1)"
                     },
                     {
                       "start": "0",
                       "end": "num_thread_blocks_n*size_thread_block_tile_n - size_thread_block_tile_n + size_thread_tile_n*int_floor(size_thread_block_tile_n - 1, size_thread_tile_n) + size_thread_tile_n - 1",
-                      "step": "1",
-                      "tile": "1"
+                      "step": "size_thread_block_tile_n",
+                      "tile": "size_thread_tile_n*(int_floor(size_thread_block_tile_n - 1, size_thread_tile_n) + 1)"
                     }
                   ]
                 },
@@ -2893,8 +2720,8 @@
               }
             }
           },
-          "src": "18",
-          "dst": "16",
+          "src": "16",
+          "dst": "14",
           "dst_connector": "IN_partial_split_k_output",
           "src_connector": "OUT_partial_split_k_output"
         },
@@ -2960,76 +2787,6 @@
                   ]
                 },
                 "num_accesses": "num_K_tiles*size_thread_tile_m*size_thread_tile_n*ceiling(size_thread_block_tile_m/size_thread_tile_m)*ceiling(size_thread_block_tile_n/size_thread_tile_n)"
-              }
-            }
-          },
-          "src": "16",
-          "dst": "14",
-          "dst_connector": "IN_partial_split_k_output",
-          "src_connector": "OUT_partial_split_k_output"
-        },
-        {
-          "type": "MultiConnectorEdge",
-          "attributes": {
-            "data": {
-              "type": "Memlet",
-              "attributes": {
-                "volume": "num_K_tiles*num_thread_blocks_m*num_thread_blocks_n*size_thread_tile_m*size_thread_tile_n*ceiling(size_thread_block_tile_m/size_thread_tile_m)*ceiling(size_thread_block_tile_n/size_thread_tile_n)",
-                "dynamic": false,
-                "subset": {
-                  "type": "Range",
-                  "ranges": [
-                    {
-                      "start": "thread_block_k",
-                      "end": "thread_block_k",
-                      "step": "1",
-                      "tile": "1"
-                    },
-                    {
-                      "start": "0",
-                      "end": "num_thread_blocks_m*size_thread_block_tile_m - size_thread_block_tile_m + size_thread_tile_m*int_floor(size_thread_block_tile_m - 1, size_thread_tile_m) + size_thread_tile_m - 1",
-                      "step": "size_thread_block_tile_m",
-                      "tile": "size_thread_tile_m*(int_floor(size_thread_block_tile_m - 1, size_thread_tile_m) + 1)"
-                    },
-                    {
-                      "start": "0",
-                      "end": "num_thread_blocks_n*size_thread_block_tile_n - size_thread_block_tile_n + size_thread_tile_n*int_floor(size_thread_block_tile_n - 1, size_thread_tile_n) + size_thread_tile_n - 1",
-                      "step": "size_thread_block_tile_n",
-                      "tile": "size_thread_tile_n*(int_floor(size_thread_block_tile_n - 1, size_thread_tile_n) + 1)"
-                    }
-                  ]
-                },
-                "other_subset": null,
-                "data": "partial_split_k_output",
-                "wcr": "(lambda x, y: (x + y))",
-                "debuginfo": null,
-                "wcr_nonatomic": false,
-                "allow_oob": false,
-                "src_subset": null,
-                "dst_subset": {
-                  "type": "Range",
-                  "ranges": [
-                    {
-                      "start": "thread_block_k",
-                      "end": "thread_block_k",
-                      "step": "1",
-                      "tile": "1"
-                    },
-                    {
-                      "start": "0",
-                      "end": "num_thread_blocks_m*size_thread_block_tile_m - size_thread_block_tile_m + size_thread_tile_m*int_floor(size_thread_block_tile_m - 1, size_thread_tile_m) + size_thread_tile_m - 1",
-                      "step": "size_thread_block_tile_m",
-                      "tile": "size_thread_tile_m*(int_floor(size_thread_block_tile_m - 1, size_thread_tile_m) + 1)"
-                    },
-                    {
-                      "start": "0",
-                      "end": "num_thread_blocks_n*size_thread_block_tile_n - size_thread_block_tile_n + size_thread_tile_n*int_floor(size_thread_block_tile_n - 1, size_thread_tile_n) + size_thread_tile_n - 1",
-                      "step": "size_thread_block_tile_n",
-                      "tile": "size_thread_tile_n*(int_floor(size_thread_block_tile_n - 1, size_thread_tile_n) + 1)"
-                    }
-                  ]
-                },
-                "num_accesses": "num_K_tiles*num_thread_blocks_m*num_thread_blocks_n*size_thread_tile_m*size_thread_tile_n*ceiling(size_thread_block_tile_m/size_thread_tile_m)*ceiling(size_thread_block_tile_n/size_thread_tile_n)"
               }
             }
           },
@@ -3103,8 +2860,8 @@
               }
             }
           },
-          "src": "24",
-          "dst": "26",
+          "src": "22",
+          "dst": "24",
           "dst_connector": "IN_partial_split_k_output",
           "src_connector": "OUT_partial_split_k_output"
         },
@@ -3173,8 +2930,8 @@
               }
             }
           },
-          "src": "26",
-          "dst": "23",
+          "src": "24",
+          "dst": "21",
           "dst_connector": "__in",
           "src_connector": "OUT_partial_split_k_output"
         },
@@ -3231,7 +2988,7 @@
               }
             }
           },
-          "src": "21",
+          "src": "19",
           "dst": "10",
           "dst_connector": "__a",
           "src_connector": "OUT_register_storage_A"
@@ -3289,7 +3046,7 @@
               }
             }
           },
-          "src": "21",
+          "src": "19",
           "dst": "10",
           "dst_connector": "__b",
           "src_connector": "OUT_register_storage_B"
@@ -3347,7 +3104,7 @@
               }
             }
           },
-          "src": "20",
+          "src": "18",
           "dst": "9",
           "dst_connector": null,
           "src_connector": "OUT_register_storage_C"
@@ -3405,8 +3162,8 @@
               }
             }
           },
-          "src": "22",
-          "dst": "20",
+          "src": "20",
+          "dst": "18",
           "dst_connector": "IN_register_storage_C",
           "src_connector": "OUT_register_storage_C"
         },
@@ -3463,7 +3220,7 @@
               }
             }
           },
-          "src": "19",
+          "src": "17",
           "dst": "7",
           "dst_connector": null,
           "src_connector": "OUT_shared_memory_A"
@@ -3521,8 +3278,8 @@
               }
             }
           },
-          "src": "17",
-          "dst": "19",
+          "src": "15",
+          "dst": "17",
           "dst_connector": "IN_shared_memory_A",
           "src_connector": "OUT_shared_memory_A"
         },
@@ -3579,7 +3336,7 @@
               }
             }
           },
-          "src": "19",
+          "src": "17",
           "dst": "8",
           "dst_connector": null,
           "src_connector": "OUT_shared_memory_B"
@@ -3637,8 +3394,8 @@
               }
             }
           },
-          "src": "17",
-          "dst": "19",
+          "src": "15",
+          "dst": "17",
           "dst_connector": "IN_shared_memory_B",
           "src_connector": "OUT_shared_memory_B"
         },
@@ -3683,8 +3440,8 @@
               }
             }
           },
-          "src": "23",
-          "dst": "27",
+          "src": "21",
+          "dst": "25",
           "dst_connector": "IN_accumulator",
           "src_connector": "__out"
         },
@@ -3742,7 +3499,7 @@
             }
           },
           "src": "10",
-          "dst": "22",
+          "dst": "20",
           "dst_connector": "IN_register_storage_C",
           "src_connector": "__out"
         }
@@ -3784,6 +3541,6 @@
     "message": "Memlet subset out-of-bounds",
     "sdfg_id": 1,
     "state_id": 1,
-    "edge_id": 26
+    "edge_id": 23
   }
 }

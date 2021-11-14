@@ -547,8 +547,8 @@ __out[1] = __in[1]''')
 
     reduction_entry, reduction_exit = nested_state.add_map(
             'reduction_map',
-            dict(i='0:M', j='0:N'),
-            # dict(i='0:M', j='0:N:2'),
+            # dict(i='0:M', j='0:N'),
+            dict(i='0:M', j='0:N:2'),
             schedule=dace.dtypes.ScheduleType.GPU_Device)
 
     reduce_split_k_entry, reduce_split_k_exit = nested_state.add_map(
@@ -583,10 +583,10 @@ __out[1] = __in[1]''')
 
     # TODO: We could use Vectorization.apply_to() here
     # Vectorization.apply_to(nested_state.parent,
-    #             dict(vector_len=veclen, preamble=False, postamble=False),
-    #             _map_entry=reduction_entry,
-    #             _tasklet=tasklet,
-    #             _map_exit=reduction_exit)
+                # dict(vector_len=veclen, preamble=False, postamble=False),
+                # _map_entry=reduction_entry,
+                # _tasklet=tasklet,
+                # _map_exit=reduction_exit)
 
                 # _map_entry=entry,
                 # _tasklet=state.out_edges(entry)[0].dst,
