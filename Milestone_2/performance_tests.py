@@ -99,25 +99,38 @@ if args.test == 3:
     path = base_path + str(args.path) +'/'
     subprocess.run(["mkdir", "-p", path])
     subprocess.run(nvprof_options + [path + "split_k_1.csv"] + python_options)
-    subprocess.run(nvprof_options + [path + "split_k_2_3d.csv"] + python_options + ["--split-k-3d", "--split-k", "2"])
-    subprocess.run(nvprof_options + [path + "split_k_2_seq.csv"] + python_options + ["--split-k-seq", "--split-k", "2"])
-    # subprocess.run(nvprof_options + [path + "split_k_3.csv"] + python_options + ["--split-k", "3"])
-    subprocess.run(nvprof_options + [path + "split_k_4_3d.csv"] + python_options + ["--split-k-3d", "--split-k", "4"])
-    subprocess.run(nvprof_options + [path + "split_k_4_seq.csv"] + python_options + ["--split-k-seq", "--split-k", "4"])
-    # subprocess.run(nvprof_options + [path + "split_k_5.csv"] + python_options + ["--split-k", "5"])
-    # subprocess.run(nvprof_options + [path + "split_k_6.csv"] + python_options + ["--split-k", "6"])
-    # subprocess.run(nvprof_options + [path + "split_k_7.csv"] + python_options + ["--split-k", "7"])
-    subprocess.run(nvprof_options + [path + "split_k_8_3d.csv"] + python_options + ["--split-k-3d", "--split-k", "8"])
-    subprocess.run(nvprof_options + [path + "split_k_8_seq.csv"] + python_options + ["--split-k-seq", "--split-k", "8"])
-    # subprocess.run(nvprof_options + [path + "split_k_9.csv"] + python_options + ["--split-k", "9"])
-    # subprocess.run(nvprof_options + [path + "split_k_10.csv"] + python_options + ["--split-k", "10"])
-    # subprocess.run(nvprof_options + [path + "split_k_11.csv"] + python_options + ["--split-k", "11"])
-    # subprocess.run(nvprof_options + [path + "split_k_12.csv"] + python_options + ["--split-k", "12"])
-    # subprocess.run(nvprof_options + [path + "split_k_13.csv"] + python_options + ["--split-k", "13"])
-    # subprocess.run(nvprof_options + [path + "split_k_14.csv"] + python_options + ["--split-k", "14"])
-    # subprocess.run(nvprof_options + [path + "split_k_15.csv"] + python_options + ["--split-k", "15"])
-    subprocess.run(nvprof_options + [path + "split_k_16_3d.csv"] + python_options + ["--split-k-3d", "--split-k", "16"])
-    subprocess.run(nvprof_options + [path + "split_k_16_seq.csv"] + python_options + ["--split-k-seq", "--split-k", "16"])
+    python_options += ["--split-k-3d"]
+    subprocess.run(nvprof_options + [path + "split_k_2.csv"] + python_options + ["--split-k", "2"])
+    subprocess.run(nvprof_options + [path + "split_k_4.csv"] + python_options + ["--split-k", "4"])
+    subprocess.run(nvprof_options + [path + "split_k_8.csv"] + python_options + ["--split-k", "8"])
+    subprocess.run(nvprof_options + [path + "split_k_16.csv"] + python_options + ["--split-k", "16"])
+
+    # subprocess.run(nvprof_options + [path + "split_k_2_3d.csv"] + python_options + ["--split-k-3d", "--split-k", "2"])
+    # subprocess.run(nvprof_options + [path + "split_k_2_seq.csv"] + python_options + ["--split-k-seq", "--split-k", "2"])
+
+    # # subprocess.run(nvprof_options + [path + "split_k_3.csv"] + python_options + ["--split-k", "3"])
+
+    # subprocess.run(nvprof_options + [path + "split_k_4_3d.csv"] + python_options + ["--split-k-3d", "--split-k", "4"])
+    # subprocess.run(nvprof_options + [path + "split_k_4_seq.csv"] + python_options + ["--split-k-seq", "--split-k", "4"])
+
+    # # subprocess.run(nvprof_options + [path + "split_k_5.csv"] + python_options + ["--split-k", "5"])
+    # # subprocess.run(nvprof_options + [path + "split_k_6.csv"] + python_options + ["--split-k", "6"])
+    # # subprocess.run(nvprof_options + [path + "split_k_7.csv"] + python_options + ["--split-k", "7"])
+
+    # subprocess.run(nvprof_options + [path + "split_k_8_3d.csv"] + python_options + ["--split-k-3d", "--split-k", "8"])
+    # subprocess.run(nvprof_options + [path + "split_k_8_seq.csv"] + python_options + ["--split-k-seq", "--split-k", "8"])
+
+    # # subprocess.run(nvprof_options + [path + "split_k_9.csv"] + python_options + ["--split-k", "9"])
+    # # subprocess.run(nvprof_options + [path + "split_k_10.csv"] + python_options + ["--split-k", "10"])
+    # # subprocess.run(nvprof_options + [path + "split_k_11.csv"] + python_options + ["--split-k", "11"])
+    # # subprocess.run(nvprof_options + [path + "split_k_12.csv"] + python_options + ["--split-k", "12"])
+    # # subprocess.run(nvprof_options + [path + "split_k_13.csv"] + python_options + ["--split-k", "13"])
+    # # subprocess.run(nvprof_options + [path + "split_k_14.csv"] + python_options + ["--split-k", "14"])
+    # # subprocess.run(nvprof_options + [path + "split_k_15.csv"] + python_options + ["--split-k", "15"])
+
+    # subprocess.run(nvprof_options + [path + "split_k_16_3d.csv"] + python_options + ["--split-k-3d", "--split-k", "16"])
+    # subprocess.run(nvprof_options + [path + "split_k_16_seq.csv"] + python_options + ["--split-k-seq", "--split-k", "16"])
+
     subprocess.run(nvprof_options + [base_path + "cublas.csv"] + cublas_options)
     # subprocess.run(nvprof_options + [base_path + "cutlass.csv"] + cutlass_options)
     # subprocess.run(["sed", "-i", "'1d;2d;3d'", base_path + "cublas.csv"]) # Delete first three lines, which are filled with nvprof information
