@@ -85,7 +85,8 @@ else:
     ndtype = np.float64
     veclen = 2
     # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
-    schedule = Schedule(load_k=16, thread_tile_m=4, thread_tile_n=4, thread_tile_k=16, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=32)
+    # schedule = Schedule(load_k=16, thread_tile_m=4, thread_tile_n=4, thread_tile_k=16, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=32)
+    schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, thread_tile_k=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=128, thread_block_tile_n=64)
     # schedule = Schedule(load_k=4, thread_tile_m=8, thread_tile_n=8, thread_tile_k=4, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
     # schedule = Schedule(load_k=2, thread_tile_m=8, thread_tile_n=8, thread_tile_k=2, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
     # schedule = Schedule(load_k=1, thread_tile_m=8, thread_tile_n=8, thread_tile_k=1, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
