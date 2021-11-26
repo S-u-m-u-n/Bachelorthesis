@@ -29,6 +29,11 @@ def read_nvprof_data(path_to_csv):
         df /= 1000
     return df
 
+if args.precision == 32:
+    peak_performance = 14 * 1000 * 1000 * 1000 # TFLOPS/ms
+else:
+    peak_performance = 7 * 1000 * 1000 * 1000 # TFLOPS/ms
+
 ### (1024 x 1024) x (1024 x 1024)
 if args.test == 1:
     base_path = "./performance_test_results/1024_1024_1024_" + str(args.precision) + "bit/"
@@ -62,7 +67,9 @@ if args.test == 1:
     combined_df_db = pd.concat([db_df, db_st_df, db_stb_df, db_st_stb_df, cutlass_df, cublas_df], axis=1)
     combined_df_db.columns = ["db", "db+st", "db+stb", "db+st+stb", "cutlass", "cublas"]
     fig_db = plt.figure()
-    sns.violinplot(data=combined_df_db).set(xticklabels=["DB", "DB+ST", "DB+STB", "DB+ST+STB", "CUTLASS", "cuBLAS"], ylabel="Runtime [ms]", title="M = 1024, N = 1024, K = 1024 with double buffering") # , xlabel=""
+    sns.violinplot(data=combined_df_db).set(xticklabels=["-", "ST", "STB", "ST+STB", "CUTLASS", "cuBLAS"], ylabel="Runtime [ms]", title="M = 1024, N = 1024, K = 1024 with double buffering") # , xlabel=""
+    plt.axhline(1024 * 1024 * (2 * 1024 - 1) / peak_performance, linestyle='--', label="Peak Performance")
+    plt.legend()
     fig_db.savefig(path + "comparison_db.png")
 
 ### (4096 x 4096) x (4096 x 4096)
@@ -95,7 +102,9 @@ if args.test == 2:
     combined_df_db = pd.concat([db_df, db_st_df, db_stb_df, db_st_stb_df, db_v_st_df, db_v_st_stb_df, cutlass_df, cublas_df], axis=1)
     combined_df_db.columns = ["db", "db_v", "db_st", "db_v_st", ".", ",", "cutlass", "cublas"]
     fig_db = plt.figure()
-    sns.violinplot(data=combined_df_db).set(xticklabels=["DB", "DB+ST", "DB+STB", "DB+ST+STB", "DB+V+ST", "DB+V+ST+STB", "CUTLASS", "cuBLAS"], ylabel="Runtime [ms]", title="M = 4096, N = 4096, K = 4096 with double buffering") # , xlabel=""
+    sns.violinplot(data=combined_df_db).set(xticklabels=["-", "ST", "STB", "ST+STB", "V+ST", "V+ST+STB", "CUTLASS", "cuBLAS"], ylabel="Runtime [ms]", title="M = 4096, N = 4096, K = 4096 with double buffering") # , xlabel=""
+    plt.axhline(4096 * 4096 * (2 * 4096 - 1) / peak_performance, linestyle='--', label="Peak Performance")
+    plt.legend()
     fig_db.savefig(path + "comparison_db.png")
 
 ### (1024 x 8192) x (8192 x 1024)
@@ -124,6 +133,8 @@ if args.test == 3:
     combined_df_db.columns = ["-", "2", "4", "8", "16", "cublas"]
     fig_db = plt.figure()
     sns.violinplot(data=combined_df_db).set(xticklabels=["-", "2", "4", "8", "16", "cuBLAS"], ylabel="Runtime [ms]", title="Split K performance: M = 1024, N = 1024, K = 8192", xlabel="Split K") # , xlabel=""
+    plt.axhline(1024 * 1024 * (2 * 8192 - 1) / peak_performance, linestyle='--', label="Peak Performance")
+    plt.legend()
     fig_db.savefig(path + "comparison.png")
 
 ### (256 x 10240) x (10240 x 256)
@@ -145,6 +156,8 @@ if args.test == 4:
     combined_df.columns = ["1", "2","4", "5", "8", "10", "16", "20", "40", "cublas"]
     fig = plt.figure()
     sns.violinplot(data=combined_df).set(xticklabels=["-", "2","4", "5", "8", "10", "16", "20", "40", "cuBLAS"], ylabel="Runtime [ms]", title="Split K performance: M = 256, N = 256, K = 10240", xlabel="Split K") # , xlabel=""
+    plt.axhline(256 * 256 * (2 * 10240 - 1) / peak_performance, linestyle='--', label="Peak Performance")
+    plt.legend()
     fig.savefig(path + "comparison.png")
 
     # fig2, (sk1, sk2, sk4, sk5, sk8, sk10, sk16, sk20, sk40, cublas) = plt.subplots(1, 10, constrained_layout=True, sharey=True)

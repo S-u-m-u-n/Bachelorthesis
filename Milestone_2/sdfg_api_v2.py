@@ -84,7 +84,8 @@ else:
     dtype = dace.float64
     ndtype = np.float64
     veclen = 2
-    schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
+    # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
+    schedule = Schedule(load_k=4, thread_tile_m=8, thread_tile_n=8, thread_tile_k=4, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
 
 if args.split_k > 1:
     if not args.split_k_3d and not args.split_k_seq:
@@ -581,7 +582,7 @@ __out[1] = __in[1]''')
                             # memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j]"))
                             memlet=dace.Memlet(f"{A_matmul_B_nested_state.data}[i, j:j+2]"))
 
-    # TODO: We could use Vectorization.apply_to() here
+    # TODO: We could use Vectorization.apply_to() here ??
     # Vectorization.apply_to(nested_state.parent,
                 # dict(vector_len=veclen, preamble=False, postamble=False),
                 # _map_entry=reduction_entry,
