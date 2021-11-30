@@ -24,15 +24,17 @@ def read_nvprof_data(path_to_csv):
     # if (df[1])
     df = df.filter(['Duration', 'Name']).iloc[1:]
 
-    df = df[df['Name'].str.contains("Thread_block_grid|dgemm|sgemm")].filter(['Duration']).reset_index(drop=True).apply(pd.to_numeric, errors='coerce').iloc[1:, :]
+    df = df[df['Name'].str.contains("Thread_block_grid|dgemm|sgemm|cosmaSgemm")].filter(['Duration']).reset_index(drop=True).apply(pd.to_numeric, errors='coerce').iloc[1:, :]
     if flag:
         df /= 1000
     return df
 
 if args.precision == 32:
     peak_performance = 14 * 1000 * 1000 * 1000 # TFLOPS/ms
+    precision_str = "Single precision:"
 else:
     peak_performance = 7 * 1000 * 1000 * 1000 # TFLOPS/ms
+    precision_str = "Double precision:"
 
 ### (1024 x 1024) x (1024 x 1024)
 if args.test == 1:
@@ -64,10 +66,16 @@ if args.test == 1:
     # db_v_st_stb_df = read_nvprof_data(path + "double_buffering_vectorization_swizzled_threads_swizzled_thread_blocks.csv")
     cutlass_df = read_nvprof_data(base_path + "cutlass.csv")
     cublas_df = read_nvprof_data(base_path + "cublas.csv")
-    combined_df_db = pd.concat([db_df, db_st_df, db_stb_df, db_st_stb_df, cutlass_df, cublas_df], axis=1)
-    combined_df_db.columns = ["db", "db+st", "db+stb", "db+st+stb", "cutlass", "cublas"]
     fig_db = plt.figure()
-    sns.violinplot(data=combined_df_db).set(xticklabels=["-", "ST", "STB", "ST+STB", "CUTLASS", "cuBLAS"], ylabel="Runtime [ms]", title="M = 1024, N = 1024, K = 1024 with double buffering") # , xlabel=""
+    if args.precision == 32:
+        cucosma_df = read_nvprof_data(base_path + "cucosma.csv")
+        combined_df_db = pd.concat([db_df, db_st_df, db_stb_df, db_st_stb_df, cutlass_df, cucosma_df, cublas_df], axis=1)
+        combined_df_db.columns = ["db", "db+st", "db+stb", "db+st+stb", "cutlass", "cublas"]
+        sns.violinplot(data=combined_df_db).set(xticklabels=["-", "ST", "STB", "ST+STB", "CUTLASS", "cuCOSMA", "cuBLAS"], ylabel="Runtime [ms]", title=precision_str + " precision: M = 1024, N = 1024, K = 1024 with double buffering") # , xlabel=""
+    else:
+        combined_df_db = pd.concat([db_df, db_st_df, db_stb_df, db_st_stb_df, cutlass_df, cublas_df], axis=1)
+        combined_df_db.columns = ["db", "db+st", "db+stb", "db+st+stb", "cutlass", "cublas"]
+        sns.violinplot(data=combined_df_db).set(xticklabels=["-", "ST", "STB", "ST+STB", "CUTLASS", "cuBLAS"], ylabel="Runtime [ms]", title=precision_str + " precision: M = 1024, N = 1024, K = 1024 with double buffering") # , xlabel=""
     plt.axhline(1024 * 1024 * (2 * 1024 - 1) / peak_performance, linestyle='--', label="Peak Performance")
     plt.legend()
     fig_db.savefig(path + "comparison_db.png")
