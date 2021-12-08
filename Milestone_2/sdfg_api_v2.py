@@ -78,22 +78,23 @@ if args.precision == 32:
     dtype = dace.float32
     ndtype = np.float32
     veclen = 4
-    # schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, thread_tile_k=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=64)
-    schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=128)
+    # schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=64)
+    # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=128)
+    schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=32, warp_tile_n=64, thread_block_tile_m=128, thread_block_tile_n=128)
 
 else:
     dtype = dace.float64
     ndtype = np.float64
     veclen = 2
-    schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, thread_tile_k=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
-    # schedule = Schedule(load_k=16, thread_tile_m=4, thread_tile_n=4, thread_tile_k=16, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=32)
-    # schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, thread_tile_k=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=128, thread_block_tile_n=64)
-    # schedule = Schedule(load_k=8, thread_tile_m=2, thread_tile_n=2, thread_tile_k=8, warp_tile_m=16, warp_tile_n=8, thread_block_tile_m=128, thread_block_tile_n=64)
-    # schedule = Schedule(load_k=8, thread_tile_m=1, thread_tile_n=1, thread_tile_k=8, warp_tile_m=8, warp_tile_n=4, thread_block_tile_m=128, thread_block_tile_n=64)
-    # schedule = Schedule(load_k=4, thread_tile_m=8, thread_tile_n=8, thread_tile_k=4, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
-    # schedule = Schedule(load_k=2, thread_tile_m=8, thread_tile_n=8, thread_tile_k=2, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
-    # schedule = Schedule(load_k=1, thread_tile_m=8, thread_tile_n=8, thread_tile_k=1, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
-    # schedule = Schedule(load_k=1, thread_tile_m=1, thread_tile_n=1, thread_tile_k=1, warp_tile_m=8, warp_tile_n=4, thread_block_tile_m=16, thread_block_tile_n=8)
+    schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
+    # schedule = Schedule(load_k=16, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=32)
+    # schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=128, thread_block_tile_n=64)
+    # schedule = Schedule(load_k=8, thread_tile_m=2, thread_tile_n=2, warp_tile_m=16, warp_tile_n=8, thread_block_tile_m=128, thread_block_tile_n=64)
+    # schedule = Schedule(load_k=8, thread_tile_m=1, thread_tile_n=1, warp_tile_m=8, warp_tile_n=4, thread_block_tile_m=128, thread_block_tile_n=64)
+    # schedule = Schedule(load_k=4, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
+    # schedule = Schedule(load_k=2, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
+    # schedule = Schedule(load_k=1, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
+    # schedule = Schedule(load_k=1, thread_tile_m=1, thread_tile_n=1, warp_tile_m=8, warp_tile_n=4, thread_block_tile_m=16, thread_block_tile_n=8)
 
 if args.split_k > 1:
     if not args.split_k_3d and not args.split_k_seq:
@@ -438,7 +439,22 @@ else:
     bitwise_or = sy.Function('bitwise_or')
     right_shift = sy.Function('right_shift')
     thread_i_idx = '(thread_i // size_warp_tile_m)*size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1), warp_height - 1)'
-    thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), warp_height * warp_width // 2), warp_width - 1), bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))'
+
+    warp_width = math.ceil(schedule.warp_tile_n / schedule.thread_tile_n)
+    if warp_width == 1:
+        thread_i_idx = '(thread_i // size_warp_tile_m)*size_warp_tile_m'
+        thread_j_idx = '0'
+    elif warp_width == 2:
+        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 32), 4), bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))'
+    elif warp_width == 4:
+        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 16), 3), bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))'
+    elif warp_width == 8:
+        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 8), 2), bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))'
+    elif warp_width == 16:
+        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 4), 1), bitwise_and(warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n), 1))'
+    elif warp_width == 32:
+        thread_i_idx = '0'
+        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n'
 
 ####################################################################################################################
 ### Data Movement: _A
