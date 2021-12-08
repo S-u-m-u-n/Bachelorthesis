@@ -439,9 +439,11 @@ else:
     bitwise_or = sy.Function('bitwise_or')
     right_shift = sy.Function('right_shift')
 
+    # idx = 'warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n)'
     idx = '((warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n)) % 32)'
 
-    thread_i_idx = '(thread_i // size_warp_tile_m)*size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(' + idx + ', 1), warp_height - 1)'
+    # thread_i_idx = '(thread_i // size_warp_tile_m)*size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(' + idx + ', 1), warp_height - 1)'
+    thread_i_idx = 'bitwise_and(right_shift(' + idx + ', 1), warp_height - 1)'
 
     warp_width = math.ceil(schedule.warp_tile_n / schedule.thread_tile_n)
     if warp_width == 1:
