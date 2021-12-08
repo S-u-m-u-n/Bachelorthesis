@@ -448,11 +448,11 @@ else:
         thread_i_idx = idx
         thread_j_idx = '0'
     elif warp_width == 2:
-        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 8), 4), bitwise_and(' + idx + ', 1))'
+        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 32), 4), bitwise_and(' + idx + ', 1))'
     elif warp_width == 4:
         thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 16), 3), bitwise_and(' + idx + ', 1))'
     elif warp_width == 8:
-        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 24), 2), bitwise_and(' + idx + ', 1))'
+        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 8), 2), bitwise_and(' + idx + ', 1))'
     elif warp_width == 16:
         thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 4), 1), bitwise_and(' + idx + ', 1))'
     elif warp_width == 32:
