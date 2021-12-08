@@ -339,9 +339,9 @@ sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
 sdfg.add_constant('size_K_tile', schedule.load_k)
 # sdfg.add_constant('num_thread_blocks_m', int(args.M / schedule.thread_block_tile_m) if not args.swizzle_thread_blocks else int((args.M / schedule.thread_block_tile_m + 2 - 1) / 2))
-sdfg.add_constant('num_thread_blocks_m', int((args.M // schedule.thread_block_tile_m + args.swizzle_thread_blocks - 1) // args.swizzle_thread_blocks))
+# sdfg.add_constant('num_thread_blocks_m', int((args.M // schedule.thread_block_tile_m + args.swizzle_thread_blocks - 1) // args.swizzle_thread_blocks))
 # sdfg.add_constant('num_thread_blocks_n', int(args.N / schedule.thread_block_tile_n) if not args.swizzle_thread_blocks else 2*int(args.N / schedule.thread_block_tile_n))
-sdfg.add_constant('num_thread_blocks_n', args.swizzle_thread_blocks * int(args.N // schedule.thread_block_tile_n))
+# sdfg.add_constant('num_thread_blocks_n', args.swizzle_thread_blocks * int(args.N // schedule.thread_block_tile_n))
 sdfg.add_constant('num_K_tiles', int(args.K / (schedule.load_k * args.split_k)))
 sdfg.add_constant('size_warp_tile_m', schedule.warp_tile_m)
 sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
@@ -351,7 +351,9 @@ sdfg.add_constant('SPLIT_K', args.split_k)
 nested_sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 nested_sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
 nested_sdfg.add_constant('num_thread_blocks_m', int((args.M // schedule.thread_block_tile_m + args.swizzle_thread_blocks - 1) // args.swizzle_thread_blocks))
-nested_sdfg.add_constant('num_thread_blocks_n', args.swizzle_thread_blocks * int(args.N // schedule.thread_block_tile_n))
+num_thread_blocks_n = args.swizzle_thread_blocks * int(args.N // schedule.thread_block_tile_n)
+nested_sdfg.add_constant('num_thread_blocks_n', num_thread_blocks_n)
+nested_sdfg.add_constant('num_warps_n', num_thread_blocks_n / schedule.warp_tile_n)
 nested_sdfg.add_constant('num_K_tiles', int(args.K / (schedule.load_k * args.split_k)))
 nested_sdfg.add_constant('size_warp_tile_m', schedule.warp_tile_m)
 nested_sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
@@ -440,27 +442,34 @@ else:
     right_shift = sy.Function('right_shift')
 
     # idx = 'warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n)'
-    idx = '((warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n)) % 32)'
+    # thread_id = '((warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n)) % 32)'
+    thread_id = '((warp_width * (thread_i  / size_thread_tile_m) + (thread_j / size_thread_tile_n)) % 32)'
+    warp_id = '((warp_width * (thread_i / size_thread_tile_m) * (thread_j / size_thread_tile_n)) / 32)'
 
-    # thread_i_idx = '(thread_i // size_warp_tile_m)*size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(' + idx + ', 1), warp_height - 1)'
-    thread_i_idx = 'bitwise_and(right_shift(' + idx + ', 1), warp_height - 1)'
+    warp_x_id = '(' + warp_id + ' % num_warps_n)'
+    warp_y_id = '(' + warp_id + ' / num_warps_n)'
+    warp_x_offset = '(' + warp_x_id + '*size_warp_tile_m)'
+    warp_y_offset = '(' + warp_y_id + '*size_warp_tile_n)'
+
+    # thread_i_idx = '(thread_i // size_warp_tile_m)*size_warp_tile_m + size_thread_tile_m * bitwise_and(right_shift(' + thread_id + ', 1), warp_height - 1)'
+    thread_i_idx = warp_y_offset + 'bitwise_and(right_shift(' + thread_id + ', 1), warp_height - 1)'
 
     warp_width = math.ceil(schedule.warp_tile_n / schedule.thread_tile_n)
     if warp_width == 1:
-        thread_i_idx = idx
+        thread_i_idx = thread_id
         thread_j_idx = '0'
     elif warp_width == 2:
-        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 96), 4), bitwise_and(' + idx + ', 1))'
+        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + thread_id + ', 96), 4), bitwise_and(' + thread_id + ', 1))'
     elif warp_width == 4:
-        # thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 16), 3), bitwise_and(' + idx + ', 1))'
-        thread_j_idx = 'bitwise_or(right_shift(bitwise_and(' + idx + ', 48), 3), bitwise_and(' + idx + ', 1))'
+        # thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + thread_id + ', 16), 3), bitwise_and(' + thread_id + ', 1))'
+        thread_j_idx = warp_x_offset + ' bitwise_or(right_shift(bitwise_and(' + thread_id + ', 48), 3), bitwise_and(' + thread_id + ', 1))'
     elif warp_width == 8:
-        thread_j_idx = 'bitwise_or(right_shift(bitwise_and(' + idx + ', 24), 2), bitwise_and(' + idx + ', 1))'
+        thread_j_idx = warp_x_offset + ' bitwise_or(right_shift(bitwise_and(' + thread_id + ', 24), 2), bitwise_and(' + thread_id + ', 1))'
     elif warp_width == 16:
-        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 28), 1), bitwise_and(' + idx + ', 1))'
+        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + thread_id + ', 28), 1), bitwise_and(' + thread_id + ', 1))'
     elif warp_width == 32:
         thread_i_idx = '0'
-        thread_j_idx = idx
+        thread_j_idx = thread_id
 
 ####################################################################################################################
 ### Data Movement: _A
