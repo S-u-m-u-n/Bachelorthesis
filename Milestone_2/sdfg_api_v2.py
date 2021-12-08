@@ -80,7 +80,7 @@ if args.precision == 32:
     veclen = 4
     # schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=64)
     # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=128)
-    schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=128)
+    schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=32, warp_tile_n=64, thread_block_tile_m=128, thread_block_tile_n=128)
 
 else:
     dtype = dace.float64
@@ -448,11 +448,11 @@ else:
         thread_i_idx = idx
         thread_j_idx = '0'
     elif warp_width == 2:
-        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 32), 4), bitwise_and(' + idx + ', 1))'
+        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 8), 4), bitwise_and(' + idx + ', 1))'
     elif warp_width == 4:
         thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 16), 3), bitwise_and(' + idx + ', 1))'
     elif warp_width == 8:
-        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 8), 2), bitwise_and(' + idx + ', 1))'
+        thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 32), 2), bitwise_and(' + idx + ', 1))'
     elif warp_width == 16:
         thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + idx + ', 4), 1), bitwise_and(' + idx + ', 1))'
     elif warp_width == 32:
