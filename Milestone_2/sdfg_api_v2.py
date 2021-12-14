@@ -141,8 +141,8 @@ gpu_B = state.add_access('gpu_B')
 gpu_C = state.add_access('gpu_C')
 gpu_result = state.add_access('gpu_result')
 
-sdfg.add_constant('alpha', args.alpha)
-sdfg.add_constant('beta', args.beta)
+sdfg.add_constant('alpha', args.alpha, dtype=dtype)
+sdfg.add_constant('beta', args.beta, dtype=dtype)
 
 sdfg.add_transient('C_times_beta', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
 sdfg.add_transient('A_matmul_B', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
@@ -394,6 +394,7 @@ K_tile_map_entry, K_tile_map_exit = nested_state.add_map(
 thread_tile_map_entry, thread_tile_map_exit = nested_state.add_map(
         'Thread_tile',
         dict(thread_i='0:size_thread_block_tile_m:size_thread_tile_m', thread_j='0:size_thread_block_tile_n:size_thread_tile_n'),
+        # dict(thread_i='0:size_thread_block_tile_m:size_thread_tile_m'),
         schedule=dace.dtypes.ScheduleType.GPU_ThreadBlock) # needs to be dace.dtypes.ScheduleType.GPU_ThreadBlock
 
 thread_K_map_entry, thread_K_map_exit = nested_state.add_map(
@@ -444,10 +445,10 @@ else:
     # idx = 'warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n)'
     # thread_id = '((warp_width * ((thread_i % size_warp_tile_m) / size_thread_tile_m) + ((thread_j % size_warp_tile_n) / size_thread_tile_n)) % 32)'
     thread_id = '((warp_width * (thread_i  / size_thread_tile_m) + (thread_j / size_thread_tile_n)) % 32)'
-    warp_id = '((warp_width * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n)) / 32)'
+    # warp_id = '((warp_width * (thread_i / size_thread_tile_m) + (thread_j / size_thread_tile_n)) / 32)'
 
-    warp_x_id = '(' + warp_id + ' % num_warps_n)'
-    warp_y_id = '(' + warp_id + ' / num_warps_n)'
+    # warp_x_id = '(' + warp_id + ' % num_warps_n)'
+    # warp_y_id = '(' + warp_id + ' / num_warps_n)'
     # warp_x_offset = '(' + warp_x_id + ' * size_warp_tile_m)'
     warp_x_offset = '(thread_j // size_warp_tile_n)*size_warp_tile_n'
     # warp_y_offset = '(' + warp_y_id + ' * size_warp_tile_n)'
@@ -467,7 +468,7 @@ else:
         # thread_j_idx = '(thread_j // size_warp_tile_n)*size_warp_tile_n + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + thread_id + ', 16), 3), bitwise_and(' + thread_id + ', 1))'
         thread_j_idx = warp_x_offset + ' + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + thread_id + ', 48), 3), bitwise_and(' + thread_id + ', 1))'
     elif warp_width == 8:
-        thread_j_idx = warp_x_offset + ' + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + thread_id + ', 8), 2), bitwise_and(' + thread_id + ', 1))'
+        thread_j_idx = warp_x_offset + ' + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + thread_id + ', 24), 2), bitwise_and(' + thread_id + ', 1))'
     elif warp_width == 16:
         thread_j_idx = warp_x_offset + ' + size_thread_tile_n * bitwise_or(right_shift(bitwise_and(' + thread_id + ', 28), 1), bitwise_and(' + thread_id + ', 1))'
     elif warp_width == 32:
