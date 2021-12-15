@@ -652,12 +652,12 @@ if args.double_buffering:
 
 nested_sdfg.fill_scope_connectors()
 sdfg.fill_scope_connectors()
-sdfg.save('sdfg_api_v2.sdfg')
+sdfg.save('sdfg_api_v3.sdfg')
 nested_sdfg.validate()
 sdfg.validate()
 
 sdfg.arg_names = ['A', 'B', 'C', 'alpha', 'beta']
-sdfg.save('sdfg_api_v2.sdfg')
+sdfg.save('sdfg_api_v3.sdfg')
 csdfg = sdfg.compile()
 
 for i in range(args.repetitions):
@@ -698,19 +698,19 @@ for i in range(args.repetitions):
         #                 return False
         #     return True
 
-        # helpers.print_info("Correct result: ", False)
-        # for i in range(16):
-        #     for j in range(16):
-        #         print("%.2f" % C_correct[i][j], end=" ")
-        #     print()
+        helpers.print_info("Correct result: ", False)
+        for i in range(16):
+            for j in range(16):
+                print("%.2f" % C_correct[i][j], end=" ")
+            print()
 
-        # print()
-        # print()
-        # helpers.print_info("SDFG result: ", False)
-        # for i in range(16):
-        #     for j in range(16):
-        #         print("%.2f" % C[i][j], end=" ")
-        #     print()
+        print()
+        print()
+        helpers.print_info("SDFG result: ", False)
+        for i in range(16):
+            for j in range(16):
+                print("%.2f" % C[i][j], end=" ")
+            print()
 
         # if areSame(C_correct, C):
         #     helpers.print_success("The SDFG is correct!", False)
