@@ -690,8 +690,8 @@ for i in range(args.repetitions):
 
         # # Can replace this with np.allclose(A, B)
         def areSame(A,B):
-            for i in range(M):
-                for j in range(N):
+            for i in range(args.M):
+                for j in range(args.N):
                     diff = math.fabs(A[i][j] - B[i][j])
                     if (diff > 0.000001):
                         helpers.print_error("Error at position (" + str(i) + ", " + str(j) + "): matrices are not equal! Difference is: " + str(diff), False)
