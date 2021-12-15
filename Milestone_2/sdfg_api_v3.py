@@ -78,6 +78,8 @@ if args.precision == 32:
     dtype = dace.float32
     ndtype = np.float32
     veclen = 4
+    args.alpha = ndtype(args.alpha)
+    args.beta = ndtype(args.beta)
     # schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=64)
     # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=128)
     schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=32, warp_tile_n=64, thread_block_tile_m=128, thread_block_tile_n=128)
@@ -142,10 +144,10 @@ gpu_C = state.add_access('gpu_C')
 gpu_result = state.add_access('gpu_result')
 
 # TODO: check with Tal why conversion didn't work here???
-# sdfg.add_constant('alpha', args.alpha, dtype=dtype)
-# sdfg.add_constant('beta', args.beta, dtype=dtype)
-sdfg.add_constant('alpha', args.alpha)
-sdfg.add_constant('beta', args.beta)
+sdfg.add_constant('alpha', ndtype(args.alpha))
+sdfg.add_constant('beta', ndtype(args.beta))
+# sdfg.add_constant('alpha', args.alpha)
+# sdfg.add_constant('beta', args.beta)
 
 sdfg.add_transient('C_times_beta', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
 sdfg.add_transient('A_matmul_B', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
@@ -169,6 +171,8 @@ state.add_edge(gpu_result, None, C_out, None, memlet=dace.Memlet.simple(gpu_resu
 
 #########################################################
 # Multiply C with beta
+
+# TODO: only do this if necessary!, i.e. if beta != 0
 map_entry, map_exit = state.add_map(
         'multiply_matrix_with_constant',
         dict(i='0:M', j='0:N'),
@@ -686,8 +690,8 @@ for i in range(args.repetitions):
 
         # # Can replace this with np.allclose(A, B)
         def areSame(A,B):
-            for i in range(M_example):
-                for j in range(N_example):
+            for i in range(M):
+                for j in range(N):
                     diff = math.fabs(A[i][j] - B[i][j])
                     if (diff > 0.000001):
                         helpers.print_error("Error at position (" + str(i) + ", " + str(j) + "): matrices are not equal! Difference is: " + str(diff), False)
