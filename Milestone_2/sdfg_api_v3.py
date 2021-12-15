@@ -31,8 +31,8 @@ parser.add_argument("-g", "--gpu-type",
 parser.add_argument("-M", type=int, dest='M', nargs="?", default=640)
 parser.add_argument("-K", type=int, dest='K', nargs="?", default=640)
 parser.add_argument("-N", type=int, dest='N', nargs="?", default=640)
-parser.add_argument("--alpha", type=dace.float64, dest='alpha', nargs="?", default=1.0)
-parser.add_argument("--beta", type=dace.float64, dest='beta', nargs="?", default=0.0)
+parser.add_argument("--alpha", type=np.float64, dest='alpha', nargs="?", default=1.0)
+parser.add_argument("--beta", type=np.float64, dest='beta', nargs="?", default=0.0)
 parser.add_argument("-r", "--repetitions", type=int, dest='repetitions', nargs="?", default=1)
 parser.add_argument('-p', '--precision',
                     type=int,
@@ -141,8 +141,11 @@ gpu_B = state.add_access('gpu_B')
 gpu_C = state.add_access('gpu_C')
 gpu_result = state.add_access('gpu_result')
 
-sdfg.add_constant('alpha', args.alpha, dtype=dtype)
-sdfg.add_constant('beta', args.beta, dtype=dtype)
+# TODO: check with Tal why conversion didn't work here???
+# sdfg.add_constant('alpha', args.alpha, dtype=dtype)
+# sdfg.add_constant('beta', args.beta, dtype=dtype)
+sdfg.add_constant('alpha', args.alpha)
+sdfg.add_constant('beta', args.beta)
 
 sdfg.add_transient('C_times_beta', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
 sdfg.add_transient('A_matmul_B', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
@@ -335,6 +338,10 @@ register_storage_B = nested_state.add_access('register_storage_B')
 register_storage_C = nested_state.add_access('register_storage_C')
 register_storage_C.setzero = True
 
+
+num_thread_blocks_n = args.swizzle_thread_blocks * int(args.N // schedule.thread_block_tile_n)
+num_threads_per_threadblock = (schedule.thread_block_tile_m // schedule.thread_tile_m) * (schedule.thread_block_tile_n // schedule.thread_tile_n)
+
 sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
 sdfg.add_constant('size_K_tile', schedule.load_k)
@@ -348,12 +355,13 @@ sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
 sdfg.add_constant('size_thread_tile_m', schedule.thread_tile_m)
 sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
 sdfg.add_constant('SPLIT_K', args.split_k)
+# sdfg.add_constant('num_warps_n', num_thread_blocks_n / schedule.warp_tile_n)
+
 nested_sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 nested_sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
 nested_sdfg.add_constant('num_thread_blocks_m', int((args.M // schedule.thread_block_tile_m + args.swizzle_thread_blocks - 1) // args.swizzle_thread_blocks))
-num_thread_blocks_n = args.swizzle_thread_blocks * int(args.N // schedule.thread_block_tile_n)
 nested_sdfg.add_constant('num_thread_blocks_n', num_thread_blocks_n)
-nested_sdfg.add_constant('num_warps_n', num_thread_blocks_n / schedule.warp_tile_n)
+nested_sdfg.add_constant('num_warps_n', int(num_thread_blocks_n / schedule.warp_tile_n))
 nested_sdfg.add_constant('num_K_tiles', int(args.K / (schedule.load_k * args.split_k)))
 nested_sdfg.add_constant('size_warp_tile_m', schedule.warp_tile_m)
 nested_sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
@@ -367,7 +375,8 @@ nested_sdfg.add_constant('size_K_split', args.K // args.split_k)
 nested_sdfg.add_constant('SWIZZLE', args.swizzle_thread_blocks)
 nested_sdfg.add_constant('SPLIT_K', args.split_k)
 
-num_threads_per_threadblock = (schedule.thread_block_tile_m // schedule.thread_tile_m) * (schedule.thread_block_tile_n // schedule.thread_tile_n)
+sdfg.add_constant('num_threads_per_threadblock', num_threads_per_threadblock)
+nested_sdfg.add_constant('num_threads_per_threadblock', num_threads_per_threadblock)
 
 tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a', '__b'}, {'__out'}, '__out = (__a * __b)')
 
@@ -394,7 +403,7 @@ K_tile_map_entry, K_tile_map_exit = nested_state.add_map(
 thread_tile_map_entry, thread_tile_map_exit = nested_state.add_map(
         'Thread_tile',
         # dict(thread_i='0:size_thread_block_tile_m:size_thread_tile_m', thread_j='0:size_thread_block_tile_n:size_thread_tile_n'),
-        dict(thread='0:(size_thread_block_tile_m*size_thread_block_tile_n)/(size_thread_tile_m*size_thread_block_tile_n)'),
+        dict(thread='0:num_threads_per_threadblock'),
         schedule=dace.dtypes.ScheduleType.GPU_ThreadBlock) # needs to be dace.dtypes.ScheduleType.GPU_ThreadBlock
 
 thread_K_map_entry, thread_K_map_exit = nested_state.add_map(
@@ -432,20 +441,20 @@ else:
     # helpers.print_info("Applying Vectorization...", False)
     # vec_adjust = '// VECLEN'
 
-warpId = '(thread / 32)'
+warpId = '(thread // 32)'
 threadId = '(thread % 32)'
 
 warpIdx = '(' + warpId + ' % num_warps_n)' # right direction
-warpIdy = '(' + warpId + ' / num_warps_n)' # down direction
-warp_x_offset = '(' + warpIdx + ' * size_warp_tile_m)'
-warp_y_offset = '(' + warpIdy + ' * size_warp_tile_n)'
+warpIdy = '(' + warpId + ' // num_warps_n)' # down direction
+warp_x_offset = '(' + warpIdx + ' * size_warp_tile_n)' # right direction
+warp_y_offset = '(' + warpIdy + ' * size_warp_tile_m)' # down direction
 
 ### Swizzle threads subset
 if not args.swizzle_threads:
     # thread_i_idx = 'thread_i'
     # thread_j_idx = 'thread_j'
-    LaneIdx = '(' + threadId + ' % warp_width)' # down direction
-    LaneIdy = '(' + threadId + ' / warp_width)' # right direction
+    LaneIdx = '(' + threadId + ' % warp_width)' # right direction
+    LaneIdy = '(' + threadId + ' // warp_width)' # down direction
 else:
     helpers.print_info("Swizzling Threads...", False)
     bitwise_and = sy.Function('bitwise_and')
@@ -479,6 +488,11 @@ else:
         LaneIdx = '0'
         LaneIdy = threadId
 
+thread_x_offset = '(' + LaneIdx + ' * size_thread_tile_n)'
+thread_y_offset = '(' + LaneIdy + ' * size_thread_tile_m)'
+thread_x_range = warp_x_offset + ' + ' + thread_x_offset + ':' + warp_x_offset + ' + ' + thread_x_offset + '+size_thread_tile_n'
+thread_y_range = warp_y_offset + ' + ' + thread_y_offset + ':' + warp_y_offset + ' + ' + thread_y_offset + '+size_thread_tile_m'
+
 ####################################################################################################################
 ### Data Movement: _A
 # _A -> shared_memory_A
@@ -488,7 +502,7 @@ else:
     nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m, ' + k_tile_range))
 
 # shared_memory_A -> register_storage_A (load size_thread_tile_m elements into register storage)
-nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, warp_y_offset + ' + ' + LaneIdy + ':' + warp_y_offset + ' + ' + LaneIdy + '+size_thread_tile_m, k'))
+nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, thread_y_range + ', k'))
 
 # register_storage_A -> tasklet
 nested_state.add_memlet_path(register_storage_A,
@@ -506,7 +520,7 @@ else:
     nested_state.add_memlet_path(_B, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_B, memlet=dace.Memlet.simple(_B.data, k_tile_range + ', ' + thread_block_j_offset  + ':' + thread_block_j_offset + '+size_thread_block_tile_n'))
 
 # shared_memory_B -> register_storage_B (load size_thread_tile_n elements into register storage)
-nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, 'k, ' + warp_x_offset + ' + ' + LaneIdx + ':' + warp_x_offset + ' + ' + LaneIdx + '+size_thread_tile_n'))
+nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, 'k, ' + thread_x_range))
 
 # register_storage_B -> tasklet
 nested_state.add_memlet_path(register_storage_B,
@@ -518,7 +532,7 @@ nested_state.add_memlet_path(register_storage_B,
 ####################################################################################################################
 ### Data Movement: output
 # tasklet -> register_storage_C
-subset = thread_block_i_offset + ' + ' + warp_y_offset + ' + ' + LaneIdy + ':' + thread_block_i_offset + ' + ' + warp_y_offset + ' + ' + LaneIdy + ' + size_thread_tile_m, ' + thread_block_j_offset + ' + ' + warp_x_offset + ' + ' + LaneIdx + ':' + thread_block_j_offset + ' + ' + warp_x_offset + ' + ' + LaneIdx + ' + size_thread_tile_n'
+subset = thread_block_i_offset + ' + ' + thread_y_range + ', ' + thread_block_j_offset + ' + ' + thread_x_range
 
 if args.split_k > 1:
     subset = 'thread_block_k, ' + subset
