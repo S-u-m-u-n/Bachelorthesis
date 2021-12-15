@@ -340,7 +340,7 @@ register_storage_C.setzero = True
 
 
 num_thread_blocks_n = args.swizzle_thread_blocks * int(args.N // schedule.thread_block_tile_n)
-num_threads_per_threadblock = (schedule.thread_block_tile_m // schedule.thread_tile_m) * (schedule.thread_block_tile_n // schedule.thread_tile_n)
+num_threads_per_threadblock = int((schedule.thread_block_tile_m // schedule.thread_tile_m) * (schedule.thread_block_tile_n // schedule.thread_tile_n))
 
 sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_m)
 sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
@@ -361,7 +361,7 @@ nested_sdfg.add_constant('size_thread_block_tile_m', schedule.thread_block_tile_
 nested_sdfg.add_constant('size_thread_block_tile_n', schedule.thread_block_tile_n)
 nested_sdfg.add_constant('num_thread_blocks_m', int((args.M // schedule.thread_block_tile_m + args.swizzle_thread_blocks - 1) // args.swizzle_thread_blocks))
 nested_sdfg.add_constant('num_thread_blocks_n', num_thread_blocks_n)
-nested_sdfg.add_constant('num_warps_n', int(num_thread_blocks_n / schedule.warp_tile_n))
+nested_sdfg.add_constant('num_warps_n', int(schedule.thread_block_tile_n / schedule.warp_tile_n))
 nested_sdfg.add_constant('num_K_tiles', int(args.K / (schedule.load_k * args.split_k)))
 nested_sdfg.add_constant('size_warp_tile_m', schedule.warp_tile_m)
 nested_sdfg.add_constant('size_warp_tile_n', schedule.warp_tile_n)
@@ -451,8 +451,6 @@ warp_y_offset = '(' + warpIdy + ' * size_warp_tile_m)' # down direction
 
 ### Swizzle threads subset
 if not args.swizzle_threads:
-    # thread_i_idx = 'thread_i'
-    # thread_j_idx = 'thread_j'
     LaneIdx = '(' + threadId + ' % warp_width)' # right direction
     LaneIdy = '(' + threadId + ' // warp_width)' # down direction
 else:
@@ -699,16 +697,16 @@ for i in range(args.repetitions):
         #     return True
 
         helpers.print_info("Correct result: ", False)
-        for i in range(128):
-            for j in range(128):
+        for i in range(16):
+            for j in range(16):
                 print("%.2f" % C_correct[i][j], end=" ")
             print()
 
         print()
         print()
         helpers.print_info("SDFG result: ", False)
-        for i in range(128):
-            for j in range(128):
+        for i in range(16):
+            for j in range(16):
                 print("%.2f" % C[i][j], end=" ")
             print()
 
