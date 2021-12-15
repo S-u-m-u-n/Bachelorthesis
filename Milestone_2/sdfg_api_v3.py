@@ -697,16 +697,16 @@ for i in range(args.repetitions):
         #     return True
 
         helpers.print_info("Correct result: ", False)
-        for i in range(16):
-            for j in range(16):
+        for i in range(128):
+            for j in range(128):
                 print("%.2f" % C_correct[i][j], end=" ")
             print()
 
         print()
         print()
         helpers.print_info("SDFG result: ", False)
-        for i in range(16):
-            for j in range(16):
+        for i in range(128):
+            for j in range(128):
                 print("%.2f" % C[i][j], end=" ")
             print()
 
