@@ -121,11 +121,9 @@ nested_sdfg.add_constant('VECLEN', veclen)
 # else:
 sdfg.add_array('A', shape=[M, K], dtype=dtype)
 sdfg.add_array('B', shape=[K, N], dtype=dtype)
-
 sdfg.add_array('C', shape=[M, N], dtype=dtype)
 A_in = state.add_read('A')
 B_in = state.add_read('B')
-C_in = state.add_read('C')
 C_out = state.add_write('C')
 
 # if args.vectorization:
@@ -140,22 +138,16 @@ sdfg.add_transient('gpu_result', shape=[M, N], dtype=dtype, storage=dace.Storage
 
 gpu_A = state.add_access('gpu_A')
 gpu_B = state.add_access('gpu_B')
-gpu_C = state.add_access('gpu_C')
 gpu_result = state.add_access('gpu_result')
 
-# TODO: check with Tal why conversion didn't work here???
 sdfg.add_constant('alpha', ndtype(args.alpha))
 sdfg.add_constant('beta', ndtype(args.beta))
 # sdfg.add_constant('alpha', args.alpha)
 # sdfg.add_constant('beta', args.beta)
 
-sdfg.add_transient('C_times_beta', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
 sdfg.add_transient('A_matmul_B', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
-sdfg.add_transient('A_matmul_B_times_alpha', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
 
-C_times_beta = state.add_write('C_times_beta')
 A_matmul_B = state.add_write('A_matmul_B')
-A_matmul_B_times_alpha = state.add_write('A_matmul_B_times_alpha')
 
 #########################################################
 # Connect arrays to GPU transient and the GPU result transient to host array
@@ -166,37 +158,17 @@ A_matmul_B_times_alpha = state.add_write('A_matmul_B_times_alpha')
 state.add_edge(A_in, None, gpu_A, None, memlet=dace.Memlet.simple(A_in.data, '0:M, 0:K'))
 state.add_edge(B_in, None, gpu_B, None, memlet=dace.Memlet.simple(B_in.data, '0:K, 0:N'))
 
-state.add_edge(C_in, None, gpu_C, None, memlet=dace.Memlet.simple(C_in.data, '0:M, 0:N'))
 state.add_edge(gpu_result, None, C_out, None, memlet=dace.Memlet.simple(gpu_result.data, '0:M, 0:N'))
 
-#########################################################
-# Multiply C with beta
-
-# Only do this if beta != 0
-if(math.fabs(args.beta) > 1e-6):
-    map_entry, map_exit = state.add_map(
-            'multiply_matrix_with_constant',
-            dict(i='0:M', j='0:N'),
-            schedule=dace.dtypes.ScheduleType.GPU_Device)
-
-    tasklet = state.add_tasklet('multiply_matrix_with_constant', ['__in'], ['__out'], '__out = (beta * __in)')
-
-    state.add_memlet_path(gpu_C,
-                            map_entry,
-                            tasklet,
-                            dst_conn='__in',
-                            memlet=dace.Memlet(f"{gpu_C.data}[i, j]"))
-
-    state.add_memlet_path(tasklet,
-                            map_exit,
-                            C_times_beta,
-                            src_conn='__out',
-                            memlet=dace.Memlet(f"{C_times_beta.data}[i, j]"))
+final_C = None
+final_A_matmul_B = A_matmul_B
 
 #########################################################
-# Multiply the result of (A @ B) with alpha
-# Only do this if alpha != 1
+# Multiply the result of (A @ B) with alpha, only if alpha != 1
 if(math.fabs(args.alpha - 1.0) > 1e-6):
+    sdfg.add_transient('A_matmul_B_times_alpha', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
+    A_matmul_B_times_alpha = state.add_write('A_matmul_B_times_alpha')
+
     map_entry, map_exit = state.add_map(
             'multiply_matrix_with_constant',
             dict(i='0:M', j='0:N'),
@@ -216,32 +188,71 @@ if(math.fabs(args.alpha - 1.0) > 1e-6):
                             src_conn='__out',
                             memlet=dace.Memlet(f"{A_matmul_B_times_alpha.data}[i, j]"))
 
+    final_A_matmul_B = A_matmul_B_times_alpha
+
+
 #########################################################
-# Add the result of (A @ B) * alpha and C * beta
-map_entry, map_exit = state.add_map(
-        'add_matrices',
-        dict(i='0:M', j='0:N'),
-        schedule=dace.dtypes.ScheduleType.GPU_Device)
+# Multiply C with beta, only if beta != 0
+if(math.fabs(args.beta) > 1e-6):
+    C_in = state.add_read('C')
+    gpu_C = state.add_access('gpu_C')
 
-tasklet = state.add_tasklet('add_matrices', ['__in1', '__in2'], ['__out'], '__out = (__in1 + __in2)')
+    state.add_edge(C_in, None, gpu_C, None, memlet=dace.Memlet.simple(C_in.data, '0:M, 0:N'))
 
-state.add_memlet_path(A_matmul_B_times_alpha,
-                        map_entry,
-                        tasklet,
-                        dst_conn='__in1',
-                        memlet=dace.Memlet(f"{A_matmul_B_times_alpha.data}[i, j]"))
+    sdfg.add_transient('C_times_beta', shape=[M, N], dtype=dtype, storage=dace.StorageType.GPU_Global, lifetime=dace.AllocationLifetime.SDFG)
+    C_times_beta = state.add_write('C_times_beta')
 
-state.add_memlet_path(C_times_beta,
-                        map_entry,
-                        tasklet,
-                        dst_conn='__in2',
-                        memlet=dace.Memlet(f"{C_times_beta.data}[i, j]"))
+    map_entry, map_exit = state.add_map(
+            'multiply_matrix_with_constant',
+            dict(i='0:M', j='0:N'),
+            schedule=dace.dtypes.ScheduleType.GPU_Device)
 
-state.add_memlet_path(tasklet,
-                        map_exit,
+    tasklet = state.add_tasklet('multiply_matrix_with_constant', ['__in'], ['__out'], '__out = (beta * __in)')
+
+    state.add_memlet_path(gpu_C,
+                            map_entry,
+                            tasklet,
+                            dst_conn='__in',
+                            memlet=dace.Memlet(f"{gpu_C.data}[i, j]"))
+
+    state.add_memlet_path(tasklet,
+                            map_exit,
+                            C_times_beta,
+                            src_conn='__out',
+                            memlet=dace.Memlet(f"{C_times_beta.data}[i, j]"))
+
+    #########################################################
+    # Add the result of (A @ B) * alpha and C * beta, also only if beta != 0
+    map_entry, map_exit = state.add_map(
+            'add_matrices',
+            dict(i='0:M', j='0:N'),
+            schedule=dace.dtypes.ScheduleType.GPU_Device)
+
+    tasklet = state.add_tasklet('add_matrices', ['__in1', '__in2'], ['__out'], '__out = (__in1 + __in2)')
+
+    state.add_memlet_path(final_A_matmul_B,
+                            map_entry,
+                            tasklet,
+                            dst_conn='__in1',
+                            memlet=dace.Memlet(f"{final_A_matmul_B.data}[i, j]"))
+
+    state.add_memlet_path(C_times_beta,
+                            map_entry,
+                            tasklet,
+                            dst_conn='__in2',
+                            memlet=dace.Memlet(f"{C_times_beta.data}[i, j]"))
+
+    state.add_memlet_path(tasklet,
+                            map_exit,
+                            gpu_result,
+                            src_conn='__out',
+                            memlet=dace.Memlet(f"{gpu_result.data}[i, j]"))
+
+# Directly store the result to the output
+else:
+    state.add_memlet_path(final_A_matmul_B,
                         gpu_result,
-                        src_conn='__out',
-                        memlet=dace.Memlet(f"{gpu_result.data}[i, j]"))
+                        memlet=dace.Memlet(gpu_result.data))
 
 #########################################################
 # Create nested sdfg
