@@ -506,8 +506,8 @@ else:
 
 thread_x_offset = '(' + LaneIdx + ' * size_thread_tile_n)'
 thread_y_offset = '(' + LaneIdy + ' * size_thread_tile_m)'
-thread_x_range = warp_x_offset + ' + ' + thread_x_offset + ':' + warp_x_offset + ' + ' + thread_x_offset + '+size_thread_tile_n'
-thread_y_range = warp_y_offset + ' + ' + thread_y_offset + ':' + warp_y_offset + ' + ' + thread_y_offset + '+size_thread_tile_m'
+# thread_x_range = warp_x_offset + ' + ' + thread_x_offset + ':' + warp_x_offset + ' + ' + thread_x_offset + '+size_thread_tile_n'
+# thread_y_range = warp_y_offset + ' + ' + thread_y_offset + ':' + warp_y_offset + ' + ' + thread_y_offset + '+size_thread_tile_m'
 
 ####################################################################################################################
 ### Data Movement: _A
@@ -518,7 +518,7 @@ else:
     nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m, ' + k_tile_range))
 
 # shared_memory_A -> register_storage_A (load size_thread_tile_m elements into register storage)
-nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, thread_y_range + ', k'))
+nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, warp_y_offset + ' + ' thread_y_offset + ':' + warp_y_offset + ' + ' + thread_y_offset + 'size_thread_tile_m, k'))
 
 # register_storage_A -> tasklet
 nested_state.add_memlet_path(register_storage_A,
@@ -536,7 +536,7 @@ else:
     nested_state.add_memlet_path(_B, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_B, memlet=dace.Memlet.simple(_B.data, k_tile_range + ', ' + thread_block_j_offset  + ':' + thread_block_j_offset + '+size_thread_block_tile_n'))
 
 # shared_memory_B -> register_storage_B (load size_thread_tile_n elements into register storage)
-nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, 'k, ' + thread_x_range))
+nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, 'k, ' + warp_x_offset + ' + ' thread_x_offset + ':' + warp_x_offset + ' + ' + thread_x_offset + 'size_thread_tile_n'))
 
 # register_storage_B -> tasklet
 nested_state.add_memlet_path(register_storage_B,
@@ -548,7 +548,8 @@ nested_state.add_memlet_path(register_storage_B,
 ####################################################################################################################
 ### Data Movement: output
 # tasklet -> register_storage_C
-subset = thread_block_i_offset + ' + ' + thread_y_range + ', ' + thread_block_j_offset + ' + ' + thread_x_range
+subset = thread_block_i_offset + ' + ' + warp_y_offset + ' + ' thread_y_offset + ':' thread_block_i_offset + ' + ' + warp_y_offset + ' + ' + thread_y_offset + 'size_thread_tile_m' + ', '
+        + thread_block_j_offset + ' + ' + warp_x_offset + ' + ' thread_x_offset + ':' thread_block_j_offset + ' + ' + warp_x_offset + ' + ' + thread_x_offset + 'size_thread_tile_n'
 
 if args.split_k > 1:
     subset = 'thread_block_k, ' + subset
