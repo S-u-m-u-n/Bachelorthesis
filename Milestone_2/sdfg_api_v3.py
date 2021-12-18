@@ -548,8 +548,8 @@ nested_state.add_memlet_path(register_storage_B,
 ####################################################################################################################
 ### Data Movement: output
 # tasklet -> register_storage_C
-subset = thread_block_i_offset + ' + ' + warp_y_offset + ' + ' + thread_y_offset + ':' thread_block_i_offset + ' + ' + warp_y_offset + ' + ' + thread_y_offset + 'size_thread_tile_m' + ', '
-        + thread_block_j_offset + ' + ' + warp_x_offset + ' + ' + thread_x_offset + ':' thread_block_j_offset + ' + ' + warp_x_offset + ' + ' + thread_x_offset + 'size_thread_tile_n'
+subset = thread_block_i_offset + ' + ' + warp_y_offset + ' + ' + thread_y_offset + ':' + thread_block_i_offset + ' + ' + warp_y_offset + ' + ' + thread_y_offset + 'size_thread_tile_m' + ', '
+        + thread_block_j_offset + ' + ' + warp_x_offset + ' + ' + thread_x_offset + ':' + thread_block_j_offset + ' + ' + warp_x_offset + ' + ' + thread_x_offset + 'size_thread_tile_n'
 
 if args.split_k > 1:
     subset = 'thread_block_k, ' + subset
