@@ -526,7 +526,7 @@
     "transformation_hist": [],
     "openmp_sections": true,
     "name": "gemm",
-    "hash": "f1e06f65efa66af5ec73129773545d39ce73c199bb7687d7f2040260faa6042f"
+    "hash": "6638b5aa3cc4716bb88908f7d59f45c097dc0c5272bb82b89ac550d40552b6a7"
   },
   "nodes": [
     {
@@ -2277,20 +2277,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "(-size_thread_block_tile_m*thread_block_i + size_thread_tile_m)*(-size_thread_block_tile_n*thread_block_j + size_thread_tile_n)",
+                            "volume": "size_thread_tile_m*size_thread_tile_n",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "size_thread_block_tile_m*thread_block_i + size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
-                                  "end": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
+                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "size_thread_block_tile_n*thread_block_j + size_thread_tile_n*Mod(Mod(thread, 32), warp_width) + size_warp_tile_n*Mod(floor(thread/32), num_warps_n)",
-                                  "end": "size_thread_tile_n*Mod(Mod(thread, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(thread/32), num_warps_n) - 1",
+                                  "end": "size_thread_block_tile_n*thread_block_j + size_thread_tile_n*Mod(Mod(thread, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(thread/32), num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -2308,19 +2308,19 @@
                               "ranges": [
                                 {
                                   "start": "size_thread_block_tile_m*thread_block_i + size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
-                                  "end": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
+                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "size_thread_block_tile_n*thread_block_j + size_thread_tile_n*Mod(Mod(thread, 32), warp_width) + size_warp_tile_n*Mod(floor(thread/32), num_warps_n)",
-                                  "end": "size_thread_tile_n*Mod(Mod(thread, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(thread/32), num_warps_n) - 1",
+                                  "end": "size_thread_block_tile_n*thread_block_j + size_thread_tile_n*Mod(Mod(thread, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(thread/32), num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
-                            "num_accesses": "(-size_thread_block_tile_m*thread_block_i + size_thread_tile_m)*(-size_thread_block_tile_n*thread_block_j + size_thread_tile_n)"
+                            "num_accesses": "size_thread_tile_m*size_thread_tile_n"
                           }
                         }
                       },
@@ -2799,22 +2799,22 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "0",
-                            "dynamic": true,
+                            "volume": "num_K_tiles*num_thread_blocks_m*num_thread_blocks_n*num_threads_per_threadblock*size_thread_tile_m*size_thread_tile_n",
+                            "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n) - 1",
-                                  "step": "1",
-                                  "tile": "1"
+                                  "end": "num_thread_blocks_m*size_thread_block_tile_m - size_thread_block_tile_m + size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n) - 1",
+                                  "step": "size_thread_block_tile_m",
+                                  "tile": "size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n)"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n) - 1",
-                                  "step": "1",
-                                  "tile": "1"
+                                  "end": "num_thread_blocks_n*size_thread_block_tile_n - size_thread_block_tile_n + size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n) - 1",
+                                  "step": "size_thread_block_tile_n",
+                                  "tile": "size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n)"
                                 }
                               ]
                             },
@@ -2830,19 +2830,19 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n) - 1",
-                                  "step": "1",
-                                  "tile": "1"
+                                  "end": "num_thread_blocks_m*size_thread_block_tile_m - size_thread_block_tile_m + size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n) - 1",
+                                  "step": "size_thread_block_tile_m",
+                                  "tile": "size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n)"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n) - 1",
-                                  "step": "1",
-                                  "tile": "1"
+                                  "end": "num_thread_blocks_n*size_thread_block_tile_n - size_thread_block_tile_n + size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n) - 1",
+                                  "step": "size_thread_block_tile_n",
+                                  "tile": "size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n)"
                                 }
                               ]
                             },
-                            "num_accesses": -1
+                            "num_accesses": "num_K_tiles*num_thread_blocks_m*num_thread_blocks_n*num_threads_per_threadblock*size_thread_tile_m*size_thread_tile_n"
                           }
                         }
                       },
@@ -2857,20 +2857,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "num_threads_per_threadblock*(size_thread_block_tile_m*thread_block_i - size_thread_tile_m)*(size_thread_block_tile_n*thread_block_j - size_thread_tile_n)",
+                            "volume": "num_threads_per_threadblock*size_thread_tile_m*size_thread_tile_n",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "size_thread_block_tile_m*thread_block_i",
-                                  "end": "size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n) - 1",
+                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "size_thread_block_tile_n*thread_block_j",
-                                  "end": "size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n) - 1",
+                                  "end": "size_thread_block_tile_n*thread_block_j + size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -2888,19 +2888,19 @@
                               "ranges": [
                                 {
                                   "start": "size_thread_block_tile_m*thread_block_i",
-                                  "end": "size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n) - 1",
+                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "size_thread_block_tile_n*thread_block_j",
-                                  "end": "size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n) - 1",
+                                  "end": "size_thread_block_tile_n*thread_block_j + size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
-                            "num_accesses": "num_threads_per_threadblock*(size_thread_block_tile_m*thread_block_i - size_thread_tile_m)*(size_thread_block_tile_n*thread_block_j - size_thread_tile_n)"
+                            "num_accesses": "num_threads_per_threadblock*size_thread_tile_m*size_thread_tile_n"
                           }
                         }
                       },
@@ -2915,20 +2915,20 @@
                         "data": {
                           "type": "Memlet",
                           "attributes": {
-                            "volume": "num_K_tiles*num_threads_per_threadblock*(size_thread_block_tile_m*thread_block_i - size_thread_tile_m)*(size_thread_block_tile_n*thread_block_j - size_thread_tile_n)",
+                            "volume": "num_K_tiles*num_threads_per_threadblock*size_thread_tile_m*size_thread_tile_n",
                             "dynamic": false,
                             "subset": {
                               "type": "Range",
                               "ranges": [
                                 {
                                   "start": "size_thread_block_tile_m*thread_block_i",
-                                  "end": "size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n) - 1",
+                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "size_thread_block_tile_n*thread_block_j",
-                                  "end": "size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n) - 1",
+                                  "end": "size_thread_block_tile_n*thread_block_j + size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -2946,19 +2946,19 @@
                               "ranges": [
                                 {
                                   "start": "size_thread_block_tile_m*thread_block_i",
-                                  "end": "size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n) - 1",
+                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_tile_m*floor(Mod(num_threads_per_threadblock + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_threadblock/32 - 1/32)/num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "size_thread_block_tile_n*thread_block_j",
-                                  "end": "size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n) - 1",
+                                  "end": "size_thread_block_tile_n*thread_block_j + size_thread_tile_n*Mod(Mod(num_threads_per_threadblock + 31, 32), warp_width) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_threadblock/32 - 1/32), num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
                               ]
                             },
-                            "num_accesses": "num_K_tiles*num_threads_per_threadblock*(size_thread_block_tile_m*thread_block_i - size_thread_tile_m)*(size_thread_block_tile_n*thread_block_j - size_thread_tile_n)"
+                            "num_accesses": "num_K_tiles*num_threads_per_threadblock*size_thread_tile_m*size_thread_tile_n"
                           }
                         }
                       },
