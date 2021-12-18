@@ -1,0 +1,5 @@
+output + 
+((((N * (((size_thread_block_tile_m * thread_block_i) 
+        + (size_thread_tile_m * ((thread % 32) / warp_width))) +
+            (size_warp_tile_m * ((thread / 32) / num_warps_n)))) + 
+                (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * ((thread % 32) % warp_width))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))), [] (const float& x, const float& y) { return (x + y); }, (((- size_thread_block_tile_m) * thread_block_i) + size_thread_tile_m), N, (((- size_thread_block_tile_n) * thread_block_j) + size_thread_tile_n), 1);

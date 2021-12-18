@@ -172,46 +172,49 @@ state.add_edge(gpu_result, None, C_out, None, memlet=dace.Memlet.simple(gpu_resu
 #########################################################
 # Multiply C with beta
 
-# TODO: only do this if necessary!, i.e. if beta != 0
-map_entry, map_exit = state.add_map(
-        'multiply_matrix_with_constant',
-        dict(i='0:M', j='0:N'),
-        schedule=dace.dtypes.ScheduleType.GPU_Device)
+# Only do this if beta != 0
+if(math.fabs(args.beta) > 1e-6):
+    map_entry, map_exit = state.add_map(
+            'multiply_matrix_with_constant',
+            dict(i='0:M', j='0:N'),
+            schedule=dace.dtypes.ScheduleType.GPU_Device)
 
-tasklet = state.add_tasklet('multiply_matrix_with_constant', ['__in'], ['__out'], '__out = (beta * __in)')
+    tasklet = state.add_tasklet('multiply_matrix_with_constant', ['__in'], ['__out'], '__out = (beta * __in)')
 
-state.add_memlet_path(gpu_C,
-                        map_entry,
-                        tasklet,
-                        dst_conn='__in',
-                        memlet=dace.Memlet(f"{gpu_C.data}[i, j]"))
+    state.add_memlet_path(gpu_C,
+                            map_entry,
+                            tasklet,
+                            dst_conn='__in',
+                            memlet=dace.Memlet(f"{gpu_C.data}[i, j]"))
 
-state.add_memlet_path(tasklet,
-                        map_exit,
-                        C_times_beta,
-                        src_conn='__out',
-                        memlet=dace.Memlet(f"{C_times_beta.data}[i, j]"))
+    state.add_memlet_path(tasklet,
+                            map_exit,
+                            C_times_beta,
+                            src_conn='__out',
+                            memlet=dace.Memlet(f"{C_times_beta.data}[i, j]"))
 
 #########################################################
 # Multiply the result of (A @ B) with alpha
-map_entry, map_exit = state.add_map(
-        'multiply_matrix_with_constant',
-        dict(i='0:M', j='0:N'),
-        schedule=dace.dtypes.ScheduleType.GPU_Device)
+# Only do this if alpha != 1
+if(math.fabs(args.alpha - 1.0) > 1e-6):
+    map_entry, map_exit = state.add_map(
+            'multiply_matrix_with_constant',
+            dict(i='0:M', j='0:N'),
+            schedule=dace.dtypes.ScheduleType.GPU_Device)
 
-tasklet = state.add_tasklet('multiply_matrix_with_constant', ['__in'], ['__out'], '__out = (alpha * __in)')
+    tasklet = state.add_tasklet('multiply_matrix_with_constant', ['__in'], ['__out'], '__out = (alpha * __in)')
 
-state.add_memlet_path(A_matmul_B,
-                        map_entry,
-                        tasklet,
-                        dst_conn='__in',
-                        memlet=dace.Memlet(f"{A_matmul_B.data}[i, j]"))
+    state.add_memlet_path(A_matmul_B,
+                            map_entry,
+                            tasklet,
+                            dst_conn='__in',
+                            memlet=dace.Memlet(f"{A_matmul_B.data}[i, j]"))
 
-state.add_memlet_path(tasklet,
-                        map_exit,
-                        A_matmul_B_times_alpha,
-                        src_conn='__out',
-                        memlet=dace.Memlet(f"{A_matmul_B_times_alpha.data}[i, j]"))
+    state.add_memlet_path(tasklet,
+                            map_exit,
+                            A_matmul_B_times_alpha,
+                            src_conn='__out',
+                            memlet=dace.Memlet(f"{A_matmul_B_times_alpha.data}[i, j]"))
 
 #########################################################
 # Add the result of (A @ B) * alpha and C * beta

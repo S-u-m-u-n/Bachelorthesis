@@ -5,3 +5,13 @@ When applying double buffering, I received the following error:
 dace.sdfg.validation.InvalidSDFGEdgeError: Dimensionality mismatch between src/dst subsets (at state K_tile_init, edge input_A[0:size_thread_block_tile_m, 0:size_K_tile] -> [0, 0:128, 0:8] (input_A:None -> shared_memory_A:None))
 
 This error can be ignored by commenting the "raise error".
+
+===
+If --split-k-seq doesn't work, change this in cpp.py:
+
+
+            # If a view, get the relevant access node
+            dstnode = edge.dst
+            if isinstance(dstnode, nodes.AccessNode):
+                while isinstance(sdfg.arrays[dstnode.data], data.View):
+                    dstnode = dfg.out_edges(dstnode)[0].dst
