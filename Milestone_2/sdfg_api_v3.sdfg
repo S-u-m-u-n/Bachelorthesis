@@ -4513,7 +4513,7 @@
     ],
     "openmp_sections": true,
     "name": "gemm",
-    "hash": "f50e65785966cb5822fecca24e189f7f96ae4c1f84d1944c2a0bde2276505396"
+    "hash": "ceaf27f5de4ee259ca0ad740bd8d880ded00ed4038c9d55b3218f063338b8875"
   },
   "nodes": [
     {
@@ -5953,6 +5953,63 @@
                               ]
                             },
                             "_arrays": {
+                              "shared_memory_B": {
+                                "type": "Array",
+                                "attributes": {
+                                  "allow_conflicts": false,
+                                  "strides": [
+                                    "1024",
+                                    "128",
+                                    "1"
+                                  ],
+                                  "total_size": "2048",
+                                  "offset": [
+                                    "0",
+                                    "0",
+                                    "0"
+                                  ],
+                                  "may_alias": false,
+                                  "alignment": 0,
+                                  "dtype": "float32",
+                                  "shape": [
+                                    "2",
+                                    "8",
+                                    "128"
+                                  ],
+                                  "transient": true,
+                                  "storage": "GPU_Shared",
+                                  "lifetime": "Scope",
+                                  "location": {},
+                                  "debuginfo": null
+                                }
+                              },
+                              "register_storage_C": {
+                                "type": "Array",
+                                "attributes": {
+                                  "allow_conflicts": false,
+                                  "strides": [
+                                    "8",
+                                    "1"
+                                  ],
+                                  "total_size": "64",
+                                  "offset": [
+                                    "0",
+                                    "0"
+                                  ],
+                                  "may_alias": false,
+                                  "alignment": 0,
+                                  "dtype": "float32",
+                                  "shape": [
+                                    "8",
+                                    "8"
+                                  ],
+                                  "transient": true,
+                                  "storage": "Register",
+                                  "lifetime": "Scope",
+                                  "location": {},
+                                  "debuginfo": null
+                                }
+                              },
                               "register_storage_B": {
                                 "type": "Array",
                                 "attributes": {
@@ -6007,36 +6064,6 @@
                                   "debuginfo": null
                                 }
                               },
-                              "shared_memory_B": {
-                                "type": "Array",
-                                "attributes": {
-                                  "allow_conflicts": false,
-                                  "strides": [
-                                    "1024",
-                                    "128",
-                                    "1"
-                                  ],
-                                  "total_size": "2048",
-                                  "offset": [
-                                    "0",
-                                    "0",
-                                    "0"
-                                  ],
-                                  "may_alias": false,
-                                  "alignment": 0,
-                                  "dtype": "float32",
-                                  "shape": [
-                                    "2",
-                                    "8",
-                                    "128"
-                                  ],
-                                  "transient": true,
-                                  "storage": "GPU_Shared",
-                                  "lifetime": "Scope",
-                                  "location": {},
-                                  "debuginfo": null
-                                }
-                              },
                               "shared_memory_A": {
                                 "type": "Array",
                                 "attributes": {
@@ -6062,33 +6089,6 @@
                                   ],
                                   "transient": true,
                                   "storage": "GPU_Shared",
-                                  "lifetime": "Scope",
-                                  "location": {},
-                                  "debuginfo": null
-                                }
-                              },
-                              "register_storage_C": {
-                                "type": "Array",
-                                "attributes": {
-                                  "allow_conflicts": false,
-                                  "strides": [
-                                    "8",
-                                    "1"
-                                  ],
-                                  "total_size": "64",
-                                  "offset": [
-                                    "0",
-                                    "0"
-                                  ],
-                                  "may_alias": false,
-                                  "alignment": 0,
-                                  "dtype": "float32",
-                                  "shape": [
-                                    "8",
-                                    "8"
-                                  ],
-                                  "transient": true,
-                                  "storage": "Register",
                                   "lifetime": "Scope",
                                   "location": {},
                                   "debuginfo": null
