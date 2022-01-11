@@ -4669,7 +4669,10 @@ void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __r
     // cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
     // cudaLaunchKernel((void*)cosmaSgemm_kernel, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
     // cosmaSgemm_kernel<<<dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1)>>>((void *)&input_A, K, (void *)&input_B, N, (void *)&output, N);
-//     cosmaSgemm_kernel<<<dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1)>>>((const float *)&input_A, K, (const float *)&input_B, N, (float *)&output, N);
-    cosmaSgemm_kernel<<<dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1)>>>((const float *)&input_A, K, (const float *)&input_B, N, (float *)&output, N);
+    cosmaSgemm_kernel<<<dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1)>>>((const float *)input_A, K, (const float *)input_B, N, (float *)output, N);
+
+    // void  *cosmaSgemm_kernel_args[] = { (const float *)&input_A, (const float *)&input_B, (void *)&output, (void *)&K, (void *)&M, (void *)&N };
+    // cudaLaunchKernel((void*)cosmaSgemm_kernel, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), cosmaSgemm_kernel_args, 0, __state->gpu_context->streams[0]);
+
 }
 
