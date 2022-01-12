@@ -4513,7 +4513,7 @@
     ],
     "openmp_sections": true,
     "name": "gemm",
-    "hash": "ceaf27f5de4ee259ca0ad740bd8d880ded00ed4038c9d55b3218f063338b8875"
+    "hash": "00f82b38b92518894303b3178f3f77b3288dedf14a26fd88c71bae32877f06c2"
   },
   "nodes": [
     {
@@ -5953,13 +5953,13 @@
                               ]
                             },
                             "_arrays": {
-                              "shared_memory_B": {
+                              "shared_memory_A": {
                                 "type": "Array",
                                 "attributes": {
                                   "allow_conflicts": false,
                                   "strides": [
                                     "1024",
-                                    "128",
+                                    "8",
                                     "1"
                                   ],
                                   "total_size": "2048",
@@ -5973,38 +5973,11 @@
                                   "dtype": "float32",
                                   "shape": [
                                     "2",
-                                    "8",
-                                    "128"
-                                  ],
-                                  "transient": true,
-                                  "storage": "GPU_Shared",
-                                  "lifetime": "Scope",
-                                  "location": {},
-                                  "debuginfo": null
-                                }
-                              },
-                              "register_storage_C": {
-                                "type": "Array",
-                                "attributes": {
-                                  "allow_conflicts": false,
-                                  "strides": [
-                                    "8",
-                                    "1"
-                                  ],
-                                  "total_size": "64",
-                                  "offset": [
-                                    "0",
-                                    "0"
-                                  ],
-                                  "may_alias": false,
-                                  "alignment": 0,
-                                  "dtype": "float32",
-                                  "shape": [
-                                    "8",
+                                    "128",
                                     "8"
                                   ],
                                   "transient": true,
-                                  "storage": "Register",
+                                  "storage": "GPU_Shared",
                                   "lifetime": "Scope",
                                   "location": {},
                                   "debuginfo": null
@@ -6064,13 +6037,40 @@
                                   "debuginfo": null
                                 }
                               },
-                              "shared_memory_A": {
+                              "register_storage_C": {
+                                "type": "Array",
+                                "attributes": {
+                                  "allow_conflicts": false,
+                                  "strides": [
+                                    "8",
+                                    "1"
+                                  ],
+                                  "total_size": "64",
+                                  "offset": [
+                                    "0",
+                                    "0"
+                                  ],
+                                  "may_alias": false,
+                                  "alignment": 0,
+                                  "dtype": "float32",
+                                  "shape": [
+                                    "8",
+                                    "8"
+                                  ],
+                                  "transient": true,
+                                  "storage": "Register",
+                                  "lifetime": "Scope",
+                                  "location": {},
+                                  "debuginfo": null
+                                }
+                              },
+                              "shared_memory_B": {
                                 "type": "Array",
                                 "attributes": {
                                   "allow_conflicts": false,
                                   "strides": [
                                     "1024",
-                                    "8",
+                                    "128",
                                     "1"
                                   ],
                                   "total_size": "2048",
@@ -6084,8 +6084,8 @@
                                   "dtype": "float32",
                                   "shape": [
                                     "2",
-                                    "128",
-                                    "8"
+                                    "8",
+                                    "128"
                                   ],
                                   "transient": true,
                                   "storage": "GPU_Shared",
@@ -6599,7 +6599,7 @@
                                       "end_line": 213,
                                       "start_column": 0,
                                       "end_column": 0,
-                                      "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/helpers.py"
+                                      "filename": "/home/jacobsi/anaconda3/lib/python3.8/site-packages/dace/transformation/helpers.py"
                                     },
                                     "data": "input_A",
                                     "in_connectors": {},
@@ -6621,7 +6621,7 @@
                                       "end_line": 200,
                                       "start_column": 0,
                                       "end_column": 0,
-                                      "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/dataflow/double_buffering.py"
+                                      "filename": "/home/jacobsi/anaconda3/lib/python3.8/site-packages/dace/transformation/dataflow/double_buffering.py"
                                     },
                                     "data": "shared_memory_A",
                                     "in_connectors": {},
@@ -6643,7 +6643,7 @@
                                       "end_line": 213,
                                       "start_column": 0,
                                       "end_column": 0,
-                                      "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/helpers.py"
+                                      "filename": "/home/jacobsi/anaconda3/lib/python3.8/site-packages/dace/transformation/helpers.py"
                                     },
                                     "data": "input_B",
                                     "in_connectors": {},
@@ -6665,7 +6665,7 @@
                                       "end_line": 200,
                                       "start_column": 0,
                                       "end_column": 0,
-                                      "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/dataflow/double_buffering.py"
+                                      "filename": "/home/jacobsi/anaconda3/lib/python3.8/site-packages/dace/transformation/dataflow/double_buffering.py"
                                     },
                                     "data": "shared_memory_B",
                                     "in_connectors": {},
@@ -7782,7 +7782,7 @@
                                       "end_line": 213,
                                       "start_column": 0,
                                       "end_column": 0,
-                                      "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/helpers.py"
+                                      "filename": "/home/jacobsi/anaconda3/lib/python3.8/site-packages/dace/transformation/helpers.py"
                                     },
                                     "data": "input_A",
                                     "in_connectors": {},
@@ -7804,7 +7804,7 @@
                                       "end_line": 157,
                                       "start_column": 0,
                                       "end_column": 0,
-                                      "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/dataflow/double_buffering.py"
+                                      "filename": "/home/jacobsi/anaconda3/lib/python3.8/site-packages/dace/transformation/dataflow/double_buffering.py"
                                     },
                                     "data": "shared_memory_A",
                                     "in_connectors": {},
@@ -7826,7 +7826,7 @@
                                       "end_line": 213,
                                       "start_column": 0,
                                       "end_column": 0,
-                                      "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/helpers.py"
+                                      "filename": "/home/jacobsi/anaconda3/lib/python3.8/site-packages/dace/transformation/helpers.py"
                                     },
                                     "data": "input_B",
                                     "in_connectors": {},
@@ -7848,7 +7848,7 @@
                                       "end_line": 157,
                                       "start_column": 0,
                                       "end_column": 0,
-                                      "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/dataflow/double_buffering.py"
+                                      "filename": "/home/jacobsi/anaconda3/lib/python3.8/site-packages/dace/transformation/dataflow/double_buffering.py"
                                     },
                                     "data": "shared_memory_B",
                                     "in_connectors": {},
@@ -8458,7 +8458,7 @@
                                       "end_line": 220,
                                       "start_column": 0,
                                       "end_column": 0,
-                                      "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/helpers.py"
+                                      "filename": "/home/jacobsi/anaconda3/lib/python3.8/site-packages/dace/transformation/helpers.py"
                                     },
                                     "data": "output",
                                     "in_connectors": {},
@@ -9549,7 +9549,7 @@
                           "end_line": 236,
                           "start_column": 0,
                           "end_column": 0,
-                          "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/helpers.py"
+                          "filename": "/home/jacobsi/anaconda3/lib/python3.8/site-packages/dace/transformation/helpers.py"
                         },
                         "is_collapsed": false,
                         "instrument": "No_Instrumentation",
