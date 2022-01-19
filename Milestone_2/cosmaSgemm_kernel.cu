@@ -1495,7 +1495,7 @@
  #define WARP_TILE_N 64
  #define THREAD_TILE_M 8
  #define THREAD_TILE_N 8
- #define A_OFFSET 4
+ #define A_OFFSET 0
  #define B_OFFSET 0
  #define SWIZZLE 1
  #define SPLIT_K 1
@@ -1503,7 +1503,6 @@
  #define ADDITIONAL_OCCUPANCY_SM 2
  #define ALPHA 1
  #define BETA 0
- #define CORRECTNESS_TEST
  #endif
 
  constexpr int M = 4096;
