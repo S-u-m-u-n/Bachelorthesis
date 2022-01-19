@@ -1,4 +1,4 @@
-// #include <cuda_runtime.h>
+#include <cuda_runtime.h>
 #include <dace/dace.h>
 
 /* ---------------------------------------------------------------------
@@ -4664,12 +4664,11 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
 DACE_EXPORTED void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __restrict__ input_A, const float * __restrict__ input_B, float * __restrict__ output, int K, int M, int N);
 void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __restrict__ input_A, const float * __restrict__ input_B, float * __restrict__ output, int K, int M, int N)
 {
-
-    void  *Thread_block_grid_1_1_3_args[] = { (void *)&input_A, (void *)&input_B, (void *)&output, (void *)&K, (void *)&M, (void *)&N };
+    // void  *Thread_block_grid_1_1_3_args[] = { (void *)&input_A, (void *)&input_B, (void *)&output, (void *)&K, (void *)&M, (void *)&N };
     // cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
     // cudaLaunchKernel((void*)cosmaSgemm_kernel, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
     // cosmaSgemm_kernel<<<dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1)>>>((void *)&input_A, K, (void *)&input_B, N, (void *)&output, N);
-//     cosmaSgemm_kernel<<<dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1)>>>((const float *)input_A, K, (const float *)input_B, N, (float *)output, N);
+    // cosmaSgemm_kernel<<<dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1)>>>((const float *)input_A, K, (const float *)input_B, N, (float *)output, N);
 
     void  *cosmaSgemm_kernel_args[] = { (void *)&input_A, (void *)&K, (void *)&input_B, (void *)&N, (void *)&output, (void *)&N };
     cudaLaunchKernel((void*)cosmaSgemm_kernel, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), cosmaSgemm_kernel_args, 0, __state->gpu_context->streams[0]);
