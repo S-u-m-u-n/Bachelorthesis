@@ -4670,7 +4670,30 @@ void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __r
     // cosmaSgemm_kernel<<<dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1)>>>((const float *)input_A, K, (const float *)input_B, N, (float *)output, N);
 
     void  *cosmaSgemm_kernel_args[] = { (void *)&input_A, (void *)&K, (void *)&input_B, (void *)&N, (void *)&output, (void *)&N };
-    cudaLaunchKernel((void*)cosmaSgemm_kernel, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), cosmaSgemm_kernel_args, 0, __state->gpu_context->streams[0]);
 
+    for (int i = 0; i < 10; ++i) {
+        cudaLaunchKernel((void*)cosmaSgemm_kernel, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), cosmaSgemm_kernel_args, 0, __state->gpu_context->streams[0]);
+		std::cout << "." << std::flush; // Use dots to measure progress
+	}
+    
+    std::cout << "\n";
+
+	cudaProfilerStart();
+
+    // The actual benchmarking
+	for (int i = 0; i < 100; ++i) {
+
+        cudaLaunchKernel((void*)cosmaSgemm_kernel, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), cosmaSgemm_kernel_args, 0, __state->gpu_context->streams[0]);
+
+
+		//checkCudaErrors(cudaGetLastError());
+		//checkCudaErrors(cudaDeviceSynchronize());
+		// flushCache();
+		//std::cout << "." << std::flush; // Use dots to measure progress
+		//checkCudaErrors(cudaGetLastError());
+		//checkCudaErrors(cudaDeviceSynchronize());
+	}
+	cudaProfilerStop();
+	std::cout << "\n";
 }
 
