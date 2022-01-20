@@ -4253,102 +4253,6 @@
              block_idx_x, block_idx_y, &C_Shared);
  
  }
- 
- /**
-  * This function performs the matrix-matrix multiplication
-  * C = alpha * AB  + beta * C
-  * where alpha and beta are scalars, and A , B and C are matrices stored in RowMajor-major format with dimensions  A:  m × k , B: k × n and C: m × n , respectively.
-  *
-  * Uses the CosmaAlgorithm
-  * Assumes RowMajor layout
-  *
-  * @param A 		<type> array of dimensions lda x k
-  * @param lda 		leading dimension of two-dimensional array used to store the matrix A.
-  * @param B			<type> array of dimension ldb x n
-  * @param ldb		leading dimension of two-dimensional array used to store matrix B.
-  * @param C			<type> array of dimensions ldc x n
-  * @param ldc		leading dimension of a two-dimensional array used to store the matrix C.
-  * @return cublasStatus_t CUBLAS_STATUS_SUCCESS || CUBLAS_STATUS_NOT_INITIALIZED || CUBLAS_STATUS_INVALID_VALUE || CUBLAS_STATUS_ARCH_MISMATCH || CUBLAS_STATUS_EXECUTION_FAILED
-  */
-  void cosmaSgemm(const TYPE *__restrict__ A, const int lda,
-         const TYPE * __restrict__ B, const int ldb, TYPE *__restrict__ C,
-         const int ldc) {
- 
-    //  if (M < 0 || N < 0 || K < 0) {
-    //      return CUBLAS_STATUS_INVALID_VALUE;
-    //  }
- 
-    //  if (BETA != 1 && ((SPLIT_K > 1 && ATOMIC_REDUCTION) || ALPHA == 0)) {
- 
-        //  cublasHandle_t handle;
-        //  checkCudaErrors(cublasCreate(&handle));
- 
-        //  const float factor = BETA;
- 
-        //  checkCudaErrors(cublasSscal(handle, ldc * M, &factor, C, 1));
- 
-        //  checkCudaErrors(cublasDestroy(handle));
- 
-         //checkCudaErrors(cudaGetLastError());
-         //checkCudaErrors(cudaDeviceSynchronize());
- 
-    //  }
-     if (ALPHA != 0) {
- 
-         constexpr int N_TILES = (N + THREADBLOCK_TILE_N - 1)
-                 / THREADBLOCK_TILE_N;
-         constexpr int M_TILES = (M + THREADBLOCK_TILE_M - 1)
-                 / THREADBLOCK_TILE_M;
- 
-         constexpr dim3 dimBlock(THREADS, 1, 1);
-         dim3 dimGrid;
- 
-         if (SWIZZLE != 1) {
- 
-             constexpr int N_TILES_SWIZZLE = N_TILES * SWIZZLE;
-             constexpr int M_TILES_SWIZZLE = (M_TILES + SWIZZLE - 1) / SWIZZLE;
- 
-             dimGrid.x = N_TILES_SWIZZLE;
-             dimGrid.y = M_TILES_SWIZZLE;
-             dimGrid.z = SPLIT_K;
- 
-         } else {
- 
-             dimGrid.x = N_TILES;
-             dimGrid.y = M_TILES;
-             dimGrid.z = SPLIT_K;
- 
-         }
- 
-         if (SPLIT_K != 1 && !ATOMIC_REDUCTION) {
- 
-             TYPE* C_SPLITK;
- 
-            //  checkCudaErrors(cudaMalloc(&C_SPLITK, sizeof(TYPE) * M * N * SPLIT_K));
-             cudaMalloc(&C_SPLITK, sizeof(TYPE) * M * N * SPLIT_K);
- 
-             cosmaSgemm_kernel<<<dimGrid, dimBlock>>>(A,lda,B,ldb,C_SPLITK,N);
- 
-             //checkCudaErrors(cudaGetLastError());
-             //checkCudaErrors(cudaDeviceSynchronize());
- 
-            //  cosmaSplitKReduce(C, ldc, C_SPLITK);
- 
-            //  checkCudaErrors(cudaFree(C_SPLITK));
-             cudaFree(C_SPLITK);
- 
-         } else {
-             cosmaSgemm_kernel<<<dimGrid, dimBlock>>>(A,lda,B,ldb,C,ldc);
-         }
- 
-     }
- 
-    //  return CUBLAS_STATUS_SUCCESS;
- 
- }
- 
- #endif /* CUCOSMAV1_CUH_ */
- 
 
 /* ---------------------------------------------------------------------
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
@@ -4382,6 +4286,258 @@ DACE_EXPORTED int __dace_init_cuda(gemm_t *__state, int K, int M, int N);
 DACE_EXPORTED void __dace_exit_cuda(gemm_t *__state);
 
 DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * input_B, float * output, int K, int M, int N) {
+
+    // trying cucosma code here
+    int lda = M;
+    int ldb = N;
+    int ldc = K;
+    constexpr int M_WARPS = THREADBLOCK_TILE_M / WARP_TILE_M;
+    constexpr int N_WARPS = THREADBLOCK_TILE_N / WARP_TILE_N;
+
+    constexpr int N_THREADS = WARP_TILE_N / THREAD_TILE_N;
+    constexpr int M_THREADS = WARP_TILE_M / THREAD_TILE_M;
+
+    static_assert(THREAD_TILE_N < 4 || WARP_TILE_N % 4 == 0 || N_WARPS == 1, "Threadtile smaller 4 or Warptile mod 4 for vector access");
+    static_assert(THREAD_TILE_M < 4 || WARP_TILE_M % 4 == 0 || M_WARPS == 1, "Threadtile smaller 4 or Warptile mod 4 for vector access");
+    static_assert(THREAD_TILE_N < 2 || WARP_TILE_N % 2 == 0 || N_WARPS == 1, "Threadtile smaller 2 or Warptile mod 2 for vector access");
+    static_assert(THREAD_TILE_M < 2 || WARP_TILE_M % 2 == 0 || M_WARPS == 1, "Threadtile smaller 2 or Warptile mod 2 for vector access");
+    static_assert(WARP_TILE_N % THREAD_TILE_N == 0, "Threadtile needs to divde warptile");
+    static_assert(WARP_TILE_M % THREAD_TILE_M == 0, "Threadtile needs to divde warptile");
+    static_assert(THREADBLOCK_TILE_M % WARP_TILE_M == 0, "Warptilde needs to divide Threadblocktile");
+    static_assert(THREADBLOCK_TILE_N % WARP_TILE_N == 0, "Warptilde needs to divide Threadblocktile");
+    static_assert(N_THREADS * M_THREADS == 32, "Warp has 32 Threads");
+
+    const int WarpId = threadIdx.x / 32;
+    const int threadId = threadIdx.x % 32;
+
+    const int WarpIdx = WarpId % N_WARPS;
+    const int WarpIdy = WarpId / N_WARPS;
+
+    int LaneIdx;
+    int LaneIdy;
+
+    if (N_THREADS == 1) {
+
+        LaneIdx = 0;
+        LaneIdy = threadId;
+
+    } else if (N_THREADS == 2) {
+
+        LaneIdx = (((threadId & 0x60) >> 4) | (threadId & 1));
+        LaneIdy = ((threadId >> 1) & (M_THREADS - 1));
+
+    } else if (N_THREADS == 4) {
+
+        LaneIdx = (((threadId & 0x30) >> 3) | (threadId & 1));
+        LaneIdy = ((threadId >> 1) & (M_THREADS - 1));
+
+    } else if (N_THREADS == 8) {
+
+        LaneIdx = (((threadId & 0x18) >> 2) | (threadId & 1));
+        LaneIdy = ((threadId >> 1) & (M_THREADS - 1));
+
+    } else if (N_THREADS == 16) {
+
+        LaneIdx = (((threadId & 0x1c) >> 1) | (threadId & 1));
+        LaneIdy = ((threadId >> 1) & (M_THREADS - 1));
+
+    } else if (N_THREADS == 32) {
+
+        LaneIdx = threadId;
+        LaneIdy = 0;
+    }
+
+    constexpr int A_SHARED_SIZE = (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K;
+    constexpr int A_SHARED_BUFFER = 2 * A_SHARED_SIZE;
+
+    constexpr int B_SHARED_SIZE = LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET);
+    constexpr int B_SHARED_BUFFER = 2 * B_SHARED_SIZE;
+
+    __shared__ TYPE A_Shared[A_SHARED_BUFFER];
+
+    __shared__ TYPE B_Shared[B_SHARED_BUFFER];
+
+    int B_Shared_Offset_0 = 0;
+    int B_Shared_Offset_1 = B_SHARED_SIZE;
+
+    int A_Shared_Offset_0 = 0;
+    int A_Shared_Offset_1 = A_SHARED_SIZE;
+
+    int block_idx_x;
+    int block_idx_y;
+
+    if (SWIZZLE != 1) {
+
+        block_idx_x = blockIdx.x / SWIZZLE;
+        block_idx_y = (blockIdx.y * SWIZZLE) + (blockIdx.x % SWIZZLE);
+
+        constexpr int TILE_SHAPE_M = (M + THREADBLOCK_TILE_M - 1)
+                / THREADBLOCK_TILE_M;
+
+        if (TILE_SHAPE_M % SWIZZLE != 0 && block_idx_y >= TILE_SHAPE_M) {
+            return;
+        }
+
+    } else {
+
+        block_idx_x = blockIdx.x;
+        block_idx_y = blockIdx.y;
+
+    }
+
+    register TYPE Thread_Tile[THREAD_TILE_M * THREAD_TILE_N];
+
+#pragma unroll
+    for (int i = 0; i < THREAD_TILE_M; ++i) {
+#pragma unroll
+        for (int j = 0; j < THREAD_TILE_N; ++j) {
+
+            Thread_Tile[i * THREAD_TILE_N + j] = 0.0;
+
+        }
+    }
+
+    register TYPE A_register_0[THREAD_TILE_M];
+    register TYPE A_register_1[THREAD_TILE_M];
+
+    register TYPE B_register_0[THREAD_TILE_N];
+    register TYPE B_register_1[THREAD_TILE_N];
+
+    constexpr int K_START = (((THREADBLOCK_TILE_K + LOAD_K - 1) / LOAD_K) - 1)
+            * LOAD_K;
+    int cta_k = K_START;
+
+    int shared_memory_stage = 1;
+
+    constexpr bool A_VECTOR_4 = (LOAD_K % 4 == 0)
+            && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 4 == 0);
+    constexpr bool A_VECTOR_2 = (LOAD_K % 2 == 0)
+            && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 2 == 0);
+
+    constexpr bool B_VECTOR_4 = THREADBLOCK_TILE_N % 4 == 0
+            && ((N % THREADBLOCK_TILE_N) % 4 == 0);
+    constexpr bool B_VECTOR_2 = THREADBLOCK_TILE_N % 2 == 0
+            && ((N % THREADBLOCK_TILE_N) % 2 == 0);
+
+    constexpr bool A_VECTOR_4_LAST = A_VECTOR_4
+            && (THREADBLOCK_TILE_K % LOAD_K) % 4 == 0
+            && (SPLIT_K == 1 || ( K % THREADBLOCK_TILE_K) % 4 == 0);
+    constexpr bool A_VECTOR_2_LAST = A_VECTOR_2
+            && (THREADBLOCK_TILE_K % LOAD_K) % 2 == 0
+            && (SPLIT_K == 1 || ( K % THREADBLOCK_TILE_K) % 2 == 0);
+
+    constexpr bool K_CHECK = (K % THREADBLOCK_TILE_K != 0 && SPLIT_K > 1);
+    constexpr bool THREADBLOCK_TILE_K_CHECK = THREADBLOCK_TILE_K % LOAD_K != 0;
+
+    load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2,
+            K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, &B_Shared, A, B, lda,
+            ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_0,
+            B_Shared_Offset_0);
+
+    __syncthreads();
+
+    cta_k -= LOAD_K;
+
+#pragma unroll 1
+    for (; cta_k >= 0; cta_k -= LOAD_K) {
+
+#pragma unroll
+        for (int k = 0; k < LOAD_K; k++) {
+
+            if (k % 2 == 0) {
+                load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0,
+                        k, WarpIdx, WarpIdy, LaneIdx, LaneIdy,
+                        A_Shared_Offset_0, B_Shared_Offset_0);
+
+            } else {
+
+                load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1,
+                        k, WarpIdx, WarpIdy, LaneIdx, LaneIdy,
+                        A_Shared_Offset_0, B_Shared_Offset_0);
+
+            }
+
+            if (k == LOAD_K - 1) {
+                load_Global<A_VECTOR_4, A_VECTOR_2, B_VECTOR_4, B_VECTOR_2,
+                        (THREADBLOCK_TILE_K * SPLIT_K - K > LOAD_K), false>(
+                        &A_Shared, &B_Shared, A, B, lda, ldb, cta_k,
+                        block_idx_x, block_idx_y, A_Shared_Offset_1,
+                        B_Shared_Offset_1);
+
+                __syncthreads();
+
+            }
+
+            if (k % 2 == 0) {
+
+                compute_inner(&A_register_0, &B_register_0, &Thread_Tile);
+
+            } else {
+
+                compute_inner(&A_register_1, &B_register_1, &Thread_Tile);
+
+            }
+
+        }
+
+        if (shared_memory_stage == 1) {
+            B_Shared_Offset_0 = B_SHARED_SIZE;
+            B_Shared_Offset_1 = 0;
+
+            A_Shared_Offset_0 = A_SHARED_SIZE;
+            A_Shared_Offset_1 = 0;
+
+        } else {
+            B_Shared_Offset_0 = 0;
+            B_Shared_Offset_1 = B_SHARED_SIZE;
+
+            A_Shared_Offset_0 = 0;
+            A_Shared_Offset_1 = A_SHARED_SIZE;
+
+        }
+
+        shared_memory_stage ^= 1;
+
+    }
+
+#pragma unroll
+    for (int k = 0; k < LOAD_K; k++) {
+
+        if (k % 2 == 0) {
+            load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k,
+                    WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0,
+                    B_Shared_Offset_0);
+
+        } else {
+
+            load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k,
+                    WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0,
+                    B_Shared_Offset_0);
+
+        }
+
+        if (k % 2 == 0) {
+
+            compute_inner(&A_register_0, &B_register_0, &Thread_Tile);
+
+        } else {
+
+            compute_inner(&A_register_1, &B_register_1, &Thread_Tile);
+
+        }
+
+    }
+
+    __shared__ TYPE C_Shared[M_WARPS * N_WARPS * 192];
+
+    load_C(Thread_Tile, C, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x,
+            block_idx_y, &C_Shared);
+
+    store_C(Thread_Tile, C, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy,
+            block_idx_x, block_idx_y, &C_Shared);
+    // end of trying cucosma code
+
+    /*
     constexpr long long VECLEN = 4;
     constexpr float alpha = 1;
     constexpr float beta = 0;
@@ -4529,6 +4685,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         }
 
     }
+    */
     
 }
 
@@ -4667,10 +4824,8 @@ void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __r
 {
     void  *Thread_block_grid_1_1_3_args[] = { (void *)&input_A, (void *)&input_B, (void *)&output, (void *)&K, (void *)&M, (void *)&N };
     cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
-    // cudaLaunchKernel((void*)cosmaSgemm_kernel, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
-    // cosmaSgemm_kernel<<<dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1)>>>((void *)&input_A, K, (void *)&input_B, N, (void *)&output, N);
-    // cosmaSgemm_kernel<<<dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1)>>>((const float *)input_A, K, (const float *)input_B, N, (float *)output, N);
 
+    // Warmup
     for (int i = 0; i < 10; ++i) {
         cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
 		std::cout << "." << std::flush; // Use dots to measure progress
