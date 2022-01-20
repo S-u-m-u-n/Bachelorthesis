@@ -4471,11 +4471,9 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                     B_Shared_Offset_0);
 
         } else {
-
             load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k,
                     WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0,
                     B_Shared_Offset_0);
-
         }
 
         if (k % 2 == 0) {
@@ -4785,8 +4783,11 @@ DACE_EXPORTED void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, con
 void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __restrict__ input_A, const float * __restrict__ input_B, float * __restrict__ output, int K, int M, int N)
 {
     void  *Thread_block_grid_1_1_3_args[] = { (void *)&input_A, (void *)&input_B, (void *)&output, (void *)&K, (void *)&M, (void *)&N };
+
+    // can use this line as a correctness check
     cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
 
+    /*
     // Warmup
     for (int i = 0; i < 10; ++i) {
         cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
@@ -4800,14 +4801,9 @@ void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __r
     // The actual benchmarking
 	for (int i = 0; i < 100; ++i) {
         cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
-		//checkCudaErrors(cudaGetLastError());
-		//checkCudaErrors(cudaDeviceSynchronize());
-		// flushCache();
-		//std::cout << "." << std::flush; // Use dots to measure progress
-		//checkCudaErrors(cudaGetLastError());
-		//checkCudaErrors(cudaDeviceSynchronize());
 	}
 	cudaProfilerStop();
 	std::cout << "\n";
+    */
 }
 
