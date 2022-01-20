@@ -30,15 +30,8 @@
  *    Thanks to Linh Hah for additions and fixes.
  */
 
- #ifndef HELPER_MATH_H
- #define HELPER_MATH_H
-  
  typedef unsigned int uint;
  typedef unsigned short ushort;
- 
- #ifndef EXIT_WAIVED
- #define EXIT_WAIVED 2
- #endif
  
  #ifndef __CUDACC__
  #include <math.h>
@@ -1456,12 +1449,7 @@
  {
      float4 y = clamp((x - a) / (b - a), 0.0f, 1.0f);
      return (y*y*(make_float4(3.0f) - (make_float4(2.0f)*y)));
- }
- 
- #endif
- 
-
-
+ } 
 
 
 /* ---------------------------------------------------------------------
@@ -1481,8 +1469,6 @@
  
  // Best on V100 with nvcc 11.0
  
- #ifndef CONFIG_H_
- #define CONFIG_H_
  #define TYPE float
  #define VECTORTYPE2 float2
  #define VECTORTYPE4 float4
@@ -1505,7 +1491,6 @@
  #define ADDITIONAL_OCCUPANCY_SM 2
  #define ALPHA 1
  #define BETA 0
- #endif
 
  constexpr int M = 4096;
  constexpr int N = 4096;
@@ -1515,9 +1500,6 @@
  
  // Defines how many threads are launched, used multiple times in the code
  #define THREADS ((THREADBLOCK_TILE_M / WARP_TILE_M) * (THREADBLOCK_TILE_N / WARP_TILE_N) * 32)
- 
- #ifndef CUCOSMAV1_CUH_
- #define CUCOSMAV1_CUH_
  
  /**
   * Loads the current tile of A from global memory into shared memory using only normal (not vectorized) loads.
