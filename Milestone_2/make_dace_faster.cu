@@ -4395,7 +4395,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
             && (THREADBLOCK_TILE_K % LOAD_K) % 2 == 0
             && (SPLIT_K == 1 || ( K % THREADBLOCK_TILE_K) % 2 == 0);
 
-    constexpr bool K_CHECK = (K % THREADBLOCK_TILE_K != 0 && SPLIT_K > 1);
+    constexpr bool K_CHECK = (K_ % THREADBLOCK_TILE_K != 0 && SPLIT_K > 1);
     constexpr bool THREADBLOCK_TILE_K_CHECK = THREADBLOCK_TILE_K % LOAD_K != 0;
 
     load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2,
@@ -4427,8 +4427,8 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
             if (k == LOAD_K - 1) {
                 load_Global<A_VECTOR_4, A_VECTOR_2, B_VECTOR_4, B_VECTOR_2,
-                        (THREADBLOCK_TILE_K * SPLIT_K - K > LOAD_K), false>(
-                        &A_Shared, &B_Shared, A, B, lda, ldb, cta_k,
+                        (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(
+                        &A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k,
                         block_idx_x, block_idx_y, A_Shared_Offset_1,
                         B_Shared_Offset_1);
 
