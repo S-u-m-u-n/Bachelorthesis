@@ -4258,6 +4258,10 @@ constexpr long long size_thread_tile_n = 8;
 // constexpr long long SPLIT_K = 1;
 constexpr long long num_threads_per_threadblock = 256;
 
+constexpr int M_ = 4096;
+constexpr int N_ = 4096;
+constexpr int K_ = 4096;
+
 struct gemm_t {
     dace::cuda::Context *gpu_context;
 };
@@ -4318,11 +4322,11 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         LaneIdy = 0;
     }
 
-    int A_SHARED_SIZE = (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K;
-    int A_SHARED_BUFFER = 2 * A_SHARED_SIZE;
+    constexpr int A_SHARED_SIZE = (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K;
+    constexpr int A_SHARED_BUFFER = 2 * A_SHARED_SIZE;
 
-    int B_SHARED_SIZE = LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET);
-    int B_SHARED_BUFFER = 2 * B_SHARED_SIZE;
+    constexpr int B_SHARED_SIZE = LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET);
+    constexpr int B_SHARED_BUFFER = 2 * B_SHARED_SIZE;
 
     __shared__ TYPE A_Shared[A_SHARED_BUFFER];
 
@@ -4342,17 +4346,15 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         block_idx_x = blockIdx.x / SWIZZLE;
         block_idx_y = (blockIdx.y * SWIZZLE) + (blockIdx.x % SWIZZLE);
 
-        int TILE_SHAPE_M = (M + THREADBLOCK_TILE_M - 1) / THREADBLOCK_TILE_M;
+        constexpr int TILE_SHAPE_M = (M_ + THREADBLOCK_TILE_M - 1) / THREADBLOCK_TILE_M;
 
         if (TILE_SHAPE_M % SWIZZLE != 0 && block_idx_y >= TILE_SHAPE_M) {
             return;
         }
 
     } else {
-
         block_idx_x = blockIdx.x;
         block_idx_y = blockIdx.y;
-
     }
 
     register TYPE Thread_Tile[THREAD_TILE_M * THREAD_TILE_N];
@@ -4361,9 +4363,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     for (int i = 0; i < THREAD_TILE_M; ++i) {
 #pragma unroll
         for (int j = 0; j < THREAD_TILE_N; ++j) {
-
             Thread_Tile[i * THREAD_TILE_N + j] = 0.0;
-
         }
     }
 
@@ -4373,30 +4373,30 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     register TYPE B_register_0[THREAD_TILE_N];
     register TYPE B_register_1[THREAD_TILE_N];
 
-    int K_START = (((THREADBLOCK_TILE_K + LOAD_K - 1) / LOAD_K) - 1) * LOAD_K;
+    constexpr int K_START = (((THREADBLOCK_TILE_K + LOAD_K - 1) / LOAD_K) - 1) * LOAD_K;
     int cta_k = K_START;
 
     int shared_memory_stage = 1;
 
-    bool A_VECTOR_4 = (LOAD_K % 4 == 0)
+    constexpr bool A_VECTOR_4 = (LOAD_K % 4 == 0)
             && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 4 == 0);
-    bool A_VECTOR_2 = (LOAD_K % 2 == 0)
+    constexpr bool A_VECTOR_2 = (LOAD_K % 2 == 0)
             && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 2 == 0);
 
-    bool B_VECTOR_4 = THREADBLOCK_TILE_N % 4 == 0
-            && ((N % THREADBLOCK_TILE_N) % 4 == 0);
-    bool B_VECTOR_2 = THREADBLOCK_TILE_N % 2 == 0
-            && ((N % THREADBLOCK_TILE_N) % 2 == 0);
+    constexpr bool B_VECTOR_4 = THREADBLOCK_TILE_N % 4 == 0
+            && ((N_ % THREADBLOCK_TILE_N) % 4 == 0);
+    constexpr bool B_VECTOR_2 = THREADBLOCK_TILE_N % 2 == 0
+            && ((N_ % THREADBLOCK_TILE_N) % 2 == 0);
 
-    bool A_VECTOR_4_LAST = A_VECTOR_4
+    constexpr bool A_VECTOR_4_LAST = A_VECTOR_4
             && (THREADBLOCK_TILE_K % LOAD_K) % 4 == 0
             && (SPLIT_K == 1 || ( K % THREADBLOCK_TILE_K) % 4 == 0);
-    bool A_VECTOR_2_LAST = A_VECTOR_2
+    constexpr bool A_VECTOR_2_LAST = A_VECTOR_2
             && (THREADBLOCK_TILE_K % LOAD_K) % 2 == 0
             && (SPLIT_K == 1 || ( K % THREADBLOCK_TILE_K) % 2 == 0);
 
-    bool K_CHECK = (K % THREADBLOCK_TILE_K != 0 && SPLIT_K > 1);
-    bool THREADBLOCK_TILE_K_CHECK = THREADBLOCK_TILE_K % LOAD_K != 0;
+    constexpr bool K_CHECK = (K % THREADBLOCK_TILE_K != 0 && SPLIT_K > 1);
+    constexpr bool THREADBLOCK_TILE_K_CHECK = THREADBLOCK_TILE_K % LOAD_K != 0;
 
     load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2,
             K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, &B_Shared, input_A, input_B, lda,
@@ -4419,7 +4419,6 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                         A_Shared_Offset_0, B_Shared_Offset_0);
 
             } else {
-
                 load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1,
                         k, WarpIdx, WarpIdy, LaneIdx, LaneIdy,
                         A_Shared_Offset_0, B_Shared_Offset_0);
@@ -4438,13 +4437,9 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
             }
 
             if (k % 2 == 0) {
-
                 compute_inner(&A_register_0, &B_register_0, &Thread_Tile);
-
             } else {
-
                 compute_inner(&A_register_1, &B_register_1, &Thread_Tile);
-
             }
 
         }
@@ -4464,9 +4459,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
             A_Shared_Offset_1 = A_SHARED_SIZE;
 
         }
-
         shared_memory_stage ^= 1;
-
     }
 
 #pragma unroll
