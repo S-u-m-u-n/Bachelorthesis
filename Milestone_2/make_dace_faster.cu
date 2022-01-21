@@ -3009,7 +3009,7 @@ __device__ __inline__ void store_C_Vector(const TYPE * __restrict__ Thread_Tile,
         const int Threadtile_i = M_times * 4 + ADDITIONAL_OFFSET_REGISTER;
 
         if (M % THREADBLOCK_TILE_M == 0 || global_i < M) {
-            store_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i,);
+            store_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i);
         }
     }
 }
