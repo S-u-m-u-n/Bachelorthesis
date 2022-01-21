@@ -3023,8 +3023,8 @@ TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy,
 __device__ __inline__ void store_C_Vector(const TYPE * __restrict__ Thread_Tile, TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy, const int LaneIdx, const int LaneIdy, const int block_idx_x, const int block_idx_y) {
     constexpr int M_THREADS = WARP_TILE_M / THREAD_TILE_M;
 
-    const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
-    // const int global_i_upleft = WarpIdy * WARP_TILE_M;
+    // const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
+    const int global_i_upleft = WarpIdy * WARP_TILE_M;
 
     constexpr int M_times = THREAD_TILE_M / 4;
 
@@ -3603,8 +3603,8 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
             // nested_nested_state_1_1_5(&input_A[0],
                                     &input_B[(size_thread_block_tile_n * thread_block_j)],
                                     // &input_B[0],
-                                    // &output[(((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1))))],
-                                    &output[0],
+                                    &output[(((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1))))],
+                                    // &output[0],
                                     K, M, N);
         }
     }
@@ -3617,9 +3617,9 @@ void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __r
     void  *Thread_block_grid_1_1_3_args[] = { (void *)&input_A, (void *)&input_B, (void *)&output, (void *)&K, (void *)&M, (void *)&N };
 
     // can use this line as a correctness check
-    // cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
+    cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
 
-    // /*
+    /*
     // Warmup
     for (int i = 0; i < 10; ++i) {
         cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
@@ -3635,5 +3635,5 @@ void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __r
 	}
 	cudaProfilerStop();
 	std::cout << "\n";
-    // */
+    */
 }
