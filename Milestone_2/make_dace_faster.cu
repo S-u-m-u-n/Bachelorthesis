@@ -3170,39 +3170,39 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         LaneIdy = 0;
     }
 
-//     constexpr int A_SHARED_SIZE = (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K;
-//     constexpr int A_SHARED_BUFFER = 2 * A_SHARED_SIZE;
+    constexpr int A_SHARED_SIZE = (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K;
+    constexpr int A_SHARED_BUFFER = 2 * A_SHARED_SIZE;
 
-//     constexpr int B_SHARED_SIZE = LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET);
-//     constexpr int B_SHARED_BUFFER = 2 * B_SHARED_SIZE;
+    constexpr int B_SHARED_SIZE = LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET);
+    constexpr int B_SHARED_BUFFER = 2 * B_SHARED_SIZE;
 
 //     __shared__ TYPE A_Shared[A_SHARED_BUFFER];
 
 //     __shared__ TYPE B_Shared[B_SHARED_BUFFER];
 
-//     int B_Shared_Offset_0 = 0;
-//     int B_Shared_Offset_1 = B_SHARED_SIZE;
+    // int B_Shared_Offset_0 = 0;
+    // int B_Shared_Offset_1 = B_SHARED_SIZE;
 
 //     int A_Shared_Offset_0 = 0;
 //     int A_Shared_Offset_1 = A_SHARED_SIZE;
 
-//     int block_idx_x;
-//     int block_idx_y;
+    int block_idx_x;
+    int block_idx_y;
 
-//     if (SWIZZLE != 1) {
-//         block_idx_x = blockIdx.x / SWIZZLE;
-//         block_idx_y = (blockIdx.y * SWIZZLE) + (blockIdx.x % SWIZZLE);
+    if (SWIZZLE != 1) {
+        block_idx_x = blockIdx.x / SWIZZLE;
+        block_idx_y = (blockIdx.y * SWIZZLE) + (blockIdx.x % SWIZZLE);
 
-//         constexpr int TILE_SHAPE_M = (M_ + THREADBLOCK_TILE_M - 1) / THREADBLOCK_TILE_M;
+        constexpr int TILE_SHAPE_M = (M_ + THREADBLOCK_TILE_M - 1) / THREADBLOCK_TILE_M;
 
-//         if (TILE_SHAPE_M % SWIZZLE != 0 && block_idx_y >= TILE_SHAPE_M) {
-//             return;
-//         }
+        if (TILE_SHAPE_M % SWIZZLE != 0 && block_idx_y >= TILE_SHAPE_M) {
+            return;
+        }
 
-//     } else {
-//         block_idx_x = blockIdx.x;
-//         block_idx_y = blockIdx.y;
-//     }
+    } else {
+        block_idx_x = blockIdx.x;
+        block_idx_y = blockIdx.y;
+    }
 
 //     register TYPE Thread_Tile[THREAD_TILE_M * THREAD_TILE_N];
 
@@ -3220,22 +3220,22 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 //     register TYPE B_register_0[THREAD_TILE_N];
 //     register TYPE B_register_1[THREAD_TILE_N];
 
-//     constexpr int K_START = (((THREADBLOCK_TILE_K + LOAD_K - 1) / LOAD_K) - 1) * LOAD_K;
-//     int cta_k = K_START;
+    constexpr int K_START = (((THREADBLOCK_TILE_K + LOAD_K - 1) / LOAD_K) - 1) * LOAD_K;
+    int cta_k = K_START;
 
 //     int shared_memory_stage = 1;
 
-//     constexpr bool A_VECTOR_4 = (LOAD_K % 4 == 0) && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 4 == 0);
-//     constexpr bool A_VECTOR_2 = (LOAD_K % 2 == 0) && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 2 == 0);
+    constexpr bool A_VECTOR_4 = (LOAD_K % 4 == 0) && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 4 == 0);
+    constexpr bool A_VECTOR_2 = (LOAD_K % 2 == 0) && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 2 == 0);
 
-//     constexpr bool B_VECTOR_4 = THREADBLOCK_TILE_N % 4 == 0 && ((N_ % THREADBLOCK_TILE_N) % 4 == 0);
-//     constexpr bool B_VECTOR_2 = THREADBLOCK_TILE_N % 2 == 0 && ((N_ % THREADBLOCK_TILE_N) % 2 == 0);
+    constexpr bool B_VECTOR_4 = THREADBLOCK_TILE_N % 4 == 0 && ((N_ % THREADBLOCK_TILE_N) % 4 == 0);
+    constexpr bool B_VECTOR_2 = THREADBLOCK_TILE_N % 2 == 0 && ((N_ % THREADBLOCK_TILE_N) % 2 == 0);
 
-//     constexpr bool A_VECTOR_4_LAST = A_VECTOR_4 && (THREADBLOCK_TILE_K % LOAD_K) % 4 == 0 && (SPLIT_K == 1 || ( K % THREADBLOCK_TILE_K) % 4 == 0);
-//     constexpr bool A_VECTOR_2_LAST = A_VECTOR_2 && (THREADBLOCK_TILE_K % LOAD_K) % 2 == 0 && (SPLIT_K == 1 || ( K % THREADBLOCK_TILE_K) % 2 == 0);
+    constexpr bool A_VECTOR_4_LAST = A_VECTOR_4 && (THREADBLOCK_TILE_K % LOAD_K) % 4 == 0 && (SPLIT_K == 1 || ( K % THREADBLOCK_TILE_K) % 4 == 0);
+    constexpr bool A_VECTOR_2_LAST = A_VECTOR_2 && (THREADBLOCK_TILE_K % LOAD_K) % 2 == 0 && (SPLIT_K == 1 || ( K % THREADBLOCK_TILE_K) % 2 == 0);
 
-//     constexpr bool K_CHECK = (K_ % THREADBLOCK_TILE_K != 0 && SPLIT_K > 1);
-//     constexpr bool THREADBLOCK_TILE_K_CHECK = THREADBLOCK_TILE_K % LOAD_K != 0;
+    constexpr bool K_CHECK = (K_ % THREADBLOCK_TILE_K != 0 && SPLIT_K > 1);
+    constexpr bool THREADBLOCK_TILE_K_CHECK = THREADBLOCK_TILE_K % LOAD_K != 0;
 
 //     load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_0, B_Shared_Offset_0);
 
