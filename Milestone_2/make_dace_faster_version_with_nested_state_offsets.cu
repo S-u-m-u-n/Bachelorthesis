@@ -1437,11 +1437,9 @@ constexpr int K = 4096;
 * @param A 			Global A, row major
 * @param lda 			lda of A
 * @param cta_k 		Start k-index of current tile
-* @param block_idx_y 	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 */
 template<bool K_CHECK, bool THREADBLOCK_TILE_K_CHECK>
-__device__ __inline__ void load_A_Global_Single(TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K], const TYPE* __restrict__ A, const int lda, const int cta_k, const int block_idx_y, const int A_Shared_Offset) {
-
+__device__ __inline__ void load_A_Global_Single(TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K], const TYPE* __restrict__ A, const int lda, const int cta_k, const int A_Shared_Offset) {
     constexpr int TIMES = (THREADBLOCK_TILE_M * LOAD_K + THREADS - 1) / THREADS;
 
 #pragma unroll
@@ -1449,7 +1447,8 @@ __device__ __inline__ void load_A_Global_Single(TYPE (* __restrict__ A_Shared)[2
         const int shared_j = (i * THREADS + threadIdx.x) % LOAD_K;
         const int shared_i = (i * THREADS + threadIdx.x) / LOAD_K;
 
-        const int global_i = block_idx_y * THREADBLOCK_TILE_M + shared_i;
+        // const int global_i = block_idx_y * THREADBLOCK_TILE_M + shared_i;
+        const int global_i = shared_i;
 
         int global_j;
 
@@ -1486,10 +1485,9 @@ __device__ __inline__ void load_A_Global_Single(TYPE (* __restrict__ A_Shared)[2
 * @param A 			Global A, row major
 * @param lda 			Leading dimension of A
 * @param cta_k 		Start k-index of current tile
-* @param block_idx_y 	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 */
 template<bool K_CHECK, bool THREADBLOCK_TILE_K_CHECK>
-__device__ __inline__ void load_A_Global_Vector4(TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K], const TYPE* __restrict__ A, const int lda, const int cta_k, const int block_idx_y, const int A_Shared_Offset) {
+__device__ __inline__ void load_A_Global_Vector4(TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K], const TYPE* __restrict__ A, const int lda, const int cta_k, const int A_Shared_Offset) {
     constexpr int VECTORCOUNT = 4;
     constexpr int LOAD_K_VECTOR = LOAD_K / 4;
 
@@ -1500,7 +1498,8 @@ __device__ __inline__ void load_A_Global_Vector4(TYPE (* __restrict__ A_Shared)[
         const int shared_j = (i * THREADS + threadIdx.x) % LOAD_K_VECTOR;
         const int shared_i = (i * THREADS + threadIdx.x) / LOAD_K_VECTOR;
 
-        const auto global_i = block_idx_y * THREADBLOCK_TILE_M + shared_i;
+        // const auto global_i = block_idx_y * THREADBLOCK_TILE_M + shared_i;
+        const auto global_i = shared_i;
 
         int global_j;
 
@@ -1549,14 +1548,9 @@ __device__ __inline__ void load_A_Global_Vector4(TYPE (* __restrict__ A_Shared)[
 * @param A 			Global A, row major
 * @param lda 			Leading dimension of A
 * @param cta_k 		Start k-index of current tile
-* @param block_idx_y 	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 */
 template<bool K_CHECK, bool THREADBLOCK_TILE_K_CHECK>
-__device__ __inline__ void load_A_Global_Vector2(
-TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K],
-        const TYPE* __restrict__ A, const int lda, const int cta_k,
-        const int block_idx_y, const int A_Shared_Offset) {
-
+__device__ __inline__ void load_A_Global_Vector2(TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K], const TYPE* __restrict__ A, const int lda, const int cta_k, const int A_Shared_Offset) {
     constexpr int VECTORCOUNT = 2;
     constexpr int LOAD_K_VECTOR = LOAD_K / 2;
 
@@ -1567,7 +1561,8 @@ TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K],
         const int shared_j = (i * THREADS + threadIdx.x) % LOAD_K_VECTOR;
         const int shared_i = (i * THREADS + threadIdx.x) / LOAD_K_VECTOR;
 
-        const auto global_i = block_idx_y * THREADBLOCK_TILE_M + shared_i;
+        // const auto global_i = block_idx_y * THREADBLOCK_TILE_M + shared_i;
+        const auto global_i = shared_i;
 
         int global_j;
 
@@ -1612,10 +1607,10 @@ TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K],
 * @param B				Global B, row major
 * @param ldb			Leading dimension of B
 * @param cta_k			Start k-index of current tile
-* @param block_idx_x	The blockId in the x dimension of the current block, it has not to be equal to blockIdx.x because we can manually remap it
 */
 template<bool K_CHECK, bool THREADBLOCK_TILE_K_CHECK>
-__device__ __inline__ void load_B_Global_Vector4(TYPE (* __restrict__ B_Shared)[2 * LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET)], const TYPE* __restrict__ B, const int ldb, const int cta_k, const int block_idx_x, const int B_Shared_Offset) {
+__device__ __inline__ void load_B_Global_Vector4(TYPE (* __restrict__ B_Shared)[2 * LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET)], const TYPE* __restrict__ B, const int ldb, const int cta_k, const int B_Shared_Offset) {
+
     constexpr int VECTORCOUNT = 4;
     constexpr int THREADBLOCK_TILE_N_VECTOR = THREADBLOCK_TILE_N / VECTORCOUNT;
     constexpr int TIMES = (THREADBLOCK_TILE_N_VECTOR * LOAD_K + THREADS - 1) / THREADS;
@@ -1633,8 +1628,8 @@ __device__ __inline__ void load_B_Global_Vector4(TYPE (* __restrict__ B_Shared)[
             global_i = blockIdx.z * THREADBLOCK_TILE_K + cta_k + shared_i;
         }
 
-        const auto global_j = block_idx_x * THREADBLOCK_TILE_N + shared_j * VECTORCOUNT;
-        // const auto global_j = shared_j * VECTORCOUNT;
+        // const auto global_j = block_idx_x * THREADBLOCK_TILE_N + shared_j * VECTORCOUNT;
+        const auto global_j = shared_j * VECTORCOUNT;
 
         // If the threads do not evenly divide the whole tile, we need to make this check.
         if ((THREADBLOCK_TILE_N_VECTOR * LOAD_K % THREADS == 0 || (i * THREADS + threadIdx.x) < THREADBLOCK_TILE_N_VECTOR * LOAD_K)) {
@@ -1661,7 +1656,6 @@ __device__ __inline__ void load_B_Global_Vector4(TYPE (* __restrict__ B_Shared)[
 * Loads the current tile of B from global memory into shared memory using only float2 loads.
 * Assigns the threads in a row major way.
 *
-*
 * @param K_CHECK 						Defines whether or not we need to check if we read out of bounds (< K)
 * @param THREADBLOCK_TILE_K_CHECK		Defines whether or not we need to check if we read out of bounds (< THREADBLOCK_TILE_K)
 *
@@ -1671,10 +1665,9 @@ __device__ __inline__ void load_B_Global_Vector4(TYPE (* __restrict__ B_Shared)[
 * @param B				Global B, row major
 * @param ldb			Leading dimension of B
 * @param cta_k			Start k-index of current tile
-* @param block_idx_x	The blockId in the x dimension of the current block, it has not to be equal to blockIdx.x because we can manually remap it
 */
 template<bool K_CHECK, bool THREADBLOCK_TILE_K_CHECK>
-__device__ __inline__ void load_B_Global_Vector2(TYPE (* __restrict__ B_Shared)[2 * LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET)], const TYPE* __restrict__ B, const int ldb, const int cta_k, const int block_idx_x, const int B_Shared_Offset) {
+__device__ __inline__ void load_B_Global_Vector2(TYPE (* __restrict__ B_Shared)[2 * LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET)], const TYPE* __restrict__ B, const int ldb, const int cta_k, const int B_Shared_Offset) {
     constexpr int VECTORCOUNT = 2;
     constexpr int THREADBLOCK_TILE_N_VECTOR = THREADBLOCK_TILE_N / VECTORCOUNT;
     constexpr int TIMES = (THREADBLOCK_TILE_N_VECTOR * LOAD_K + THREADS - 1) / THREADS;
@@ -1692,7 +1685,8 @@ __device__ __inline__ void load_B_Global_Vector2(TYPE (* __restrict__ B_Shared)[
             global_i = blockIdx.z * THREADBLOCK_TILE_K + cta_k + shared_i;
         }
 
-        const auto global_j = block_idx_x * THREADBLOCK_TILE_N + shared_j * VECTORCOUNT;
+        // const auto global_j = block_idx_x * THREADBLOCK_TILE_N + shared_j * VECTORCOUNT;
+        const auto global_j = shared_j * VECTORCOUNT;
 
         // If the threads do not evenly divide the whole tile, we need to make this check.
         if ((THREADBLOCK_TILE_N_VECTOR * LOAD_K % THREADS == 0 || (i * THREADS + threadIdx.x) < THREADBLOCK_TILE_N_VECTOR * LOAD_K)) {
@@ -1727,10 +1721,9 @@ __device__ __inline__ void load_B_Global_Vector2(TYPE (* __restrict__ B_Shared)[
 * @param B				Global B, row major
 * @param ldb			Leading dimension of B
 * @param cta_k			Start k-index of current tile
-* @param block_idx_x	The blockId in the x dimension of the current block, it has not to be equal to blockIdx.x because we can manually remap it
 */
 template<bool K_CHECK, bool THREADBLOCK_TILE_K_CHECK>
-__device__ __inline__ void load_B_Global_Single(TYPE (* __restrict__ B_Shared)[2 * LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET)], const TYPE* __restrict__ B, const int ldb, const int cta_k, const int block_idx_x, const int B_Shared_Offset) {
+__device__ __inline__ void load_B_Global_Single(TYPE (* __restrict__ B_Shared)[2 * LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET)], const TYPE* __restrict__ B, const int ldb, const int cta_k, const int B_Shared_Offset) {
     constexpr int TIMES = (THREADBLOCK_TILE_N * LOAD_K + THREADS - 1) / THREADS;
 
 #pragma unroll
@@ -1746,7 +1739,8 @@ __device__ __inline__ void load_B_Global_Single(TYPE (* __restrict__ B_Shared)[2
             global_i = blockIdx.z * THREADBLOCK_TILE_K + cta_k + shared_i;
         }
 
-        const auto global_j = block_idx_x * THREADBLOCK_TILE_N + shared_j;
+        // const auto global_j = block_idx_x * THREADBLOCK_TILE_N + shared_j;
+        const auto global_j = shared_j;
 
         // If the threads do not evenly divide the whole tile, we need to make this check.
         if ((THREADBLOCK_TILE_N * LOAD_K % THREADS == 0 || (i * THREADS + threadIdx.x) < THREADBLOCK_TILE_N * LOAD_K)) {
@@ -1778,22 +1772,21 @@ __device__ __inline__ void load_B_Global_Single(TYPE (* __restrict__ B_Shared)[2
 * @param A 			Global A, row major
 * @param lda 			Leading dimension of A
 * @param cta_k 		Start k-index of current tile
-* @param block_idx_y 	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 */
 template<bool useVector4, bool useVector2, bool K_CHECK, bool THREADBLOCK_TILE_K_CHECK>
-__device__ __inline__ void load_A_Global(TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K], const TYPE* __restrict__ A, const int lda, const int cta_k, const int block_idx_y, const int A_Shared_Offset) {
+__device__ __inline__ void load_A_Global(TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K], const TYPE* __restrict__ A, const int lda, const int cta_k, const int A_Shared_Offset) {
     if ((THREADBLOCK_TILE_M * (LOAD_K / 4)) % THREADS == 0 && useVector4) {
-        load_A_Global_Vector4<K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, block_idx_y, A_Shared_Offset);
+        load_A_Global_Vector4<K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, A_Shared_Offset);
     } else if ((THREADBLOCK_TILE_M * (LOAD_K / 2)) % THREADS == 0 && useVector2) {
-        load_A_Global_Vector4<K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, block_idx_y, A_Shared_Offset);
+        load_A_Global_Vector4<K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, A_Shared_Offset);
     } else if ((THREADBLOCK_TILE_M * LOAD_K) % THREADS == 0) {
-        load_A_Global_Single<K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, block_idx_y, A_Shared_Offset);
+        load_A_Global_Single<K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, A_Shared_Offset);
     } else if (useVector4) {
-        load_A_Global_Vector4<K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, block_idx_y, A_Shared_Offset);
+        load_A_Global_Vector4<K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, A_Shared_Offset);
     } else if (useVector2) {
-        load_A_Global_Vector2<K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, block_idx_y, A_Shared_Offset);
+        load_A_Global_Vector2<K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, A_Shared_Offset);
     } else {
-        load_A_Global_Single<K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, block_idx_y, A_Shared_Offset);
+        load_A_Global_Single<K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, A_Shared_Offset);
     }
 }
 
@@ -1812,29 +1805,27 @@ __device__ __inline__ void load_A_Global(TYPE (* __restrict__ A_Shared)[2 * (THR
 * @param B				Global B, row major
 * @param ldb			Leading dimension of B
 * @param cta_k			Start k-index of current tile
-* @param block_idx_x	The blockId in the x dimension of the current block, it has not to be equal to blockIdx.x because we can manually remap it
 */
 template<bool useVector4, bool useVector2, bool K_CHECK,
         bool THREADBLOCK_TILE_K_CHECK>
-__device__ __inline__ void load_B_Global(TYPE (* __restrict__ B_Shared)[2 * LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET)], const TYPE* __restrict__ B, const int ldb, const int cta_k, const int block_idx_x, const int B_Shared_Offset) {
+__device__ __inline__ void load_B_Global(TYPE (* __restrict__ B_Shared)[2 * LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET)], const TYPE* __restrict__ B, const int ldb, const int cta_k, const int B_Shared_Offset) {
     if (((THREADBLOCK_TILE_N / 4) * LOAD_K) % THREADS == 0 && useVector4) {
-        load_B_Global_Vector4<K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, block_idx_x, B_Shared_Offset);
+        load_B_Global_Vector4<K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, B_Shared_Offset);
     } else if (((THREADBLOCK_TILE_N / 2) * LOAD_K) % THREADS == 0 && useVector2) {
-        load_B_Global_Vector2<K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, block_idx_x, B_Shared_Offset);
+        load_B_Global_Vector2<K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, B_Shared_Offset);
     } else if ((THREADBLOCK_TILE_N * LOAD_K) % THREADS == 0) {
-        load_B_Global_Single<K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, block_idx_x, B_Shared_Offset);
+        load_B_Global_Single<K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, B_Shared_Offset);
     } else if (useVector4) {
-        load_B_Global_Vector4<K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, block_idx_x, B_Shared_Offset);
+        load_B_Global_Vector4<K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, B_Shared_Offset);
     } else if (useVector2) {
-        load_B_Global_Vector2<K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, block_idx_x, B_Shared_Offset);
+        load_B_Global_Vector2<K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, B_Shared_Offset);
     } else {
-        load_B_Global_Single<K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, block_idx_x, B_Shared_Offset);
+        load_B_Global_Single<K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, B_Shared_Offset);
     }
 }
 
 /**
 * This function loads the current global tiles into shared memory.
-*
 *
 * @param A_useVector4 					Specifies if we are allowed to use float4 loads for loading A
 * @param A_useVector2					Specifies if we are allowed to use float2 loads for loading A
@@ -1849,22 +1840,19 @@ __device__ __inline__ void load_B_Global(TYPE (* __restrict__ B_Shared)[2 * LOAD
 * @param B				Global B, row major
 * @param lda 			Leading dimension of A
 * @param ldb			Leading dimension of B
-* @param cta_k 		Start k-index of current tile
-* @param block_idx_x 	The blockId in the x dimension of the current block, it has not to be equal to blockIdx.x because we can manually remap it
-* @param block_idx_y 	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
+* @param cta_k 		    Start k-index of current tile
 */
-template<bool A_useVector4, bool A_useVector2, bool B_useVector4,
-        bool B_useVector2, bool K_CHECK, bool THREADBLOCK_TILE_K_CHECK>
+template<bool A_useVector4, bool A_useVector2, bool B_useVector4, bool B_useVector2, bool K_CHECK, bool THREADBLOCK_TILE_K_CHECK>
 __device__ __inline__ void load_Global(
 TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K],
 TYPE (* __restrict__ B_Shared)[2 * LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET)],
-        const TYPE* __restrict__ A, const TYPE* __restrict__ B, const int lda, const int ldb, const int cta_k, const int block_idx_x, const int block_idx_y, const int A_Shared_Offset, const int B_Shared_Offset) {
+        const TYPE* __restrict__ A, const TYPE* __restrict__ B, const int lda, const int ldb, const int cta_k, const int A_Shared_Offset, const int B_Shared_Offset) {
 
     // Load A into shared memory
-    load_A_Global<A_useVector4, A_useVector2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, block_idx_y, A_Shared_Offset);
+    load_A_Global<A_useVector4, A_useVector2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, A_Shared_Offset);
 
     // Load B into shared memory
-    load_B_Global<B_useVector4, B_useVector2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, block_idx_x, B_Shared_Offset);
+    load_B_Global<B_useVector4, B_useVector2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(B_Shared, B, ldb, cta_k, B_Shared_Offset);
 }
 
 /**
@@ -1876,9 +1864,6 @@ TYPE (* __restrict__ B_Shared)[2 * LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET)],
 * 		+ . . . .
 * 		+ . . . .
 * 		+ . . . .
-*
-*
-*
 *
 *
 * @param A_register 	Values needed from A. (+)
@@ -2028,16 +2013,12 @@ TYPE (* __restrict__ B_register)[THREAD_TILE_N], const int k, const int WarpIdx,
 * @param LaneIdx			The LaneId in the x dimension of the current thread
 * @param global_i			The row to load
 * @param Threadtile_i		The row in the accumulator where to store the loaded row
-* @param block_idx_x		The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 */
-__device__ __inline__ void load_C_OneRow_Vector(TYPE * __restrict__ Thread_Tile,
-        const TYPE * __restrict__ C, const int ldc, const int WarpIdx,
-        const int LaneIdx, const int global_i, const int Threadtile_i,
-        const int block_idx_x) {
-
+__device__ __inline__ void load_C_OneRow_Vector(TYPE * __restrict__ Thread_Tile, const TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int LaneIdx, const int global_i, const int Threadtile_i) {
     constexpr int N_TIMES = THREAD_TILE_N / 4;
     constexpr int N_THREADS = WARP_TILE_N / THREAD_TILE_N;
-    const int global_j_upleft = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N;
+    // const int global_j_upleft = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N;
+    const int global_j_upleft = WarpIdx * WARP_TILE_N;
 
 // We use as many float4 loads as we can
 #pragma unroll
@@ -2078,7 +2059,6 @@ __device__ __inline__ void load_C_OneRow_Vector(TYPE * __restrict__ Thread_Tile,
 /**
 * This function loads one row of C using only scalar loads
 *
-*
 * @param Thread_Tile			The accumulator used to accumulate the result.
 * @param C						Global C, row major
 * @param ldc					Leading dimension of C
@@ -2087,14 +2067,10 @@ __device__ __inline__ void load_C_OneRow_Vector(TYPE * __restrict__ Thread_Tile,
 * @param LaneIdy				The LaneId in the y dimension of the current thread
 * @param global_i				The row to load
 * @param Threadtile_i			The row in the accumulator where to store the loaded row
-* @param block_idx_x			The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 * @param THREAD_TILE_Y_HEIGHT	The height of the current thread tile in the y dimension
 * @param Shared				The shared memory to perform the epilogue shuffle
 */
-__device__ __inline__ void load_C_OneRow_Single(TYPE * __restrict__ Thread_Tile,
-        const TYPE * __restrict__ C, const int ldc, const int WarpIdx,
-        const int LaneIdx, const int LaneIdy, const int global_i_upleft,
-        const int Threadtile_i, const int block_idx_x, const int THREAD_TILE_Y_HEIGHT,
+__device__ __inline__ void load_C_OneRow_Single(TYPE * __restrict__ Thread_Tile, const TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int LaneIdx, const int LaneIdy, const int global_i_upleft, const int Threadtile_i, const int THREAD_TILE_Y_HEIGHT,
         TYPE (* __restrict__ Shared)[(THREADBLOCK_TILE_M / WARP_TILE_M) * (THREADBLOCK_TILE_N / WARP_TILE_N) * 192]) {
 
     constexpr int N_TIMES = THREAD_TILE_N / 4;
@@ -2134,7 +2110,8 @@ __device__ __inline__ void load_C_OneRow_Single(TYPE * __restrict__ Thread_Tile,
             const int threadIdIdy_epilogue = threadId / EPILOGUE_N;
 
             const int global_i = global_i_upleft + threadIdIdy_epilogue * (4 * THREAD_TILE_Y_HEIGHT);
-            const int global_j = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + j * N_THREADS * 4;
+            // const int global_j = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + j * N_THREADS * 4;
+            const int global_j = WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + j * N_THREADS * 4;
 
             TYPE a0, a1, a2, a3;
 
@@ -2164,8 +2141,10 @@ __device__ __inline__ void load_C_OneRow_Single(TYPE * __restrict__ Thread_Tile,
 
             const int global_i = global_i_upleft;
 
-            const int global_j_1 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_1;
-            const int global_j_2 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_2;
+            // const int global_j_1 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_1;
+            const int global_j_1 = WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_1;
+            // const int global_j_2 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_2;
+            const int global_j_2 = WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_2;
 
             TYPE a0, a1, a2, a3;
 
@@ -2196,10 +2175,14 @@ __device__ __inline__ void load_C_OneRow_Single(TYPE * __restrict__ Thread_Tile,
             const int threadIdIdx_epilogue_3 = threadId + 64;
             const int threadIdIdx_epilogue_4 = threadId + 96;
 
-            const int global_j_1 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_1;
-            const int global_j_2 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_2;
-            const int global_j_3 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_3;
-            const int global_j_4 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_4;
+            // const int global_j_1 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_1;
+            const int global_j_1 = WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_1;
+            // const int global_j_2 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_2;
+            const int global_j_2 = WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_2;
+            // const int global_j_3 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_3;
+            const int global_j_3 = WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_3;
+            // const int global_j_4 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_4;
+            const int global_j_4 = WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_4;
 
             const int global_i = global_i_upleft;
 
@@ -2261,7 +2244,8 @@ __device__ __inline__ void load_C_OneRow_Single(TYPE * __restrict__ Thread_Tile,
             const int threadIdIdy_epilogue = threadId / EPILOGUE_N;
 
             const int global_i = global_i_upleft + threadIdIdy_epilogue * (2 * THREAD_TILE_Y_HEIGHT);
-            const int global_j = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + N_TIMES * N_THREADS * 4;
+            // const int global_j = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + N_TIMES * N_THREADS * 4;
+            const int global_j = WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + N_TIMES * N_THREADS * 4;
 
             TYPE a0, a1;
 
@@ -2283,8 +2267,10 @@ __device__ __inline__ void load_C_OneRow_Single(TYPE * __restrict__ Thread_Tile,
             const int threadIdIdx_epilogue_1 = threadId;
             const int threadIdIdx_epilogue_2 = threadId + 32;
 
-            const int global_j_1 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + N_TIMES * N_THREADS * 4 + threadIdIdx_epilogue_1;
-            const int global_j_2 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + N_TIMES * N_THREADS * 4 + threadIdIdx_epilogue_2;
+            // const int global_j_1 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + N_TIMES * N_THREADS * 4 + threadIdIdx_epilogue_1;
+            const int global_j_1 = WarpIdx * WARP_TILE_N + N_TIMES * N_THREADS * 4 + threadIdIdx_epilogue_1;
+            // const int global_j_2 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + N_TIMES * N_THREADS * 4 + threadIdIdx_epilogue_2;
+            const int global_j_2 = WarpIdx * WARP_TILE_N + N_TIMES * N_THREADS * 4 + threadIdIdx_epilogue_2;
 
             TYPE a0, a2;
 
@@ -2340,7 +2326,8 @@ __device__ __inline__ void load_C_OneRow_Single(TYPE * __restrict__ Thread_Tile,
         constexpr int ADDITIONAL_OFFSET_GLOBAL = (THREAD_TILE_N % 4 >= 2) ? N_THREADS * 2 : 0;
 
         const int global_i = global_i_upleft + threadIdIdy_epilogue * (1 * THREAD_TILE_Y_HEIGHT);
-        const int global_j = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + N_TIMES * N_THREADS * 4 + ADDITIONAL_OFFSET_GLOBAL;
+        // const int global_j = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + N_TIMES * N_THREADS * 4 + ADDITIONAL_OFFSET_GLOBAL;
+        const int global_j = WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + N_TIMES * N_THREADS * 4 + ADDITIONAL_OFFSET_GLOBAL;
 
         TYPE a0;
 
@@ -2374,17 +2361,13 @@ __device__ __inline__ void load_C_OneRow_Single(TYPE * __restrict__ Thread_Tile,
 * @param WarpIdy		The WarpId in the y dimension of the current thread
 * @param LaneIdx		The LaneId in the x dimension of the current thread
 * @param LaneIdy		The LaneId in the y dimension of the current thread
-* @param block_idx_x	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
-* @param block_idx_y 	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 */
-__device__ __inline__ void load_C_Vector(TYPE * __restrict__ Thread_Tile,
-        const TYPE * __restrict__ C, const int ldc, const int WarpIdx,
-        const int WarpIdy, const int LaneIdx, const int LaneIdy,
-        const int block_idx_x, const int block_idx_y) {
+__device__ __inline__ void load_C_Vector(TYPE * __restrict__ Thread_Tile, const TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy, const int LaneIdx, const int LaneIdy) {
 
     constexpr int M_THREADS = WARP_TILE_M / THREAD_TILE_M;
 
-    const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
+    // const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
+    const int global_i_upleft = WarpIdy * WARP_TILE_M;
 
     constexpr int M_TIMES = THREAD_TILE_M / 4;
 
@@ -2398,7 +2381,7 @@ __device__ __inline__ void load_C_Vector(TYPE * __restrict__ Thread_Tile,
             if (M % THREADBLOCK_TILE_M == 0 || global_i < M) {
                 const int Threadtile_i = i * 4 + ii;
 
-                load_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i, block_idx_x);
+                load_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i);
             }
         }
     }
@@ -2409,7 +2392,7 @@ __device__ __inline__ void load_C_Vector(TYPE * __restrict__ Thread_Tile,
 
             if (M % THREADBLOCK_TILE_M == 0 || global_i < M) {
                 const int Threadtile_i = M_TIMES * 4 + ii;
-                load_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i, block_idx_x);
+                load_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i);
             }
         }
     }
@@ -2423,7 +2406,7 @@ __device__ __inline__ void load_C_Vector(TYPE * __restrict__ Thread_Tile,
 
         if (M % THREADBLOCK_TILE_M == 0 || global_i < M) {
             const int Threadtile_i = M_TIMES * 4 + ADDITIONAL_OFFSET_REGISTER;
-            load_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i, block_idx_x);
+            load_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i);
         }
     }
 }
@@ -2438,21 +2421,16 @@ __device__ __inline__ void load_C_Vector(TYPE * __restrict__ Thread_Tile,
 * @param WarpIdy		The WarpId in the y dimension of the current thread
 * @param LaneIdx		The LaneId in the x dimension of the current thread
 * @param LaneIdy		The LaneId in the y dimension of the current thread
-* @param block_idx_x	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
-* @param block_idx_y 	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 * @param Shared		The shared memory to perform the epilogue shuffle
 *
 */
-__device__ __inline__ void load_C_Single(TYPE * __restrict__ Thread_Tile,
-        const TYPE * __restrict__ C, const int ldc, const int WarpIdx,
-        const int WarpIdy, const int LaneIdx, const int LaneIdy,
-        const int block_idx_x, const int block_idx_y,
-        TYPE (* __restrict__ Shared)[(THREADBLOCK_TILE_M / WARP_TILE_M)
-                * (THREADBLOCK_TILE_N / WARP_TILE_N) * 192]) {
+__device__ __inline__ void load_C_Single(TYPE * __restrict__ Thread_Tile, const TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy, const int LaneIdx, const int LaneIdy,
+        TYPE (* __restrict__ Shared)[(THREADBLOCK_TILE_M / WARP_TILE_M) * (THREADBLOCK_TILE_N / WARP_TILE_N) * 192]) {
 
     constexpr int M_THREADS = WARP_TILE_M / THREAD_TILE_M;
 
-    const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
+    // const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
+    const int global_i_upleft = WarpIdy * WARP_TILE_M;
 
     constexpr int M_TIMES = THREAD_TILE_M / 4;
 
@@ -2463,7 +2441,7 @@ __device__ __inline__ void load_C_Single(TYPE * __restrict__ Thread_Tile,
         for (int ii = 0; ii < 4; ii++) {
             const int global_i = global_i_upleft + +i * M_THREADS * 4 + ii;
             const int Threadtile_i = i * 4 + ii;
-            load_C_OneRow_Single(Thread_Tile, C, ldc, WarpIdx, LaneIdx, LaneIdy, global_i, Threadtile_i, block_idx_x, 4, Shared);
+            load_C_OneRow_Single(Thread_Tile, C, ldc, WarpIdx, LaneIdx, LaneIdy, global_i, Threadtile_i, 4, Shared);
         }
     }
 
@@ -2471,7 +2449,7 @@ __device__ __inline__ void load_C_Single(TYPE * __restrict__ Thread_Tile,
         for (int ii = 0; ii < 2; ii++) {
             const int global_i = global_i_upleft + +M_TIMES * M_THREADS * 4 + ii;
             const int Threadtile_i = M_TIMES * 4 + ii;
-            load_C_OneRow_Single(Thread_Tile, C, ldc, WarpIdx, LaneIdx, LaneIdy, global_i, Threadtile_i, block_idx_x, 2, Shared);
+            load_C_OneRow_Single(Thread_Tile, C, ldc, WarpIdx, LaneIdx, LaneIdy, global_i, Threadtile_i, 2, Shared);
         }
     }
 
@@ -2481,7 +2459,7 @@ __device__ __inline__ void load_C_Single(TYPE * __restrict__ Thread_Tile,
 
         const int global_i = global_i_upleft + M_TIMES * M_THREADS * 4 + ADDITIONAL_OFFSET_GLOBAL;
         const int Threadtile_i = M_TIMES * 4 + ADDITIONAL_OFFSET_REGISTER;
-        load_C_OneRow_Single(Thread_Tile, C, ldc, WarpIdx, LaneIdx, LaneIdy, global_i, Threadtile_i, block_idx_x, 1, Shared);
+        load_C_OneRow_Single(Thread_Tile, C, ldc, WarpIdx, LaneIdx, LaneIdy, global_i, Threadtile_i, 1, Shared);
     }
 }
 
@@ -2496,16 +2474,10 @@ __device__ __inline__ void load_C_Single(TYPE * __restrict__ Thread_Tile,
 * @param WarpIdy		The WarpId in the y dimension of the current thread
 * @param LaneIdx		The LaneId in the x dimension of the current thread
 * @param LaneIdy		The LaneId in the y dimension of the current thread
-* @param block_idx_x	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
-* @param block_idx_y 	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 * @param Shared		The shared memory to perform the epilogue shuffle
 */
-__device__ __inline__ void load_C(TYPE * __restrict__ Thread_Tile,
-        const TYPE * __restrict__ C, const int ldc, const int WarpIdx,
-        const int WarpIdy, const int LaneIdx, const int LaneIdy,
-        const int block_idx_x, const int block_idx_y,
-        TYPE (* __restrict__ Shared)[(THREADBLOCK_TILE_M / WARP_TILE_M)
-                * (THREADBLOCK_TILE_N / WARP_TILE_N) * 192]) {
+__device__ __inline__ void load_C(TYPE * __restrict__ Thread_Tile, const TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy, const int LaneIdx, const int LaneIdy,
+    TYPE (* __restrict__ Shared)[(THREADBLOCK_TILE_M / WARP_TILE_M) * (THREADBLOCK_TILE_N / WARP_TILE_N) * 192]) {
 
     if ((ALPHA != 1.0 && SPLIT_K == 1) || (ALPHA != 1.0 && SPLIT_K != 1 && ATOMIC_REDUCTION)) {
 #pragma unroll
@@ -2515,7 +2487,7 @@ __device__ __inline__ void load_C(TYPE * __restrict__ Thread_Tile,
     }
 
     if (BETA != 0.0 && SPLIT_K == 1) {
-        load_C_Vector(Thread_Tile, C, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y);
+        load_C_Vector(Thread_Tile, C, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy);
     }
 }
 
@@ -2531,13 +2503,12 @@ __device__ __inline__ void load_C(TYPE * __restrict__ Thread_Tile,
 * @param LaneIdx			The LaneId in the x dimension of the current thread
 * @param global_i			The row to store
 * @param Threadtile_i		The row in the accumulator
-* @param block_idx_x		The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 */
-__device__ __inline__ void store_C_OneRow_Vector(const TYPE * __restrict__ Thread_Tile, TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int LaneIdx, const int global_i, const int Threadtile_i, const int block_idx_x) {
+__device__ __inline__ void store_C_OneRow_Vector(const TYPE * __restrict__ Thread_Tile, TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int LaneIdx, const int global_i, const int Threadtile_i) {
     constexpr int N_TIMES = THREAD_TILE_N / 4;
     constexpr int N_THREADS = WARP_TILE_N / THREAD_TILE_N;
-    const int global_j_upleft = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N;
-    // const int global_j_upleft = WarpIdx * WARP_TILE_N;
+    // const int global_j_upleft = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N;
+    const int global_j_upleft = WarpIdx * WARP_TILE_N;
 
 #pragma unroll
     for (int j = 0; j < N_TIMES; j++) {
@@ -2590,14 +2561,10 @@ __device__ __inline__ void store_C_OneRow_Vector(const TYPE * __restrict__ Threa
 * @param LaneIdx				The LaneId in the x dimension of the current thread
 * @param global_i				The row to store
 * @param Threadtile_i			The row in the accumulator
-* @param block_idx_x			The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 * @param THREAD_TILE_Y_HEIGHT	The height of the current thread tile in the y dimension
 * @param Shared				The shared memory to perform the epilogue shuffle
 */
-__device__ __inline__ void store_C_OneRow_Single(
-        const TYPE * __restrict__ Thread_Tile, TYPE * __restrict__ C,
-        const int ldc, const int WarpIdx, const int LaneIdx, const int LaneIdy,
-        const int global_i_upleft, const int Threadtile_i, const int block_idx_x, 
+__device__ __inline__ void store_C_OneRow_Single(const TYPE * __restrict__ Thread_Tile, TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int LaneIdx, const int LaneIdy, const int global_i_upleft, const int Threadtile_i,
         TYPE (* __restrict__ Shared)[(THREADBLOCK_TILE_M / WARP_TILE_M) * (THREADBLOCK_TILE_N / WARP_TILE_N) * 192], const int THREAD_TILE_Y_HEIGHT) {
     constexpr int N_TIMES = THREAD_TILE_N / 4;
 
@@ -2655,7 +2622,8 @@ __device__ __inline__ void store_C_OneRow_Single(
                 const TYPE a3 = (*Shared)[SHARED_MEM_PER_WARP * WarpId + (threadIdIdy_epilogue * 4 + 3) * (EPILOGUE_N + EPILOGUE_OFFSET) + threadIdIdx_epilogue];
 
                 const int global_i = global_i_upleft + threadIdIdy_epilogue * (4 * THREAD_TILE_Y_HEIGHT);
-                const int global_j = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + j * N_THREADS * 4;
+                // const int global_j = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + j * N_THREADS * 4;
+                const int global_j = WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + j * N_THREADS * 4;
 
                 // Store the values into C
 
@@ -2699,8 +2667,10 @@ __device__ __inline__ void store_C_OneRow_Single(
 
                 const int global_i = global_i_upleft;
 
-                const int global_j_1 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_1;
-                const int global_j_2 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_2;
+                // const int global_j_1 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_1;
+                const int global_j_1 = WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_1;
+                // const int global_j_2 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_2;
+                const int global_j_2 = WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_2;
 
                 // Store the values into C
                 if (SPLIT_K == 1 || !ATOMIC_REDUCTION) {
@@ -2745,10 +2715,14 @@ __device__ __inline__ void store_C_OneRow_Single(
 
                 const int global_i = global_i_upleft;
 
-                const int global_j_1 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_1;
-                const int global_j_2 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_2;
-                const int global_j_3 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_3;
-                const int global_j_4 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_4;
+                // const int global_j_1 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_1;
+                const int global_j_1 = WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_1;
+                // const int global_j_2 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_2;
+                const int global_j_2 = WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_2;
+                // const int global_j_3 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_3;
+                const int global_j_3 = WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_3;
+                // const int global_j_4 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_4;
+                const int global_j_4 = WarpIdx * WARP_TILE_N + j * N_THREADS * 4 + threadIdIdx_epilogue_4;
 
                 // Store the values into C
                 if (SPLIT_K == 1 || !ATOMIC_REDUCTION) {
@@ -2827,7 +2801,8 @@ __device__ __inline__ void store_C_OneRow_Single(
                 const TYPE a1 = (*Shared)[SHARED_MEM_PER_WARP * WarpId + (threadIdIdy_epilogue * 2 + 1) * (EPILOGUE_N + EPILOGUE_OFFSET) + threadIdIdx_epilogue];
 
                 const int global_i = global_i_upleft + threadIdIdy_epilogue * (2 * THREAD_TILE_Y_HEIGHT);
-                const int global_j = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + N_TIMES * N_THREADS * 4;
+                // const int global_j = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + N_TIMES * N_THREADS * 4;
+                const int global_j = WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + N_TIMES * N_THREADS * 4;
 
                 // Store the values into C
                 if (SPLIT_K == 1 || !ATOMIC_REDUCTION) {
@@ -2857,8 +2832,10 @@ __device__ __inline__ void store_C_OneRow_Single(
 
                 const int global_i = global_i_upleft;
 
-                const int global_j_1 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + N_TIMES * N_THREADS * 44 + threadIdIdx_epilogue_1;
-                const int global_j_2 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + N_TIMES * N_THREADS * 4 + threadIdIdx_epilogue_2;
+                // const int global_j_1 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + N_TIMES * N_THREADS * 44 + threadIdIdx_epilogue_1;
+                const int global_j_1 = WarpIdx * WARP_TILE_N + N_TIMES * N_THREADS * 44 + threadIdIdx_epilogue_1;
+                // const int global_j_2 = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + N_TIMES * N_THREADS * 4 + threadIdIdx_epilogue_2;
+                const int global_j_2 = WarpIdx * WARP_TILE_N + N_TIMES * N_THREADS * 4 + threadIdIdx_epilogue_2;
 
                 // Store the values into C
                 if (SPLIT_K == 1 || !ATOMIC_REDUCTION) {
@@ -2917,7 +2894,8 @@ __device__ __inline__ void store_C_OneRow_Single(
         constexpr int ADDITIONAL_OFFSET_GLOBAL = (THREAD_TILE_N % 4 >= 2) ? N_THREADS * 2 : 0;
 
         const int global_i = global_i_upleft + threadIdIdy_epilogue * (1 * THREAD_TILE_Y_HEIGHT);
-        const int global_j = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + N_TIMES * N_THREADS * 4 + ADDITIONAL_OFFSET_GLOBAL;
+        // const int global_j = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + N_TIMES * N_THREADS * 4 + ADDITIONAL_OFFSET_GLOBAL;
+        const int global_j = WarpIdx * WARP_TILE_N + threadIdIdx_epilogue + N_TIMES * N_THREADS * 4 + ADDITIONAL_OFFSET_GLOBAL;
 
         if (SPLIT_K == 1 || !ATOMIC_REDUCTION) {
             if ((M % THREADBLOCK_TILE_M == 0 || (global_i + 0 * THREAD_TILE_Y_HEIGHT) < M) && (N % THREADBLOCK_TILE_N == 0 || global_j < N)) {
@@ -2944,19 +2922,14 @@ __device__ __inline__ void store_C_OneRow_Single(
 * @param WarpIdy		The WarpId in the y dimension of the current thread
 * @param LaneIdx		The LaneId in the x dimension of the current thread
 * @param LaneIdy		The LaneId in the y dimension of the current thread
-* @param block_idx_x	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
-* @param block_idx_y 	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 * @param Shared		The shared memory to perform the epilogue shuffle
 */
-__device__ __inline__ void store_C_Single(const TYPE * __restrict__ Thread_Tile,
-TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy,
-        const int LaneIdx, const int LaneIdy, const int block_idx_x, const int block_idx_y,
+__device__ __inline__ void store_C_Single(const TYPE * __restrict__ Thread_Tile, TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy, const int LaneIdx, const int LaneIdy,
         TYPE (* __restrict__ Shared)[(THREADBLOCK_TILE_M / WARP_TILE_M) * (THREADBLOCK_TILE_N / WARP_TILE_N) * 192]) {
 
     constexpr int M_THREADS = WARP_TILE_M / THREAD_TILE_M;
-
-    const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
-
+    // const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
+    const int global_i_upleft = WarpIdy * WARP_TILE_M;
     constexpr int M_TIMES = THREAD_TILE_M / 4;
 
 #pragma unroll
@@ -2966,7 +2939,7 @@ TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy,
         for (int ii = 0; ii < 4; ii++) {
             const int global_i = global_i_upleft + i * M_THREADS * 4 + ii;
             const int Threadtile_i = i * 4 + ii;
-            store_C_OneRow_Single(Thread_Tile, C, ldc, WarpIdx, LaneIdx, LaneIdy, global_i, Threadtile_i, block_idx_x, Shared, 4);
+            store_C_OneRow_Single(Thread_Tile, C, ldc, WarpIdx, LaneIdx, LaneIdy, global_i, Threadtile_i, Shared, 4);
         }
     }
 
@@ -2974,7 +2947,7 @@ TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy,
         for (int ii = 0; ii < 2; ii++) {
             const int global_i = global_i_upleft + M_TIMES * M_THREADS * 4 + ii;
             const int Threadtile_i = M_TIMES * 4 + ii;
-            store_C_OneRow_Single(Thread_Tile, C, ldc, WarpIdx, LaneIdx, LaneIdy, global_i, Threadtile_i, block_idx_x, Shared, 2);
+            store_C_OneRow_Single(Thread_Tile, C, ldc, WarpIdx, LaneIdx, LaneIdy, global_i, Threadtile_i, Shared, 2);
         }
     }
 
@@ -2983,7 +2956,7 @@ TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy,
         constexpr int ADDITIONAL_OFFSET_REGISTER = (THREAD_TILE_M % 4 >= 2) ? 2 : 0;
         const int global_i = global_i_upleft + M_TIMES * M_THREADS * 4 + ADDITIONAL_OFFSET_GLOBAL;
         const int Threadtile_i = M_TIMES * 4 + ADDITIONAL_OFFSET_REGISTER;
-        store_C_OneRow_Single(Thread_Tile, C, ldc, WarpIdx, LaneIdx, LaneIdy, global_i, Threadtile_i, block_idx_x, Shared, 1);
+        store_C_OneRow_Single(Thread_Tile, C, ldc, WarpIdx, LaneIdx, LaneIdy, global_i, Threadtile_i, Shared, 1);
     }
 }
 
@@ -2997,14 +2970,12 @@ TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy,
 * @param WarpIdy		The WarpId in the y dimension of the current thread
 * @param LaneIdx		The LaneId in the x dimension of the current thread
 * @param LaneIdy		The LaneId in the y dimension of the current thread
-* @param block_idx_x	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
-* @param block_idx_y 	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 */
-__device__ __inline__ void store_C_Vector(const TYPE * __restrict__ Thread_Tile, TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy, const int LaneIdx, const int LaneIdy, const int block_idx_x, const int block_idx_y) {
+__device__ __inline__ void store_C_Vector(const TYPE * __restrict__ Thread_Tile, TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy, const int LaneIdx, const int LaneIdy) {
     constexpr int M_THREADS = WARP_TILE_M / THREAD_TILE_M;
 
-    const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
-    // const int global_i_upleft = WarpIdy * WARP_TILE_M;
+    // const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
+    const int global_i_upleft = WarpIdy * WARP_TILE_M;
 
     constexpr int M_times = THREAD_TILE_M / 4;
 
@@ -3016,7 +2987,7 @@ __device__ __inline__ void store_C_Vector(const TYPE * __restrict__ Thread_Tile,
             const int global_i = global_i_upleft + LaneIdy * 4 + i * M_THREADS * 4 + ii;
             if (M % THREADBLOCK_TILE_M == 0 || global_i < M) {
                 const int Threadtile_i = i * 4 + ii;
-                store_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i, block_idx_x);
+                store_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i);
             }
         }
     }
@@ -3026,7 +2997,7 @@ __device__ __inline__ void store_C_Vector(const TYPE * __restrict__ Thread_Tile,
             const int global_i = global_i_upleft + LaneIdy * 2 + M_times * M_THREADS * 4 + ii;
             const int Threadtile_i = M_times * 4 + ii;
             if (M % THREADBLOCK_TILE_M == 0 || global_i < M) {
-                store_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i, block_idx_x);
+                store_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i);
             }
         }
     }
@@ -3038,14 +3009,13 @@ __device__ __inline__ void store_C_Vector(const TYPE * __restrict__ Thread_Tile,
         const int Threadtile_i = M_times * 4 + ADDITIONAL_OFFSET_REGISTER;
 
         if (M % THREADBLOCK_TILE_M == 0 || global_i < M) {
-            store_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i, block_idx_x);
+            store_C_OneRow_Vector(Thread_Tile, C, ldc, WarpIdx, LaneIdx, global_i, Threadtile_i);
         }
     }
 }
 
 /**
 * This function decides what kind of store function we should use to store C.
-*
 *
 * @param Thread_Tile	The accumulator used to accumulate the result.
 * @param C				Global C, row major
@@ -3054,15 +3024,11 @@ __device__ __inline__ void store_C_Vector(const TYPE * __restrict__ Thread_Tile,
 * @param WarpIdy		The WarpId in the y dimension of the current thread
 * @param LaneIdx		The LaneId in the x dimension of the current thread
 * @param LaneIdy		The LaneId in the y dimension of the current thread
-* @param block_idx_x	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
-* @param block_idx_y 	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 * @param Shared		The shared memory to perform the epilogue shuffle
 *
 */
-__device__ __inline__ void store_C(TYPE * __restrict__ Thread_Tile,
-TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy,
-        const int LaneIdx, const int LaneIdy, const int block_idx_x, const int block_idx_y,
-        TYPE (* __restrict__ Shared)[(THREADBLOCK_TILE_M / WARP_TILE_M) * (THREADBLOCK_TILE_N / WARP_TILE_N) * 192]) {
+__device__ __inline__ void store_C(TYPE * __restrict__ Thread_Tile, TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy, const int LaneIdx, const int LaneIdy,
+    TYPE (* __restrict__ Shared)[(THREADBLOCK_TILE_M / WARP_TILE_M) * (THREADBLOCK_TILE_N / WARP_TILE_N) * 192]) {
 
 //	// Relu
 //#pragma unroll
@@ -3077,9 +3043,9 @@ TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy,
 //	}
 
     if (SPLIT_K == 1) {
-        store_C_Vector(Thread_Tile, C, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y);
+        store_C_Vector(Thread_Tile, C, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy);
     } else {
-        store_C_Single(Thread_Tile, C, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, Shared);
+        store_C_Single(Thread_Tile, C, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, Shared);
     }
 }
 
@@ -3123,8 +3089,8 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     // trying cucosma code here
 
     int lda = M;
-    int ldb = N;
-    int ldc = K;
+    int ldb = K;
+    int ldc = N;
     constexpr int M_WARPS = THREADBLOCK_TILE_M / WARP_TILE_M;
     constexpr int N_WARPS = THREADBLOCK_TILE_N / WARP_TILE_N;
 
@@ -3170,6 +3136,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         LaneIdy = 0;
     }
 
+    /*
     constexpr int A_SHARED_SIZE = (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K;
     constexpr int A_SHARED_BUFFER = 2 * A_SHARED_SIZE;
 
@@ -3237,7 +3204,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     constexpr bool K_CHECK = (K_ % THREADBLOCK_TILE_K != 0 && SPLIT_K > 1);
     constexpr bool THREADBLOCK_TILE_K_CHECK = THREADBLOCK_TILE_K % LOAD_K != 0;
 
-    load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_0, B_Shared_Offset_0);
+    load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, &B_Shared, input_A_, input_B_, lda, ldb, cta_k, A_Shared_Offset_0, B_Shared_Offset_0);
 
     __syncthreads();
 
@@ -3255,7 +3222,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
             }
 
             if (k == LOAD_K - 1) {
-                load_Global<A_VECTOR_4, A_VECTOR_2, B_VECTOR_4, B_VECTOR_2, (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_1, B_Shared_Offset_1);
+                load_Global<A_VECTOR_4, A_VECTOR_2, B_VECTOR_4, B_VECTOR_2, (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(&A_Shared, &B_Shared, input_A_, input_B_, lda, ldb, cta_k, A_Shared_Offset_1, B_Shared_Offset_1);
                 __syncthreads();
             }
 
@@ -3299,13 +3266,13 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
     __shared__ TYPE C_Shared[M_WARPS * N_WARPS * 192];
 
-    load_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
+    load_C(Thread_Tile, output_, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, &C_Shared);
 
-    store_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
+    store_C(Thread_Tile, output_, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, &C_Shared);
 
     // end of trying cucosma code
+    */
 
-    /*
     constexpr long long VECLEN = 4;
     constexpr float alpha = 1;
     constexpr float beta = 0;
@@ -3364,11 +3331,13 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                                 {
                                     for (auto k = 0; k < size_K_tile; k += 1) {
 
-                                        dace::CopyND<float, 1, false, size_thread_tile_m>::template ConstDst<1>::Copy(
-                                        shared_memory_A + (((k + ((8 * size_thread_tile_m) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((8 * size_warp_tile_m) * ((thread / 32) / num_warps_n))) + (1024 * (k_tile % 2))), register_storage_A, 8);
+                                        load_Shared(&shared_memory_A, &register_storage_A, &shared_memory_B, &register_storage_B, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
 
-                                        dace::CopyND<float, 1, false, size_thread_tile_n>::template ConstDst<1>::Copy(
-                                        shared_memory_B + ((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + (1024 * (k_tile % 2))), register_storage_B, 1);
+                                        // dace::CopyND<float, 1, false, size_thread_tile_m>::template ConstDst<1>::Copy(
+                                        // shared_memory_A + (((k + ((8 * size_thread_tile_m) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((8 * size_warp_tile_m) * ((thread / 32) / num_warps_n))) + (1024 * (k_tile % 2))), register_storage_A, 8);
+
+                                        // dace::CopyND<float, 1, false, size_thread_tile_n>::template ConstDst<1>::Copy(
+                                        // shared_memory_B + ((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + (1024 * (k_tile % 2))), register_storage_B, 1);
                                         {
                                             #pragma unroll
                                             for (auto i = 0; i < size_thread_tile_m; i += 1) {
@@ -3409,7 +3378,6 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
     }
     {
-
         {
             {
                 __syncthreads();
@@ -3418,11 +3386,13 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                     {
                         for (auto k = 0; k < size_K_tile; k += 1) {
 
-                            dace::CopyND<float, 1, false, size_thread_tile_m>::template ConstDst<1>::Copy(
-                            shared_memory_A + (((k + ((8 * size_thread_tile_m) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((8 * size_warp_tile_m) * ((thread / 32) / num_warps_n))) + (1024 * (k_tile % 2))), register_storage_A, 8);
+                            load_Shared(&shared_memory_A, &register_storage_A, &shared_memory_B, &register_storage_B, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
 
-                            dace::CopyND<float, 1, false, size_thread_tile_n>::template ConstDst<1>::Copy(
-                            shared_memory_B + ((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + (1024 * (k_tile % 2))), register_storage_B, 1);
+                            // dace::CopyND<float, 1, false, size_thread_tile_m>::template ConstDst<1>::Copy(
+                            // shared_memory_A + (((k + ((8 * size_thread_tile_m) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((8 * size_warp_tile_m) * ((thread / 32) / num_warps_n))) + (1024 * (k_tile % 2))), register_storage_A, 8);
+
+                            // dace::CopyND<float, 1, false, size_thread_tile_n>::template ConstDst<1>::Copy(
+                            // shared_memory_B + ((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + (1024 * (k_tile % 2))), register_storage_B, 1);
                             {
                                 #pragma unroll
                                 for (auto i = 0; i < size_thread_tile_m; i += 1) {
@@ -3453,7 +3423,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         }
 
     }
-    */
+    // */
     
 }
 
@@ -3584,13 +3554,9 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
             // const float * input_A_ = &input_A[((K * size_thread_block_tile_m) * thread_block_i)];
             // const float * input_B_ = &input_B[(size_thread_block_tile_n * thread_block_j)];
             // float * output_ = &output[(((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1))))];
-            // nested_nested_state_1_1_5(&input_A[((K * size_thread_block_tile_m) * thread_block_i)],
-                                    // &input_B[(size_thread_block_tile_n * thread_block_j)],
-                                    // &output[(((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1))))],
-                                    // K, M, N);
-            nested_nested_state_1_1_5(&input_A[0],
-                                    &input_B[0],
-                                    &output[0],
+            nested_nested_state_1_1_5(&input_A[((K * size_thread_block_tile_m) * thread_block_i)],
+                                    &input_B[(size_thread_block_tile_n * thread_block_j)],
+                                    &output[(((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1))))],
                                     K, M, N);
         }
     }
