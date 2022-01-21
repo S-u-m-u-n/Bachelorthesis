@@ -1504,8 +1504,8 @@ TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K],
         const int shared_j = (i * THREADS + threadIdx.x) % LOAD_K_VECTOR;
         const int shared_i = (i * THREADS + threadIdx.x) / LOAD_K_VECTOR;
 
-        const auto global_i = block_idx_y * THREADBLOCK_TILE_M + shared_i;
-        // const auto global_i = shared_i;
+        // const auto global_i = block_idx_y * THREADBLOCK_TILE_M + shared_i;
+        const auto global_i = shared_i;
 
         int global_j;
 
@@ -1878,10 +1878,7 @@ template<bool A_useVector4, bool A_useVector2, bool B_useVector4,
 __device__ __inline__ void load_Global(
 TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K],
 TYPE (* __restrict__ B_Shared)[2 * LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET)],
-        const TYPE* __restrict__ A, const TYPE* __restrict__ B, const int lda,
-        const int ldb, const int cta_k, const int block_idx_x,
-        const int block_idx_y, const int A_Shared_Offset,
-        const int B_Shared_Offset) {
+        const TYPE* __restrict__ A, const TYPE* __restrict__ B, const int lda, const int ldb, const int cta_k, const int block_idx_x, const int block_idx_y, const int A_Shared_Offset, const int B_Shared_Offset) {
 
     // Load A into shared memory
     load_A_Global<A_useVector4, A_useVector2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(A_Shared, A, lda, cta_k, block_idx_y, A_Shared_Offset);
@@ -3603,8 +3600,8 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
         {
             int thread_block_j = blockIdx.x;
             int thread_block_i = blockIdx.y;
-            // nested_nested_state_1_1_5(&input_A[((K * size_thread_block_tile_m) * thread_block_i)],
-            nested_nested_state_1_1_5(&input_A[0],
+            nested_nested_state_1_1_5(&input_A[((K * size_thread_block_tile_m) * thread_block_i)],
+            // nested_nested_state_1_1_5(&input_A[0],
                                     // &input_B[(size_thread_block_tile_n * thread_block_j)],
                                     &input_B[0],
                                     // &output[(((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1))))],
