@@ -3332,7 +3332,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     __shared__ float shared_memory_A[2048];
     long long k_tile;
 
-    load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
+    load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&shared_memory_A, &shared_memory_B, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
 
     // {
 
