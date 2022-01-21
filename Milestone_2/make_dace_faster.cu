@@ -2553,11 +2553,10 @@ __device__ __inline__ void load_C(TYPE * __restrict__ Thread_Tile,
 * @param block_idx_x		The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 */
 __device__ __inline__ void store_C_OneRow_Vector(const TYPE * __restrict__ Thread_Tile, TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int LaneIdx, const int global_i, const int Threadtile_i, const int block_idx_x) {
-
     constexpr int N_TIMES = THREAD_TILE_N / 4;
     constexpr int N_THREADS = WARP_TILE_N / THREAD_TILE_N;
-    const int global_j_upleft = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N;
-    // const int global_j_upleft = WarpIdx * WARP_TILE_N;
+    // const int global_j_upleft = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N;
+    const int global_j_upleft = WarpIdx * WARP_TILE_N;
 
 #pragma unroll
     for (int j = 0; j < N_TIMES; j++) {
