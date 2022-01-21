@@ -2062,24 +2062,16 @@ __device__ __inline__ void compute_inner(
 * @param LaneIdy			The LaneId in the y dimension of the current thread
 * @param A_Shared_Offset	Offset used to access A_Shared due to double buffering
 */
-__device__ __inline__ void load_A_Shared(
-        const TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K],
-        TYPE (* __restrict__ A_register)[ THREAD_TILE_M], const int k,
-        const int WarpIdy, const int LaneIdy, const int A_Shared_Offset) {
-
+__device__ __inline__ void load_A_Shared(const TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K], TYPE (* __restrict__ A_register)[ THREAD_TILE_M], const int k, const int WarpIdy, const int LaneIdy, const int A_Shared_Offset) {
     constexpr int TIMES = THREAD_TILE_M / 4;
-
     constexpr int M_THREADS = WARP_TILE_M / THREAD_TILE_M;
-
     const int Shared_j = k;
 
 // We use as many float4 loads as we can
 #pragma unroll
     for (int i = 0; i < TIMES; i++) {
         const int Shared_i = WarpIdy * WARP_TILE_M + i * M_THREADS * 4 + LaneIdy * 4;
-
         const TYPE* shared_mem_pointer = &(*A_Shared)[A_Shared_Offset + Shared_i + (THREADBLOCK_TILE_M + A_OFFSET) * Shared_j];
-
         const VECTORTYPE4 a = reinterpret_cast<const VECTORTYPE4*>(shared_mem_pointer)[0];
 
         TYPE* register_ptr = &(*A_register)[i * 4];
@@ -2739,8 +2731,8 @@ __device__ __inline__ void store_C_OneRow_Vector(const TYPE * __restrict__ Threa
 
     constexpr int N_TIMES = THREAD_TILE_N / 4;
     constexpr int N_THREADS = WARP_TILE_N / THREAD_TILE_N;
-    // const int global_j_upleft = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N;
-    const int global_j_upleft = WarpIdx * WARP_TILE_N;
+    const int global_j_upleft = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N;
+    // const int global_j_upleft = WarpIdx * WARP_TILE_N;
 
 #pragma unroll
     for (int j = 0; j < N_TIMES; j++) {
@@ -3153,10 +3145,8 @@ __device__ __inline__ void store_C_OneRow_Single(
 */
 __device__ __inline__ void store_C_Single(const TYPE * __restrict__ Thread_Tile,
 TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy,
-        const int LaneIdx, const int LaneIdy, const int block_idx_x,
-        const int block_idx_y,
-        TYPE (* __restrict__ Shared)[(THREADBLOCK_TILE_M / WARP_TILE_M)
-                * (THREADBLOCK_TILE_N / WARP_TILE_N) * 192]) {
+        const int LaneIdx, const int LaneIdy, const int block_idx_x, const int block_idx_y,
+        TYPE (* __restrict__ Shared)[(THREADBLOCK_TILE_M / WARP_TILE_M) * (THREADBLOCK_TILE_N / WARP_TILE_N) * 192]) {
 
     constexpr int M_THREADS = WARP_TILE_M / THREAD_TILE_M;
 
@@ -3208,8 +3198,8 @@ TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy,
 __device__ __inline__ void store_C_Vector(const TYPE * __restrict__ Thread_Tile, TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy, const int LaneIdx, const int LaneIdy, const int block_idx_x, const int block_idx_y) {
     constexpr int M_THREADS = WARP_TILE_M / THREAD_TILE_M;
 
-    // const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
-    const int global_i_upleft = WarpIdy * WARP_TILE_M;
+    const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
+    // const int global_i_upleft = WarpIdy * WARP_TILE_M;
 
     constexpr int M_times = THREAD_TILE_M / 4;
 
@@ -3429,30 +3419,19 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
     int shared_memory_stage = 1;
 
-    constexpr bool A_VECTOR_4 = (LOAD_K % 4 == 0)
-            && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 4 == 0);
-    constexpr bool A_VECTOR_2 = (LOAD_K % 2 == 0)
-            && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 2 == 0);
+    constexpr bool A_VECTOR_4 = (LOAD_K % 4 == 0) && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 4 == 0);
+    constexpr bool A_VECTOR_2 = (LOAD_K % 2 == 0) && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 2 == 0);
 
-    constexpr bool B_VECTOR_4 = THREADBLOCK_TILE_N % 4 == 0
-            && ((N_ % THREADBLOCK_TILE_N) % 4 == 0);
-    constexpr bool B_VECTOR_2 = THREADBLOCK_TILE_N % 2 == 0
-            && ((N_ % THREADBLOCK_TILE_N) % 2 == 0);
+    constexpr bool B_VECTOR_4 = THREADBLOCK_TILE_N % 4 == 0 && ((N_ % THREADBLOCK_TILE_N) % 4 == 0);
+    constexpr bool B_VECTOR_2 = THREADBLOCK_TILE_N % 2 == 0 && ((N_ % THREADBLOCK_TILE_N) % 2 == 0);
 
-    constexpr bool A_VECTOR_4_LAST = A_VECTOR_4
-            && (THREADBLOCK_TILE_K % LOAD_K) % 4 == 0
-            && (SPLIT_K == 1 || ( K % THREADBLOCK_TILE_K) % 4 == 0);
-    constexpr bool A_VECTOR_2_LAST = A_VECTOR_2
-            && (THREADBLOCK_TILE_K % LOAD_K) % 2 == 0
-            && (SPLIT_K == 1 || ( K % THREADBLOCK_TILE_K) % 2 == 0);
+    constexpr bool A_VECTOR_4_LAST = A_VECTOR_4 && (THREADBLOCK_TILE_K % LOAD_K) % 4 == 0 && (SPLIT_K == 1 || ( K % THREADBLOCK_TILE_K) % 4 == 0);
+    constexpr bool A_VECTOR_2_LAST = A_VECTOR_2 && (THREADBLOCK_TILE_K % LOAD_K) % 2 == 0 && (SPLIT_K == 1 || ( K % THREADBLOCK_TILE_K) % 2 == 0);
 
     constexpr bool K_CHECK = (K_ % THREADBLOCK_TILE_K != 0 && SPLIT_K > 1);
     constexpr bool THREADBLOCK_TILE_K_CHECK = THREADBLOCK_TILE_K % LOAD_K != 0;
 
-    load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2,
-            K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, &B_Shared, input_A, input_B, lda,
-            ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_0,
-            B_Shared_Offset_0);
+    load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_0, B_Shared_Offset_0);
 
     __syncthreads();
 
@@ -3464,21 +3443,13 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 #pragma unroll
         for (int k = 0; k < LOAD_K; k++) {
             if (k % 2 == 0) {
-                load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0,
-                        k, WarpIdx, WarpIdy, LaneIdx, LaneIdy,
-                        A_Shared_Offset_0, B_Shared_Offset_0);
+                load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
             } else {
-                load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1,
-                        k, WarpIdx, WarpIdy, LaneIdx, LaneIdy,
-                        A_Shared_Offset_0, B_Shared_Offset_0);
+                load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
             }
 
             if (k == LOAD_K - 1) {
-                load_Global<A_VECTOR_4, A_VECTOR_2, B_VECTOR_4, B_VECTOR_2,
-                        (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(
-                        &A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k,
-                        block_idx_x, block_idx_y, A_Shared_Offset_1,
-                        B_Shared_Offset_1);
+                load_Global<A_VECTOR_4, A_VECTOR_2, B_VECTOR_4, B_VECTOR_2, (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_1, B_Shared_Offset_1);
                 __syncthreads();
             }
 
@@ -3501,7 +3472,6 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
             A_Shared_Offset_0 = 0;
             A_Shared_Offset_1 = A_SHARED_SIZE;
-
         }
         shared_memory_stage ^= 1;
     }
@@ -3509,13 +3479,9 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 #pragma unroll
     for (int k = 0; k < LOAD_K; k++) {
         if (k % 2 == 0) {
-            load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k,
-                    WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0,
-                    B_Shared_Offset_0);
+            load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
         } else {
-            load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k,
-                    WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0,
-                    B_Shared_Offset_0);
+            load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
         }
 
         if (k % 2 == 0) {
@@ -3531,7 +3497,6 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
     store_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
     // end of trying cucosma code
-
 
     /*
     constexpr long long VECLEN = 4;
@@ -3809,7 +3774,11 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
         {
             int thread_block_j = blockIdx.x;
             int thread_block_i = blockIdx.y;
-            nested_nested_state_1_1_5(&input_A[((K * size_thread_block_tile_m) * thread_block_i)], &input_B[(size_thread_block_tile_n * thread_block_j)], &output[(((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1))))], K, M, N);
+            nested_nested_state_1_1_5(&input_A[((K * size_thread_block_tile_m) * thread_block_i)],
+                                    &input_B[(size_thread_block_tile_n * thread_block_j)],
+                                    // &output[(((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1))))],
+                                    &output,
+                                    K, M, N);
         }
     }
 }
