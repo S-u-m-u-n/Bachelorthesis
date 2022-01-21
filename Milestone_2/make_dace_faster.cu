@@ -3137,7 +3137,7 @@ struct gemm_t {
 DACE_EXPORTED int __dace_init_cuda(gemm_t *__state, int K, int M, int N);
 DACE_EXPORTED void __dace_exit_cuda(gemm_t *__state);
 
-DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * input_B, float * output, int K, int M, int N) {
+inline DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * input_B, float * output, int K, int M, int N) {
     // IMPORTANT: The input_A, input_B and output are already offsetted for the current thread block!!!!
     // trying cucosma code here
     int lda = M;
@@ -3599,11 +3599,8 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
             int thread_block_j = blockIdx.x;
             int thread_block_i = blockIdx.y;
             nested_nested_state_1_1_5(&input_A[((K * size_thread_block_tile_m) * thread_block_i)],
-            // nested_nested_state_1_1_5(&input_A[0],
                                     &input_B[(size_thread_block_tile_n * thread_block_j)],
-                                    // &input_B[0],
                                     &output[(((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1))))],
-                                    // &output[0],
                                     K, M, N);
         }
     }
