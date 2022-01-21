@@ -1511,7 +1511,6 @@ TYPE (* __restrict__ A_Shared)[2 * (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K],
 
         if (SPLIT_K == 1) {
             global_j = cta_k + shared_j * VECTORCOUNT;
-            // global_j = shared_j * VECTORCOUNT;
         } else {
             global_j = blockIdx.z * THREADBLOCK_TILE_K + cta_k + shared_j * VECTORCOUNT;
         }
@@ -1646,8 +1645,8 @@ TYPE (* __restrict__ B_Shared)[2 * LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET)],
             global_i = blockIdx.z * THREADBLOCK_TILE_K + cta_k + shared_i;
         }
 
-        const auto global_j = block_idx_x * THREADBLOCK_TILE_N + shared_j * VECTORCOUNT;
-        // const auto global_j = shared_j * VECTORCOUNT;
+        // const auto global_j = block_idx_x * THREADBLOCK_TILE_N + shared_j * VECTORCOUNT;
+        const auto global_j = shared_j * VECTORCOUNT;
 
         // If the threads do not evenly divide the whole tile, we need to make this check.
         if ((THREADBLOCK_TILE_N_VECTOR * LOAD_K % THREADS == 0 || (i * THREADS + threadIdx.x) < THREADBLOCK_TILE_N_VECTOR * LOAD_K)) {
@@ -3602,8 +3601,8 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
             int thread_block_i = blockIdx.y;
             nested_nested_state_1_1_5(&input_A[((K * size_thread_block_tile_m) * thread_block_i)],
             // nested_nested_state_1_1_5(&input_A[0],
-                                    // &input_B[(size_thread_block_tile_n * thread_block_j)],
-                                    &input_B[0],
+                                    &input_B[(size_thread_block_tile_n * thread_block_j)],
+                                    // &input_B[0],
                                     // &output[(((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1))))],
                                     &output[0],
                                     K, M, N);
