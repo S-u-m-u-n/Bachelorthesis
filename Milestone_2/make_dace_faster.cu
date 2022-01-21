@@ -3138,7 +3138,7 @@ DACE_EXPORTED int __dace_init_cuda(gemm_t *__state, int K, int M, int N);
 DACE_EXPORTED void __dace_exit_cuda(gemm_t *__state);
 
 // DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * input_B, float * output, int K, int M, int N) {
-inline void nested_nested_state_1_1_5(const float * input_A, const float * input_B, float * output, int K, int M, int N) {
+__device__ __forceinline__ void nested_nested_state_1_1_5(const float * input_A, const float * input_B, float * output, int K, int M, int N) {
     // IMPORTANT: The input_A, input_B and output are already offsetted for the current thread block!!!!
     // trying cucosma code here
     int lda = M;
