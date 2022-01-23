@@ -3401,7 +3401,11 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                     }
                 } // End omp section
 
-                load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&shared_memory_A, &shared_memory_B, input_A + (size_K_tile * (k_tile + 1)), input_B + ((N * size_K_tile) * (k_tile + 1)), lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
+                // load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&shared_memory_A, &shared_memory_B, input_A + (size_K_tile * (k_tile + 1)), input_B + ((N * size_K_tile) * (k_tile + 1)), lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
+                load_Global<A_VECTOR_4, A_VECTOR_2, B_VECTOR_4, B_VECTOR_2, (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(&shared_memory_A, &shared_memory_B, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
+                // load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&shared_memory_A, &shared_memory_B, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
+
+
 
                 // #pragma omp section
                 // {
@@ -3414,6 +3418,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
             } // End omp sections
 
         }
+        cta_k -= LOAD_K;
     }
     {
 
