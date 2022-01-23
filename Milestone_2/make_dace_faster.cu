@@ -3170,6 +3170,16 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         LaneIdx = threadId;
         LaneIdy = 0;
     }
+    //     __shared__ TYPE A_Shared[A_SHARED_BUFFER];
+    
+    //     __shared__ TYPE B_Shared[B_SHARED_BUFFER];
+    
+        // int B_Shared_Offset_0 = 0;
+        // int B_Shared_Offset_1 = B_SHARED_SIZE;
+    
+    //     int A_Shared_Offset_0 = 0;
+    //     int A_Shared_Offset_1 = A_SHARED_SIZE;
+    
 
     constexpr int A_SHARED_SIZE = (THREADBLOCK_TILE_M + A_OFFSET) * LOAD_K;
     constexpr int A_SHARED_BUFFER = 2 * A_SHARED_SIZE;
@@ -3177,15 +3187,15 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     constexpr int B_SHARED_SIZE = LOAD_K * (THREADBLOCK_TILE_N + B_OFFSET);
     constexpr int B_SHARED_BUFFER = 2 * B_SHARED_SIZE;
 
-//     __shared__ TYPE A_Shared[A_SHARED_BUFFER];
+    __shared__ TYPE A_Shared[A_SHARED_BUFFER];
 
-//     __shared__ TYPE B_Shared[B_SHARED_BUFFER];
+    __shared__ TYPE B_Shared[B_SHARED_BUFFER];
 
-    // int B_Shared_Offset_0 = 0;
-    // int B_Shared_Offset_1 = B_SHARED_SIZE;
+    int B_Shared_Offset_0 = 0;
+    int B_Shared_Offset_1 = B_SHARED_SIZE;
 
-//     int A_Shared_Offset_0 = 0;
-//     int A_Shared_Offset_1 = A_SHARED_SIZE;
+    int A_Shared_Offset_0 = 0;
+    int A_Shared_Offset_1 = A_SHARED_SIZE;
 
     int block_idx_x;
     int block_idx_y;
@@ -3205,26 +3215,26 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         block_idx_y = blockIdx.y;
     }
 
-//     register TYPE Thread_Tile[THREAD_TILE_M * THREAD_TILE_N];
+    register TYPE Thread_Tile[THREAD_TILE_M * THREAD_TILE_N];
 
-// #pragma unroll
-//     for (int i = 0; i < THREAD_TILE_M; ++i) {
-// #pragma unroll
-//         for (int j = 0; j < THREAD_TILE_N; ++j) {
-//             Thread_Tile[i * THREAD_TILE_N + j] = 0.0;
-//         }
-//     }
+#pragma unroll
+    for (int i = 0; i < THREAD_TILE_M; ++i) {
+#pragma unroll
+        for (int j = 0; j < THREAD_TILE_N; ++j) {
+            Thread_Tile[i * THREAD_TILE_N + j] = 0.0;
+        }
+    }
 
-//     register TYPE A_register_0[THREAD_TILE_M];
-//     register TYPE A_register_1[THREAD_TILE_M];
+    register TYPE A_register_0[THREAD_TILE_M];
+    register TYPE A_register_1[THREAD_TILE_M];
 
-//     register TYPE B_register_0[THREAD_TILE_N];
-//     register TYPE B_register_1[THREAD_TILE_N];
+    register TYPE B_register_0[THREAD_TILE_N];
+    register TYPE B_register_1[THREAD_TILE_N];
 
     constexpr int K_START = (((THREADBLOCK_TILE_K + LOAD_K - 1) / LOAD_K) - 1) * LOAD_K;
     int cta_k = K_START;
 
-//     int shared_memory_stage = 1;
+    int shared_memory_stage = 1;
 
     constexpr bool A_VECTOR_4 = (LOAD_K % 4 == 0) && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 4 == 0);
     constexpr bool A_VECTOR_2 = (LOAD_K % 2 == 0) && (SPLIT_K == 1 || THREADBLOCK_TILE_K % 2 == 0);
@@ -3238,71 +3248,73 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     constexpr bool K_CHECK = (K_ % THREADBLOCK_TILE_K != 0 && SPLIT_K > 1);
     constexpr bool THREADBLOCK_TILE_K_CHECK = THREADBLOCK_TILE_K % LOAD_K != 0;
 
-//     load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_0, B_Shared_Offset_0);
+    // load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_0, B_Shared_Offset_0);
+    dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 8, 1, true>(input_A + ((K * size_thread_block_tile_m) * block_idx_y), K, 1, shared_memory_A);
+    dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + (size_thread_block_tile_n * block_idx_x), N, 1, shared_memory_B);
 
-//     __syncthreads();
+    __syncthreads();
 
-//     cta_k -= LOAD_K;
+    cta_k -= LOAD_K;
 
-// #pragma unroll 1
-//     for (; cta_k >= 0; cta_k -= LOAD_K) {
+#pragma unroll 1
+    for (; cta_k >= 0; cta_k -= LOAD_K) {
 
-// #pragma unroll
-//         for (int k = 0; k < LOAD_K; k++) {
-//             if (k % 2 == 0) {
-//                 load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
-//             } else {
-//                 load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
-//             }
+#pragma unroll
+        for (int k = 0; k < LOAD_K; k++) {
+            if (k % 2 == 0) {
+                load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
+            } else {
+                load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
+            }
 
-//             if (k == LOAD_K - 1) {
-//                 load_Global<A_VECTOR_4, A_VECTOR_2, B_VECTOR_4, B_VECTOR_2, (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_1, B_Shared_Offset_1);
-//                 __syncthreads();
-//             }
+            if (k == LOAD_K - 1) {
+                load_Global<A_VECTOR_4, A_VECTOR_2, B_VECTOR_4, B_VECTOR_2, (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_1, B_Shared_Offset_1);
+                __syncthreads();
+            }
 
-//             if (k % 2 == 0) {
-//                 compute_inner(&A_register_0, &B_register_0, &Thread_Tile);
-//             } else {
-//                 compute_inner(&A_register_1, &B_register_1, &Thread_Tile);
-//             }
-//         }
+            if (k % 2 == 0) {
+                compute_inner(&A_register_0, &B_register_0, &Thread_Tile);
+            } else {
+                compute_inner(&A_register_1, &B_register_1, &Thread_Tile);
+            }
+        }
 
-//         if (shared_memory_stage == 1) {
-//             B_Shared_Offset_0 = B_SHARED_SIZE;
-//             B_Shared_Offset_1 = 0;
+        if (shared_memory_stage == 1) {
+            B_Shared_Offset_0 = B_SHARED_SIZE;
+            B_Shared_Offset_1 = 0;
 
-//             A_Shared_Offset_0 = A_SHARED_SIZE;
-//             A_Shared_Offset_1 = 0;
-//         } else {
-//             B_Shared_Offset_0 = 0;
-//             B_Shared_Offset_1 = B_SHARED_SIZE;
+            A_Shared_Offset_0 = A_SHARED_SIZE;
+            A_Shared_Offset_1 = 0;
+        } else {
+            B_Shared_Offset_0 = 0;
+            B_Shared_Offset_1 = B_SHARED_SIZE;
 
-//             A_Shared_Offset_0 = 0;
-//             A_Shared_Offset_1 = A_SHARED_SIZE;
-//         }
-//         shared_memory_stage ^= 1;
-//     }
+            A_Shared_Offset_0 = 0;
+            A_Shared_Offset_1 = A_SHARED_SIZE;
+        }
+        shared_memory_stage ^= 1;
+    }
 
-// #pragma unroll
-//     for (int k = 0; k < LOAD_K; k++) {
-//         if (k % 2 == 0) {
-//             load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
-//         } else {
-//             load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
-//         }
+#pragma unroll
+    for (int k = 0; k < LOAD_K; k++) {
+        if (k % 2 == 0) {
+            load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
+        } else {
+            load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
+        }
 
-//         if (k % 2 == 0) {
-//             compute_inner(&A_register_0, &B_register_0, &Thread_Tile);
-//         } else {
-//             compute_inner(&A_register_1, &B_register_1, &Thread_Tile);
-//         }
-//     }
+        if (k % 2 == 0) {
+            compute_inner(&A_register_0, &B_register_0, &Thread_Tile);
+        } else {
+            compute_inner(&A_register_1, &B_register_1, &Thread_Tile);
+        }
+    }
 
-//     __shared__ TYPE C_Shared[M_WARPS * N_WARPS * 192];
+    __shared__ TYPE C_Shared[M_WARPS * N_WARPS * 192];
 
-//     load_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
+    load_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
 
-//     store_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
+    store_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
 
     // end of trying cucosma code
 
@@ -3334,10 +3346,11 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     long long k_tile;
 
 
+    /*
     {
 
-        load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&shared_memory_A, &shared_memory_B, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
-        cta_k -= LOAD_K;
+        // load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&shared_memory_A, &shared_memory_B, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
+        // cta_k -= LOAD_K;
 
         // #pragma omp parallel sections
         // {
@@ -3402,7 +3415,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                 } // End omp section
 
                 // load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&shared_memory_A, &shared_memory_B, input_A + (size_K_tile * (k_tile + 1)), input_B + ((N * size_K_tile) * (k_tile + 1)), lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
-                load_Global<A_VECTOR_4, A_VECTOR_2, B_VECTOR_4, B_VECTOR_2, (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(&shared_memory_A, &shared_memory_B, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
+                // load_Global<A_VECTOR_4, A_VECTOR_2, B_VECTOR_4, B_VECTOR_2, (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(&shared_memory_A, &shared_memory_B, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
                 // load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&shared_memory_A, &shared_memory_B, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
 
 
