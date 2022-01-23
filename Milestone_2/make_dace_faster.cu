@@ -3332,21 +3332,22 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     __shared__ float shared_memory_A[2048];
     long long k_tile;
 
-    // load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&shared_memory_A, &shared_memory_B, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
 
     {
 
-        #pragma omp parallel sections
-        {
-            #pragma omp section
-            {
-                dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 8, 1, true>(input_A + ((K * size_thread_block_tile_m) * block_idx_y), K, 1, shared_memory_A);
-            } // End omp section
-            #pragma omp section
-            {
-                dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + (size_thread_block_tile_n * block_idx_x), N, 1, shared_memory_B);
-            } // End omp section
-        } // End omp sections
+        load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&shared_memory_A, &shared_memory_B, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
+
+        // #pragma omp parallel sections
+        // {
+        //     #pragma omp section
+        //     {
+        //         dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 8, 1, true>(input_A + ((K * size_thread_block_tile_m) * block_idx_y), K, 1, shared_memory_A);
+        //     } // End omp section
+        //     #pragma omp section
+        //     {
+        //         dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + (size_thread_block_tile_n * block_idx_x), N, 1, shared_memory_B);
+        //     } // End omp section
+        // } // End omp sections
 
     }
 
@@ -3398,16 +3399,16 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                     }
                 } // End omp section
 
-                // load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&shared_memory_A, &shared_memory_B, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
+                load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&shared_memory_A, &shared_memory_B, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
 
-                #pragma omp section
-                {
-                    dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 8, 1, true>(input_A + (size_K_tile * (k_tile + 1)) + ((K * size_thread_block_tile_m) * block_idx_y), K, 1, shared_memory_A + (1024 * ((k_tile + 1) % 2)));
-                } // End omp section
-                #pragma omp section
-                {
-                    dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + ((N * size_K_tile) * (k_tile + 1)) + (size_thread_block_tile_n * block_idx_x), N, 1, shared_memory_B + (1024 * ((k_tile + 1) % 2)));
-                } // End omp section
+                // #pragma omp section
+                // {
+                //     dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 8, 1, true>(input_A + (size_K_tile * (k_tile + 1)) + ((K * size_thread_block_tile_m) * block_idx_y), K, 1, shared_memory_A + (1024 * ((k_tile + 1) % 2)));
+                // } // End omp section
+                // #pragma omp section
+                // {
+                //     dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + ((N * size_K_tile) * (k_tile + 1)) + (size_thread_block_tile_n * block_idx_x), N, 1, shared_memory_B + (1024 * ((k_tile + 1) % 2)));
+                // } // End omp section
             } // End omp sections
 
         }
