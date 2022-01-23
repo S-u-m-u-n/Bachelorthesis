@@ -3364,13 +3364,12 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                             if (thread < num_threads_per_threadblock) {
                                 {
                                     for (auto k = 0; k < size_K_tile; k += 1) {
+                                        // load_Shared(&shared_memory_A, &register_storage_A, &shared_memory_B, &register_storage_B, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
+                                        dace::CopyND<float, 1, false, size_thread_tile_m>::template ConstDst<1>::Copy(
+                                        shared_memory_A + (((k + ((8 * size_thread_tile_m) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((8 * size_warp_tile_m) * ((thread / 32) / num_warps_n))) + (1024 * (k_tile % 2))), register_storage_A, 8);
 
-                                        load_Shared(&shared_memory_A, &register_storage_A, &shared_memory_B, &register_storage_B, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
-                                        // dace::CopyND<float, 1, false, size_thread_tile_m>::template ConstDst<1>::Copy(
-                                        // shared_memory_A + (((k + ((8 * size_thread_tile_m) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((8 * size_warp_tile_m) * ((thread / 32) / num_warps_n))) + (1024 * (k_tile % 2))), register_storage_A, 8);
-
-                                        // dace::CopyND<float, 1, false, size_thread_tile_n>::template ConstDst<1>::Copy(
-                                        // shared_memory_B + ((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + (1024 * (k_tile % 2))), register_storage_B, 1);
+                                        dace::CopyND<float, 1, false, size_thread_tile_n>::template ConstDst<1>::Copy(
+                                        shared_memory_B + ((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + (1024 * (k_tile % 2))), register_storage_B, 1);
                                         {
                                             #pragma unroll
                                             for (auto i = 0; i < size_thread_tile_m; i += 1) {
@@ -3421,14 +3420,13 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                 if (thread < num_threads_per_threadblock) {
                     {
                         for (auto k = 0; k < size_K_tile; k += 1) {
+                            // load_Shared(&shared_memory_A, &register_storage_A, &shared_memory_B, &register_storage_B, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
 
-                            load_Shared(&shared_memory_A, &register_storage_A, &shared_memory_B, &register_storage_B, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, 1024 * (k_tile % 2), 1024 * (k_tile % 2));
+                            dace::CopyND<float, 1, false, size_thread_tile_m>::template ConstDst<1>::Copy(
+                            shared_memory_A + (((k + ((8 * size_thread_tile_m) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((8 * size_warp_tile_m) * ((thread / 32) / num_warps_n))) + (1024 * (k_tile % 2))), register_storage_A, 8);
 
-                            // dace::CopyND<float, 1, false, size_thread_tile_m>::template ConstDst<1>::Copy(
-                            // shared_memory_A + (((k + ((8 * size_thread_tile_m) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((8 * size_warp_tile_m) * ((thread / 32) / num_warps_n))) + (1024 * (k_tile % 2))), register_storage_A, 8);
-
-                            // dace::CopyND<float, 1, false, size_thread_tile_n>::template ConstDst<1>::Copy(
-                            // shared_memory_B + ((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + (1024 * (k_tile % 2))), register_storage_B, 1);
+                            dace::CopyND<float, 1, false, size_thread_tile_n>::template ConstDst<1>::Copy(
+                            shared_memory_B + ((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + (1024 * (k_tile % 2))), register_storage_B, 1);
                             {
                                 #pragma unroll
                                 for (auto i = 0; i < size_thread_tile_m; i += 1) {
