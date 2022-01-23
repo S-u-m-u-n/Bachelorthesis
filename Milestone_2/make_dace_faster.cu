@@ -3320,32 +3320,32 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
     // end of trying cucosma code
 
-    constexpr long long VECLEN = 4;
-    constexpr float alpha = 1;
-    constexpr float beta = 0;
-    constexpr long long size_thread_block_tile_m = 128;
-    constexpr long long size_thread_block_tile_n = 128;
-    constexpr long long size_K_tile = 8;
-    constexpr long long num_thread_blocks_m = 32;
-    constexpr long long num_thread_blocks_n = 32;
-    constexpr long long num_K_tiles = 512;
-    constexpr long long size_warp_tile_m = 32;
-    constexpr long long size_warp_tile_n = 64;
-    constexpr long long size_thread_tile_m = 8;
-    constexpr long long size_thread_tile_n = 8;
-    // constexpr long long SPLIT_K = 1;
-    constexpr long long num_threads_per_threadblock = 256;
-    constexpr long long num_warps_n = 2;
-    constexpr long long warp_width = 8;
-    constexpr long long warp_height = 4;
-    constexpr long long size_K_split = 4096;
-    // constexpr long long SWIZZLE = 1;
-    __shared__ float shared_memory_B[2048];
-    float register_storage_C[64]  DACE_ALIGN(64) = {0};
-    float register_storage_B[8]  DACE_ALIGN(64);
-    float register_storage_A[8]  DACE_ALIGN(64);
-    __shared__ float shared_memory_A[2048];
-    long long k_tile;
+    // constexpr long long VECLEN = 4;
+    // constexpr float alpha = 1;
+    // constexpr float beta = 0;
+    // constexpr long long size_thread_block_tile_m = 128;
+    // constexpr long long size_thread_block_tile_n = 128;
+    // constexpr long long size_K_tile = 8;
+    // constexpr long long num_thread_blocks_m = 32;
+    // constexpr long long num_thread_blocks_n = 32;
+    // constexpr long long num_K_tiles = 512;
+    // constexpr long long size_warp_tile_m = 32;
+    // constexpr long long size_warp_tile_n = 64;
+    // constexpr long long size_thread_tile_m = 8;
+    // constexpr long long size_thread_tile_n = 8;
+    // // constexpr long long SPLIT_K = 1;
+    // constexpr long long num_threads_per_threadblock = 256;
+    // constexpr long long num_warps_n = 2;
+    // constexpr long long warp_width = 8;
+    // constexpr long long warp_height = 4;
+    // constexpr long long size_K_split = 4096;
+    // // constexpr long long SWIZZLE = 1;
+    // __shared__ float shared_memory_B[2048];
+    // float register_storage_C[64]  DACE_ALIGN(64) = {0};
+    // float register_storage_B[8]  DACE_ALIGN(64);
+    // float register_storage_A[8]  DACE_ALIGN(64);
+    // __shared__ float shared_memory_A[2048];
+    // long long k_tile;
 
 
     /*
