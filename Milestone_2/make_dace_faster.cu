@@ -3340,11 +3340,11 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         {
             #pragma omp section
             {
-                dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 8, 1, true>(input_A + ((K * size_thread_block_tile_m) * thread_block_i), K, 1, shared_memory_A);
+                dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 8, 1, true>(input_A + ((K * size_thread_block_tile_m) * block_idx_y), K, 1, shared_memory_A);
             } // End omp section
             #pragma omp section
             {
-                dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + (size_thread_block_tile_n * thread_block_j), N, 1, shared_memory_B);
+                dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + (size_thread_block_tile_n * block_idx_x), N, 1, shared_memory_B);
             } // End omp section
         } // End omp sections
 
@@ -3402,11 +3402,11 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
                 #pragma omp section
                 {
-                    dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 8, 1, true>(input_A + (size_K_tile * (k_tile + 1)) + ((K * size_thread_block_tile_m) * thread_block_i), K, 1, shared_memory_A + (1024 * ((k_tile + 1) % 2)));
+                    dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 8, 1, true>(input_A + (size_K_tile * (k_tile + 1)) + ((K * size_thread_block_tile_m) * block_idx_y), K, 1, shared_memory_A + (1024 * ((k_tile + 1) % 2)));
                 } // End omp section
                 #pragma omp section
                 {
-                    dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + ((N * size_K_tile) * (k_tile + 1)) + (size_thread_block_tile_n * thread_block_j), N, 1, shared_memory_B + (1024 * ((k_tile + 1) % 2)));
+                    dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + ((N * size_K_tile) * (k_tile + 1)) + (size_thread_block_tile_n * block_idx_x), N, 1, shared_memory_B + (1024 * ((k_tile + 1) % 2)));
                 } // End omp section
             } // End omp sections
 
@@ -3452,7 +3452,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                     }
                     
                     dace::CopyND<float, 1, false, size_thread_tile_m, size_thread_tile_n>::template ConstSrc<8, 1>::Accumulate(
-                    register_storage_C, output + (((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1)))) + ((((N * ((((- size_thread_tile_m) * bitwise_and(right_shift(0, 1), (warp_height - 1))) + (size_thread_tile_m * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + (size_warp_tile_m * ((thread / 32) / num_warps_n)))) - (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1)))) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))), [] (const float& x, const float& y) { return (x + y); }, N, 1);
+                    register_storage_C, output + (((N * ((size_thread_block_tile_m * block_idx_y) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * block_idx_x)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1)))) + ((((N * ((((- size_thread_tile_m) * bitwise_and(right_shift(0, 1), (warp_height - 1))) + (size_thread_tile_m * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + (size_warp_tile_m * ((thread / 32) / num_warps_n)))) - (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1)))) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))), [] (const float& x, const float& y) { return (x + y); }, N, 1);
                 }
             }
         }
