@@ -3458,7 +3458,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                 printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 34, B_Shared[B_Shared_Offset_0 + 34]);
                 printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 35, B_Shared[B_Shared_Offset_0 + 35]);
                 printf("--\n");
-                printf("B_register_1[%d] = %f\n", 0, B_register_1))[0]);
+                printf("B_register_1[%d] = %f\n", 0, B_register_1[0]);
                 printf("B_register_1[%d] = %f\n", 1, B_register_1[1]);
                 printf("B_register_1[%d] = %f\n", 2, B_register_1[2]);
                 printf("B_register_1[%d] = %f\n", 3, B_register_1[3]);
