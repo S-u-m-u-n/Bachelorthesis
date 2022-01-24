@@ -3246,7 +3246,15 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
     if(thread == 0 && block_idx_x == 0 && block_idx_y == 0) {
         printf("input_A[0] = %d\n", *input_A);
-        printf("input_B[0] = %d\n", *input_B);
+        printf("input_A[0] = %d\n", *(input_A));
+        printf("input_A[0] = %d\n", *(input_A + 0));
+        printf("input_A[0] = %d\n", *input_A[0]);
+        printf("input_A[0] = %d\n", input_A);
+        printf("input_A[0] = %d\n", input_A[0]);
+        printf("input_A[0] = %d\n", &input_A);
+        printf("input_A[0] = %d\n", &input_A[0]);
+        printf("input_A[0] = %d\n", &(input_A + 0));
+        // printf("input_B[0] = %d\n", *input_B);
     }
 
     // register TYPE Thread_Tile[THREAD_TILE_M * THREAD_TILE_N];
@@ -3387,7 +3395,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                 printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 1, A_Shared[A_Shared_Offset_0 + 1]);
                 printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 2, A_Shared[A_Shared_Offset_0 + 2]);
                 printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 3, A_Shared[A_Shared_Offset_0 + 3]);
-                printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 4, *(A_Shared + (A_Shared_Offset_0 + 4)));
+                printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 4, *(A_Shared + A_Shared_Offset_0 + 4));
                 printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 5, &A_Shared[A_Shared_Offset_0 + 5]);
                 printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 6, &A_Shared[A_Shared_Offset_0 + 6]);
                 printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 7, &A_Shared[A_Shared_Offset_0 + 7]);
