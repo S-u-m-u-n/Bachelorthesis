@@ -3310,23 +3310,23 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                 // dace::CopyND<float, 1, false, size_thread_tile_n>::template ConstDst<1>::Copy(
                     // B_Shared + ((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + B_Shared_Offset_0), B_register_0, 1);
                 if(block_idx_x == 0 && block_idx_y == 0 && thread == 0 && k == 0) {
-                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0, B_Shared[B_Shared_Offset_0])
-                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 1, B_Shared[B_Shared_Offset_0 + 1])
-                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 2, B_Shared[B_Shared_Offset_0 + 2])
-                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 3, B_Shared[B_Shared_Offset_0 + 3])
-                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 4, B_Shared[B_Shared_Offset_0 + 4])
-                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 5, B_Shared[B_Shared_Offset_0 + 5])
-                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 6, B_Shared[B_Shared_Offset_0 + 6])
-                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 7, B_Shared[B_Shared_Offset_0 + 7])
-                    printf("--------------------------------------------------------------------\n")
-                    printf("B_register_0[%d] = %d\n", 0, B_register_0[0])
-                    printf("B_register_0[%d] = %d\n", 1, B_register_0[1])
-                    printf("B_register_0[%d] = %d\n", 2, B_register_0[2])
-                    printf("B_register_0[%d] = %d\n", 3, B_register_0[3])
-                    printf("B_register_0[%d] = %d\n", 4, B_register_0[4])
-                    printf("B_register_0[%d] = %d\n", 5, B_register_0[5])
-                    printf("B_register_0[%d] = %d\n", 6, B_register_0[6])
-                    printf("B_register_0[%d] = %d\n", 7, B_register_0[7])
+                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0, B_Shared[B_Shared_Offset_0]);
+                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 1, B_Shared[B_Shared_Offset_0 + 1]);
+                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 2, B_Shared[B_Shared_Offset_0 + 2]);
+                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 3, B_Shared[B_Shared_Offset_0 + 3]);
+                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 4, B_Shared[B_Shared_Offset_0 + 4]);
+                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 5, B_Shared[B_Shared_Offset_0 + 5]);
+                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 6, B_Shared[B_Shared_Offset_0 + 6]);
+                    printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 7, B_Shared[B_Shared_Offset_0 + 7]);
+                    printf("--------------------------------------------------------------------\n");
+                    printf("B_register_0[%d] = %d\n", 0, B_register_0[0]);
+                    printf("B_register_0[%d] = %d\n", 1, B_register_0[1]);
+                    printf("B_register_0[%d] = %d\n", 2, B_register_0[2]);
+                    printf("B_register_0[%d] = %d\n", 3, B_register_0[3]);
+                    printf("B_register_0[%d] = %d\n", 4, B_register_0[4]);
+                    printf("B_register_0[%d] = %d\n", 5, B_register_0[5]);
+                    printf("B_register_0[%d] = %d\n", 6, B_register_0[6]);
+                    printf("B_register_0[%d] = %d\n", 7, B_register_0[7]);
                 }
                 // dace::CopyND<float, 1, false, size_thread_tile_n / 2>::template ConstDst<1>::Copy(
                     // B_Shared + ((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + B_Shared_Offset_0), B_register_0, 1);
