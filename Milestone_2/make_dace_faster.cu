@@ -3169,11 +3169,8 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     static_assert(THREADBLOCK_TILE_N % WARP_TILE_N == 0, "Warptilde needs to divide Threadblocktile");
     static_assert(N_THREADS * M_THREADS == 32, "Warp has 32 Threads");
 
+    
     int thread = threadIdx.x;
-    if(thread == 0) {
-        printf("input_A[0] = %d", input_A[0]);
-        printf("input_B[0] = %d", input_B[0]);
-    }
     const int WarpId = threadIdx.x / 32;
     const int threadId = threadIdx.x % 32;
 
@@ -3231,6 +3228,11 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
     int block_idx_x;
     int block_idx_y;
+
+    if(thread == 0 && block_idx_x == 0 && block_idx_y == 0) {
+        printf("input_A[0] = %d", &input_A[0]);
+        printf("input_B[0] = %d", &input_B[0]);
+    }
 
     if (SWIZZLE != 1) {
         block_idx_x = blockIdx.x / SWIZZLE;
