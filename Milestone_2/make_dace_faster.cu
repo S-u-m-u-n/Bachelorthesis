@@ -3311,6 +3311,24 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                     // B_Shared + ((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + B_Shared_Offset_0), B_register_0, 1);
                 __syncthreads();
                 if(block_idx_x == 0 && block_idx_y == 0 && thread == 0 && k == 0 && WarpIdx == 0 && LaneIdx == 0 && cta_k == 0) {
+                    printf("A_Shared[%d] = %d\n", A_Shared_Offset_0, A_Shared[A_Shared_Offset_0]);
+                    printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 1, A_Shared[A_Shared_Offset_0 + 1]);
+                    printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 2, A_Shared[A_Shared_Offset_0 + 2]);
+                    printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 3, A_Shared[A_Shared_Offset_0 + 3]);
+                    printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 4, A_Shared[A_Shared_Offset_0 + 4]);
+                    printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 5, A_Shared[A_Shared_Offset_0 + 5]);
+                    printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 6, A_Shared[A_Shared_Offset_0 + 6]);
+                    printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 7, A_Shared[A_Shared_Offset_0 + 7]);
+                    printf("--\n");
+                    printf("A_register_0[%d] = %d\n", 0, A_register_0[0]);
+                    printf("A_register_0[%d] = %d\n", 1, A_register_0[1]);
+                    printf("A_register_0[%d] = %d\n", 2, A_register_0[2]);
+                    printf("A_register_0[%d] = %d\n", 3, A_register_0[3]);
+                    printf("A_register_0[%d] = %d\n", 4, A_register_0[4]);
+                    printf("A_register_0[%d] = %d\n", 5, A_register_0[5]);
+                    printf("A_register_0[%d] = %d\n", 6, A_register_0[6]);
+                    printf("A_register_0[%d] = %d\n", 7, A_register_0[7]);
+                    printf("--\n");
                     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0, B_Shared[B_Shared_Offset_0]);
                     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 1, B_Shared[B_Shared_Offset_0 + 1]);
                     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 2, B_Shared[B_Shared_Offset_0 + 2]);
