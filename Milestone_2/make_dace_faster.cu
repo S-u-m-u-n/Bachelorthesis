@@ -3244,16 +3244,17 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         block_idx_y = blockIdx.y;
     }
 
-    // if(thread == 0 && block_idx_x == 0 && block_idx_y == 0) {
+    if(thread == 0 && block_idx_x == 0 && block_idx_y == 0) {
     //     printf("input_A[0] = %d\n", *input_A);
     //     printf("input_A[0] = %d\n", *(input_A));
     //     printf("input_A[0] = %d\n", *(input_A + 0));
     //     printf("input_A[0] = %d\n", input_A);
-    //     printf("input_A[0] = %d\n", input_A[0]);
+        printf("input_A[0] = %d\n", input_A[0]);
     //     printf("input_A[0] = %d\n", &input_A);
     //     printf("input_A[0] = %d\n", &input_A[0]);
-    //     // printf("input_B[0] = %d\n", *input_B);
-    // }
+        printf("input_B[0] = %d\n", input_B[0]);
+        printf("output[0] = %d\n", output[0]);
+    }
 
     // register TYPE Thread_Tile[THREAD_TILE_M * THREAD_TILE_N];
     TYPE Thread_Tile[THREAD_TILE_M * THREAD_TILE_N] DACE_ALIGN(64) = {0};
@@ -3738,8 +3739,8 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
                                     // K, M, N);
             if(threadIdx.x == 0 && thread_block_j == 0 && thread_block_i == 0) {
                 printf("input_A[0] = %d\n", input_A[0]);
-                printf("input_A[0] = %d\n", input_B[0]);
-                printf("input_A[0] = %d\n", output[0]);
+                printf("input_B[0] = %d\n", input_B[0]);
+                printf("output[0] = %d\n", output[0]);
             }
 
             nested_nested_state_1_1_5(input_A,
