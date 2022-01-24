@@ -3390,9 +3390,11 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
         if (k % 2 == 0) {
             compute_inner(&A_register_0, &B_register_0, &Thread_Tile);
-            if(B_register_0[4] != B_Shared[((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + B_Shared_Offset_0 + 32)]) {
-                printf("- ERROR!!!!! -\n");
-
+            if(abs(B_register_0[0] - B_Shared[((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + B_Shared_Offset_0)]) > 0.0001) {
+                printf("- ERROR!!!!! 00 -\n");
+            }
+            if(abs(B_register_0[4] - B_Shared[((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + B_Shared_Offset_0 + 32)] > 0.0001) {
+                printf("- ERROR!!!!! 32 -\n");
             }
             if(block_idx_x == 0 && block_idx_y == 0 && threadIdx.x == 0 && k == 0) {
                 printf("A_Shared[%d] = %f\n", A_Shared_Offset_0, A_Shared[A_Shared_Offset_0]);
