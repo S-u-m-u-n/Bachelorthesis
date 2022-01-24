@@ -3723,6 +3723,9 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
     // constexpr long long SWIZZLE = 1;
     // constexpr long long SPLIT_K = 1;
     constexpr long long num_threads_per_threadblock = 256;
+
+    printf("input_A[0] = %d\n", *(&input_A[0]));
+
     {
         {
             int thread_block_j = blockIdx.x;
@@ -3746,12 +3749,11 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
 DACE_EXPORTED void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __restrict__ input_A, const float * __restrict__ input_B, float * __restrict__ output, int K, int M, int N);
 void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __restrict__ input_A, const float * __restrict__ input_B, float * __restrict__ output, int K, int M, int N)
 {
-    std::cout << "input_A[0] = " << *input_A << std::flush;
+    // std::cout << "input_A[0] = " << *input_A << std::flush;
     void  *Thread_block_grid_1_1_3_args[] = { (void *)&input_A, (void *)&input_B, (void *)&output, (void *)&K, (void *)&M, (void *)&N };
 
     // can use this line as a correctness check
     cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
-	cudaProfilerStop();
 
     /*
     // Warmup
