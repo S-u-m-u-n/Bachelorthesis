@@ -3438,6 +3438,8 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     load_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
 
     store_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
+    printf("output[0] = %d\n", output[0]);
+
 
     // end of trying cucosma code
 
