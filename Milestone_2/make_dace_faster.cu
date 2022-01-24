@@ -3243,7 +3243,8 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         block_idx_y = blockIdx.y;
     }
 
-    register TYPE Thread_Tile[THREAD_TILE_M * THREAD_TILE_N] DACE_ALIGN(64) = {0};
+    // register TYPE Thread_Tile[THREAD_TILE_M * THREAD_TILE_N];
+    TYPE Thread_Tile[THREAD_TILE_M * THREAD_TILE_N] DACE_ALIGN(64) = {0};
 
 #pragma unroll
     for (int i = 0; i < THREAD_TILE_M; ++i) {
@@ -3253,11 +3254,11 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         }
     }
 
-    register TYPE A_register_0[THREAD_TILE_M] DACE_ALIGN(64);
-    register TYPE A_register_1[THREAD_TILE_M] DACE_ALIGN(64);
+    TYPE A_register_0[THREAD_TILE_M] DACE_ALIGN(64);
+    TYPE A_register_1[THREAD_TILE_M] DACE_ALIGN(64);
 
-    register TYPE B_register_0[THREAD_TILE_N] DACE_ALIGN(64);
-    register TYPE B_register_1[THREAD_TILE_N] DACE_ALIGN(64);
+    TYPE B_register_0[THREAD_TILE_N] DACE_ALIGN(64);
+    TYPE B_register_1[THREAD_TILE_N] DACE_ALIGN(64);
 
     constexpr int K_START = (((THREADBLOCK_TILE_K + LOAD_K - 1) / LOAD_K) - 1) * LOAD_K;
     int cta_k = K_START;
