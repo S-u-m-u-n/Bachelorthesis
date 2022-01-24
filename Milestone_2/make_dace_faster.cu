@@ -3249,15 +3249,13 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     constexpr bool THREADBLOCK_TILE_K_CHECK = THREADBLOCK_TILE_K % LOAD_K != 0;
 
 
+    // load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_0, B_Shared_Offset_0);
+
     // load_A_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, input_A, lda, cta_k, block_idx_y, A_Shared_Offset_0);
     dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 1, 128, true>(input_A + ((K * size_thread_block_tile_m) * block_idx_y) + cta_k, K, 1, A_Shared + A_Shared_Offset_0);
 
     // load_B_Global<B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&B_Shared, input_B, ldb, cta_k, block_idx_x, B_Shared_Offset_0);
     dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + (K * cta_k) + (size_thread_block_tile_n * block_idx_x), N, 1, B_Shared + B_Shared_Offset_0);
-
-    // load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_0, B_Shared_Offset_0);
-    // dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 8, 1, true>(input_A + ((K * size_thread_block_tile_m) * block_idx_y), K, 1, A_Shared + A_Shared_Offset_0);
-    // dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + (size_thread_block_tile_n * block_idx_x), N, 1, B_Shared + B_Shared_Offset_0);
 
     __syncthreads();
 
@@ -3269,9 +3267,13 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 #pragma unroll
         for (int k = 0; k < LOAD_K; k++) {
             if (k % 2 == 0) {
-                load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
+                // load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
+                load_A_Shared(&A_Shared, &A_register_0, k, WarpIdy, LaneIdy, A_Shared_Offset_0);
+                load_B_Shared(&B_Shared, &B_register_0, k, WarpIdx, LaneIdx, B_Shared_Offset_0);
             } else {
-                load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
+                // load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
+                load_A_Shared(&A_Shared, &A_register_1, k, WarpIdy, LaneIdy, A_Shared_Offset_0);
+                load_B_Shared(&B_Shared, &B_register_1, k, WarpIdx, LaneIdx, B_Shared_Offset_0);
             }
 
             if (k == LOAD_K - 1) {
@@ -3311,9 +3313,13 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 #pragma unroll
     for (int k = 0; k < LOAD_K; k++) {
         if (k % 2 == 0) {
-            load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
+            // load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
+            load_A_Shared(&A_Shared, &A_register_0, k, WarpIdy, LaneIdy, A_Shared_Offset_0);
+            load_B_Shared(&B_Shared, &B_register_0, k, WarpIdx, LaneIdx, B_Shared_Offset_0);
         } else {
-            load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
+            // load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
+            load_A_Shared(&A_Shared, &A_register_1, k, WarpIdy, LaneIdy, A_Shared_Offset_0);
+            load_B_Shared(&B_Shared, &B_register_1, k, WarpIdx, LaneIdx, B_Shared_Offset_0);
         }
 
         if (k % 2 == 0) {
