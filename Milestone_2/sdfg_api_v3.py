@@ -714,19 +714,19 @@ for i in range(args.repetitions):
                         return False
             return True
 
-        # helpers.print_info("Correct result: ", False)
-        # for i in range(128):
-        #     for j in range(128):
-        #         print("%.2f" % C_correct[i][j], end=" ")
-        #     print()
+        helpers.print_info("Correct result: ", False)
+        for i in range(8):
+            for j in range(8):
+                print("%.2f" % C_correct[i][j], end=" ")
+            print()
 
-        # print()
-        # print()
-        # helpers.print_info("SDFG result: ", False)
-        # for i in range(128):
-        #     for j in range(128):
-        #         print("%.2f" % C[i][j], end=" ")
-        #     print()
+        print()
+        print()
+        helpers.print_info("SDFG result: ", False)
+        for i in range(8):
+            for j in range(8):
+                print("%.2f" % C[i][j], end=" ")
+            print()
 
         if areSame(C_correct, C):
             helpers.print_success("The SDFG is correct!", False)
