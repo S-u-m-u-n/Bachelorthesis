@@ -3170,6 +3170,10 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     static_assert(N_THREADS * M_THREADS == 32, "Warp has 32 Threads");
 
     int thread = threadIdx.x;
+    if(thread == 0) {
+        printf("input_A[0] = %d", input_A[0])
+        printf("input_B[0] = %d", input_B[0])
+    }
     const int WarpId = threadIdx.x / 32;
     const int threadId = threadIdx.x % 32;
 
