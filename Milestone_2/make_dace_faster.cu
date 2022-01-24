@@ -3298,7 +3298,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                 // load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
                 // load_A_Shared(&A_Shared, &A_register_0, k, WarpIdy, LaneIdy, A_Shared_Offset_0);
                 dace::CopyND<float, 1, false, size_thread_tile_m>::template ConstDst<1>::Copy(
-                    A_Shared + (((k + ((8 * size_thread_tile_m) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((8 * size_warp_tile_m) * ((thread / 32) / num_warps_n))) + A_Shared_Offset_0, A_register_0, 128));
+                    A_Shared + (((k + ((8 * size_thread_tile_m) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((8 * size_warp_tile_m) * ((thread / 32) / num_warps_n))) + A_Shared_Offset_0, A_register_0, 8));
                 load_B_Shared(&B_Shared, &B_register_0, k, WarpIdx, LaneIdx, B_Shared_Offset_0);
             } else {
                 // load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
