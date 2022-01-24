@@ -3467,6 +3467,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                 printf("B_register_1[%d] = %f\n", 6, B_register_1[6]);
                 printf("B_register_1[%d] = %f\n", 7, B_register_1[7]);
                 printf("--------------------------------------------------------------------\n");
+            }
         }
     }
 
