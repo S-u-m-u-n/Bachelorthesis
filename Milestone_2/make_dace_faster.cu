@@ -3244,16 +3244,16 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         block_idx_y = blockIdx.y;
     }
 
-    if(thread == 0 && block_idx_x == 0 && block_idx_y == 0) {
-        printf("input_A[0] = %d\n", *input_A);
-        printf("input_A[0] = %d\n", *(input_A));
-        printf("input_A[0] = %d\n", *(input_A + 0));
-        printf("input_A[0] = %d\n", input_A);
-        printf("input_A[0] = %d\n", input_A[0]);
-        printf("input_A[0] = %d\n", &input_A);
-        printf("input_A[0] = %d\n", &input_A[0]);
-        // printf("input_B[0] = %d\n", *input_B);
-    }
+    // if(thread == 0 && block_idx_x == 0 && block_idx_y == 0) {
+    //     printf("input_A[0] = %d\n", *input_A);
+    //     printf("input_A[0] = %d\n", *(input_A));
+    //     printf("input_A[0] = %d\n", *(input_A + 0));
+    //     printf("input_A[0] = %d\n", input_A);
+    //     printf("input_A[0] = %d\n", input_A[0]);
+    //     printf("input_A[0] = %d\n", &input_A);
+    //     printf("input_A[0] = %d\n", &input_A[0]);
+    //     // printf("input_B[0] = %d\n", *input_B);
+    // }
 
     // register TYPE Thread_Tile[THREAD_TILE_M * THREAD_TILE_N];
     TYPE Thread_Tile[THREAD_TILE_M * THREAD_TILE_N] DACE_ALIGN(64) = {0};
@@ -3388,44 +3388,44 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         }
 
         if (k % 2 == 0) {
-            if(block_idx_x == 0 && block_idx_y == 0 && threadIdx.x == 0 && k == 0) {
-                printf("A_Shared[%d] = %d\n", A_Shared_Offset_0, A_Shared[A_Shared_Offset_0]);
-                printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 1, A_Shared[A_Shared_Offset_0 + 1]);
-                printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 2, A_Shared[A_Shared_Offset_0 + 2]);
-                printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 3, A_Shared[A_Shared_Offset_0 + 3]);
-                printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 4, *(A_Shared + A_Shared_Offset_0 + 4));
-                printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 5, &A_Shared[A_Shared_Offset_0 + 5]);
-                printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 6, &A_Shared[A_Shared_Offset_0 + 6]);
-                printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 7, &A_Shared[A_Shared_Offset_0 + 7]);
-                printf("--\n");
-                printf("A_register_0[%d] = %d\n", 0, A_register_0[0]);
-                printf("A_register_0[%d] = %d\n", 1, A_register_0[1]);
-                printf("A_register_0[%d] = %d\n", 2, A_register_0[2]);
-                printf("A_register_0[%d] = %d\n", 3, A_register_0[3]);
-                printf("A_register_0[%d] = %d\n", 4, &A_register_0[4]);
-                printf("A_register_0[%d] = %d\n", 5, &A_register_0[5]);
-                printf("A_register_0[%d] = %d\n", 6, &A_register_0[6]);
-                printf("A_register_0[%d] = %d\n", 7, &A_register_0[7]);
-                printf("--\n");
-                printf("B_Shared[%d] = %d\n", B_Shared_Offset_0, B_Shared[B_Shared_Offset_0]);
-                printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 1, B_Shared[B_Shared_Offset_0 + 1]);
-                printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 2, B_Shared[B_Shared_Offset_0 + 2]);
-                printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 3, B_Shared[B_Shared_Offset_0 + 3]);
-                printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 4, &B_Shared[B_Shared_Offset_0 + 4]);
-                printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 5, &B_Shared[B_Shared_Offset_0 + 5]);
-                printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 6, &B_Shared[B_Shared_Offset_0 + 6]);
-                printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 7, &B_Shared[B_Shared_Offset_0 + 7]);
-                printf("--\n");
-                printf("B_register_0[%d] = %d\n", 0, B_register_0[0]);
-                printf("B_register_0[%d] = %d\n", 1, B_register_0[1]);
-                printf("B_register_0[%d] = %d\n", 2, B_register_0[2]);
-                printf("B_register_0[%d] = %d\n", 3, B_register_0[3]);
-                printf("B_register_0[%d] = %d\n", 4, &B_register_0[4]);
-                printf("B_register_0[%d] = %d\n", 5, &B_register_0[5]);
-                printf("B_register_0[%d] = %d\n", 6, &B_register_0[6]);
-                printf("B_register_0[%d] = %d\n", 7, &B_register_0[7]);
-                printf("--------------------------------------------------------------------\n");
-            }
+            // if(block_idx_x == 0 && block_idx_y == 0 && threadIdx.x == 0 && k == 0) {
+            //     printf("A_Shared[%d] = %d\n", A_Shared_Offset_0, A_Shared[A_Shared_Offset_0]);
+            //     printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 1, A_Shared[A_Shared_Offset_0 + 1]);
+            //     printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 2, A_Shared[A_Shared_Offset_0 + 2]);
+            //     printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 3, A_Shared[A_Shared_Offset_0 + 3]);
+            //     printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 4, *(A_Shared + A_Shared_Offset_0 + 4));
+            //     printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 5, &A_Shared[A_Shared_Offset_0 + 5]);
+            //     printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 6, &A_Shared[A_Shared_Offset_0 + 6]);
+            //     printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 7, &A_Shared[A_Shared_Offset_0 + 7]);
+            //     printf("--\n");
+            //     printf("A_register_0[%d] = %d\n", 0, A_register_0[0]);
+            //     printf("A_register_0[%d] = %d\n", 1, A_register_0[1]);
+            //     printf("A_register_0[%d] = %d\n", 2, A_register_0[2]);
+            //     printf("A_register_0[%d] = %d\n", 3, A_register_0[3]);
+            //     printf("A_register_0[%d] = %d\n", 4, &A_register_0[4]);
+            //     printf("A_register_0[%d] = %d\n", 5, &A_register_0[5]);
+            //     printf("A_register_0[%d] = %d\n", 6, &A_register_0[6]);
+            //     printf("A_register_0[%d] = %d\n", 7, &A_register_0[7]);
+            //     printf("--\n");
+            //     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0, B_Shared[B_Shared_Offset_0]);
+            //     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 1, B_Shared[B_Shared_Offset_0 + 1]);
+            //     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 2, B_Shared[B_Shared_Offset_0 + 2]);
+            //     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 3, B_Shared[B_Shared_Offset_0 + 3]);
+            //     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 4, &B_Shared[B_Shared_Offset_0 + 4]);
+            //     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 5, &B_Shared[B_Shared_Offset_0 + 5]);
+            //     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 6, &B_Shared[B_Shared_Offset_0 + 6]);
+            //     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 7, &B_Shared[B_Shared_Offset_0 + 7]);
+            //     printf("--\n");
+            //     printf("B_register_0[%d] = %d\n", 0, B_register_0[0]);
+            //     printf("B_register_0[%d] = %d\n", 1, B_register_0[1]);
+            //     printf("B_register_0[%d] = %d\n", 2, B_register_0[2]);
+            //     printf("B_register_0[%d] = %d\n", 3, B_register_0[3]);
+            //     printf("B_register_0[%d] = %d\n", 4, &B_register_0[4]);
+            //     printf("B_register_0[%d] = %d\n", 5, &B_register_0[5]);
+            //     printf("B_register_0[%d] = %d\n", 6, &B_register_0[6]);
+            //     printf("B_register_0[%d] = %d\n", 7, &B_register_0[7]);
+            //     printf("--------------------------------------------------------------------\n");
+            // }
             compute_inner(&A_register_0, &B_register_0, &Thread_Tile);
         } else {
             compute_inner(&A_register_1, &B_register_1, &Thread_Tile);
@@ -3751,6 +3751,7 @@ void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __r
 
     // can use this line as a correctness check
     cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
+	cudaProfilerStop();
 
     /*
     // Warmup
