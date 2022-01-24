@@ -3390,7 +3390,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
         if (k % 2 == 0) {
             if(block_idx_x == 0 && block_idx_y == 0 && threadIdx.x == 0 && k == 0) {
-                printf("A_Shared[%d] = %d\n", A_Shared_Offset_0, A_Shared[A_Shared_Offset_0]);
+                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0, A_Shared[A_Shared_Offset_0]);
             //     printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 1, A_Shared[A_Shared_Offset_0 + 1]);
             //     printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 2, A_Shared[A_Shared_Offset_0 + 2]);
             //     printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 3, A_Shared[A_Shared_Offset_0 + 3]);
@@ -3399,7 +3399,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
             //     printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 6, &A_Shared[A_Shared_Offset_0 + 6]);
             //     printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 7, &A_Shared[A_Shared_Offset_0 + 7]);
             //     printf("--\n");
-                printf("A_register_0[%d] = %d\n", 0, A_register_0[0]);
+                printf("A_register_0[%d] = %f\n", 0, A_register_0[0]);
             //     printf("A_register_0[%d] = %d\n", 1, A_register_0[1]);
             //     printf("A_register_0[%d] = %d\n", 2, A_register_0[2]);
             //     printf("A_register_0[%d] = %d\n", 3, A_register_0[3]);
@@ -3408,7 +3408,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
             //     printf("A_register_0[%d] = %d\n", 6, &A_register_0[6]);
             //     printf("A_register_0[%d] = %d\n", 7, &A_register_0[7]);
             //     printf("--\n");
-                printf("B_Shared[%d] = %d\n", B_Shared_Offset_0, B_Shared[B_Shared_Offset_0]);
+                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0, B_Shared[B_Shared_Offset_0]);
             //     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 1, B_Shared[B_Shared_Offset_0 + 1]);
             //     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 2, B_Shared[B_Shared_Offset_0 + 2]);
             //     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 3, B_Shared[B_Shared_Offset_0 + 3]);
@@ -3417,7 +3417,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
             //     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 6, &B_Shared[B_Shared_Offset_0 + 6]);
             //     printf("B_Shared[%d] = %d\n", B_Shared_Offset_0 + 7, &B_Shared[B_Shared_Offset_0 + 7]);
             //     printf("--\n");
-                printf("B_register_0[%d] = %d\n", 0, (*(&B_register_0))[0]);
+                printf("B_register_0[%d] = %f\n", 0, (*(&B_register_0))[0]);
             //     printf("B_register_0[%d] = %d\n", 1, B_register_0[1]);
             //     printf("B_register_0[%d] = %d\n", 2, B_register_0[2]);
             //     printf("B_register_0[%d] = %d\n", 3, B_register_0[3]);
@@ -3439,7 +3439,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
     store_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
     if(block_idx_x == 0 && block_idx_y == 0 && threadIdx.x == 0) {
-        printf("output[0] = %d\n", output[0]);
+        printf("output[0] = %f\n", output[0]);
     }
 
     // end of trying cucosma code
@@ -3741,9 +3741,9 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
                                     // &output[(((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1))))],
                                     // K, M, N);
             if(threadIdx.x == 0 && thread_block_j == 0 && thread_block_i == 0) {
-                printf("input_A[0] = %d\n", input_A[0]);
-                printf("input_B[0] = %d\n", input_B[0]);
-                printf("output[0] = %d\n", output[0]);
+                printf("input_A[0] = %f\n", input_A[0]);
+                printf("input_B[0] = %f\n", input_B[0]);
+                printf("output[0] = %f\n", output[0]);
             }
 
             nested_nested_state_1_1_5(input_A,
