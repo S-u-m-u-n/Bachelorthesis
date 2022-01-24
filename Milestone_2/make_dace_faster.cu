@@ -3254,6 +3254,12 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         }
     }
 
+    // register TYPE A_register_0[THREAD_TILE_M];
+    // register TYPE A_register_1[THREAD_TILE_M];
+
+    // register TYPE B_register_0[THREAD_TILE_N];
+    // register TYPE B_register_1[THREAD_TILE_N];
+
     TYPE A_register_0[THREAD_TILE_M] DACE_ALIGN(64);
     TYPE A_register_1[THREAD_TILE_M] DACE_ALIGN(64);
 
@@ -3302,7 +3308,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                     // A_Shared + (((k + ((8 * size_thread_tile_m) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((8 * size_warp_tile_m) * ((thread / 32) / num_warps_n))) + A_Shared_Offset_0), A_register_0, 128);
                 // load_B_Shared(&B_Shared, &B_register_0, k, WarpIdx, LaneIdx, B_Shared_Offset_0);
                 dace::CopyND<float, 1, false, size_thread_tile_n>::template ConstDst<1>::Copy(
-                    B_Shared + ((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + B_Shared_Offset_0), B_register_0, 1);
+                    B_Shared + ((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + B_Shared_Offset_0), B_register_0, 8);
                     // B_Shared + ((((128 * k) + (size_thread_tile_n * LaneIdx)) + (size_warp_tile_n * WarpIdx)) + B_Shared_Offset_0), B_register_0, 1);
             } else {
                 // load_Shared(&A_Shared, &A_register_1, &B_Shared, &B_register_1, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
