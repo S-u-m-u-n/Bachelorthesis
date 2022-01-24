@@ -3738,12 +3738,13 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
                                     // K, M, N);
             if(threadIdx.x == 0 && thread_block_j == 0 && thread_block_i == 0) {
                 printf("input_A[0] = %d\n", input_A[0]);
-                printf("input_A[0] = %d\n", *input_A);
+                printf("input_A[0] = %d\n", input_B[0]);
+                printf("input_A[0] = %d\n", output[0]);
             }
 
             nested_nested_state_1_1_5(input_A,
-                                    &input_B[0],
-                                    &output[0],
+                                    input_B,
+                                    output,
                                     K, M, N);
         }
     }
