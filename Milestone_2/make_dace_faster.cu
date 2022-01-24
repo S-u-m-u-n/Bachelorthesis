@@ -3746,6 +3746,7 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
 DACE_EXPORTED void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __restrict__ input_A, const float * __restrict__ input_B, float * __restrict__ output, int K, int M, int N);
 void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __restrict__ input_A, const float * __restrict__ input_B, float * __restrict__ output, int K, int M, int N)
 {
+    printf("input_A[0] = %d\n\n\n", *input_A);
     void  *Thread_block_grid_1_1_3_args[] = { (void *)&input_A, (void *)&input_B, (void *)&output, (void *)&K, (void *)&M, (void *)&N };
 
     // can use this line as a correctness check
