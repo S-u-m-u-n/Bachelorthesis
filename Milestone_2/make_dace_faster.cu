@@ -3376,7 +3376,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         }
 
         if (k % 2 == 0) {
-            if(block_idx_x == 0 && block_idx_y == 0 && k == 0 && WarpIdx == 0 && LaneIdx == 0 && cta_k == 0) {
+            if(block_idx_x == 0 && block_idx_y == 0 && thread == 0 && k == 0) {
                 printf("A_Shared[%d] = %d\n", A_Shared_Offset_0, A_Shared[A_Shared_Offset_0]);
                 printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 1, A_Shared[A_Shared_Offset_0 + 1]);
                 printf("A_Shared[%d] = %d\n", A_Shared_Offset_0 + 2, A_Shared[A_Shared_Offset_0 + 2]);
