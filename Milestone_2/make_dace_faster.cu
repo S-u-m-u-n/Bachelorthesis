@@ -3724,7 +3724,6 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
     // constexpr long long SPLIT_K = 1;
     constexpr long long num_threads_per_threadblock = 256;
 
-    printf("input_A[0] = %d\n", *(&input_A[0]));
 
     {
         {
@@ -3737,6 +3736,11 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
                                     // &input_B[(size_thread_block_tile_n * thread_block_j)],
                                     // &output[(((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1))))],
                                     // K, M, N);
+            if(threadIdx.x == 0 && thread_block_j == 0 && thread_block_i == 0) {
+                printf("input_A[0] = %d\n", *(&input_A[0]));
+                printf("input_A[0] = %d\n", input_A[0]);
+            }
+
             nested_nested_state_1_1_5(&input_A[0],
                                     &input_B[0],
                                     &output[0],
