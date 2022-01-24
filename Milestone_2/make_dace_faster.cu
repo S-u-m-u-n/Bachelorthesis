@@ -3169,6 +3169,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     static_assert(THREADBLOCK_TILE_N % WARP_TILE_N == 0, "Warptilde needs to divide Threadblocktile");
     static_assert(N_THREADS * M_THREADS == 32, "Warp has 32 Threads");
 
+    int thread = threadIdx.x;
     const int WarpId = threadIdx.x / 32;
     const int threadId = threadIdx.x % 32;
 
