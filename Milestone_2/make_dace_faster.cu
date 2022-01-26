@@ -1920,6 +1920,9 @@ __device__ __inline__ void load_A_Shared(const TYPE (* __restrict__ A_Shared)[2 
     for (int i = 0; i < TIMES; i++) {
         const int Shared_i = WarpIdy * WARP_TILE_M + i * M_THREADS * 4 + LaneIdy * 4;
         const TYPE* shared_mem_pointer = &(*A_Shared)[A_Shared_Offset + Shared_i + (THREADBLOCK_TILE_M + A_OFFSET) * Shared_j];
+        if (threadIdx.x == 0 && blockIdx.x == 0 && blockIdx.y == 0) {
+            printf("Current k: %d. Loading from Address %d in shared memory...\n", k, A_Shared_Offset + Shared_i + (THREADBLOCK_TILE_M + A_OFFSET) * Shared_j)
+        }
         const VECTORTYPE4 a = reinterpret_cast<const VECTORTYPE4*>(shared_mem_pointer)[0];
 
         TYPE* register_ptr = &(*A_register)[i * 4];
@@ -3390,90 +3393,90 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
         if (k % 2 == 0) {
             compute_inner(&A_register_0, &B_register_0, &Thread_Tile);
-            if(abs(B_register_0[0] - B_Shared[((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + B_Shared_Offset_0)]) > 0.0001) {
-                printf("- ERROR!!!!! 00 -\n");
-            }
-            if(abs(B_register_0[4] - B_Shared[((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + B_Shared_Offset_0 + 32)]) > 0.0001) {
-                printf("- ERROR!!!!! 32 -\n");
-            }
-            if(block_idx_x == 0 && block_idx_y == 0 && threadIdx.x == 0 && k == 0) {
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0, A_Shared[A_Shared_Offset_0]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 1, A_Shared[A_Shared_Offset_0 + 1]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 2, A_Shared[A_Shared_Offset_0 + 2]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 3, A_Shared[A_Shared_Offset_0 + 3]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 16, A_Shared[A_Shared_Offset_0 + 16]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 17, A_Shared[A_Shared_Offset_0 + 17]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 18, A_Shared[A_Shared_Offset_0 + 18]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 19, A_Shared[A_Shared_Offset_0 + 19]);
-                printf("--\n");
-                printf("A_register_0[%d] = %f\n", 0, A_register_0[0]);
-                printf("A_register_0[%d] = %f\n", 1, A_register_0[1]);
-                printf("A_register_0[%d] = %f\n", 2, A_register_0[2]);
-                printf("A_register_0[%d] = %f\n", 3, A_register_0[3]);
-                printf("A_register_0[%d] = %f\n", 4, A_register_0[4]);
-                printf("A_register_0[%d] = %f\n", 5, A_register_0[5]);
-                printf("A_register_0[%d] = %f\n", 6, A_register_0[6]);
-                printf("A_register_0[%d] = %f\n", 7, A_register_0[7]);
-                printf("--\n");
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0, B_Shared[B_Shared_Offset_0]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 1, B_Shared[B_Shared_Offset_0 + 1]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 2, B_Shared[B_Shared_Offset_0 + 2]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 3, B_Shared[B_Shared_Offset_0 + 3]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 32, B_Shared[B_Shared_Offset_0 + 32]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 33, B_Shared[B_Shared_Offset_0 + 33]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 34, B_Shared[B_Shared_Offset_0 + 34]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 35, B_Shared[B_Shared_Offset_0 + 35]);
-                printf("--\n");
-                printf("B_register_0[%d] = %f\n", 0, (*(&B_register_0))[0]);
-                printf("B_register_0[%d] = %f\n", 1, B_register_0[1]);
-                printf("B_register_0[%d] = %f\n", 2, B_register_0[2]);
-                printf("B_register_0[%d] = %f\n", 3, B_register_0[3]);
-                printf("B_register_0[%d] = %f\n", 4, B_register_0[4]);
-                printf("B_register_0[%d] = %f\n", 5, B_register_0[5]);
-                printf("B_register_0[%d] = %f\n", 6, B_register_0[6]);
-                printf("B_register_0[%d] = %f\n", 7, B_register_0[7]);
-                printf("--------------------------------------------------------------------\n");
-            }
+            // if(abs(B_register_0[0] - B_Shared[((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + B_Shared_Offset_0)]) > 0.0001) {
+            //     printf("- ERROR!!!!! 00 -\n");
+            // }
+            // if(abs(B_register_0[4] - B_Shared[((((128 * k) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))) + B_Shared_Offset_0 + 32)]) > 0.0001) {
+            //     printf("- ERROR!!!!! 32 -\n");
+            // }
+            // if(block_idx_x == 0 && block_idx_y == 0 && threadIdx.x == 0 && k == 0) {
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0, A_Shared[A_Shared_Offset_0]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 1, A_Shared[A_Shared_Offset_0 + 1]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 2, A_Shared[A_Shared_Offset_0 + 2]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 3, A_Shared[A_Shared_Offset_0 + 3]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 16, A_Shared[A_Shared_Offset_0 + 16]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 17, A_Shared[A_Shared_Offset_0 + 17]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 18, A_Shared[A_Shared_Offset_0 + 18]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 19, A_Shared[A_Shared_Offset_0 + 19]);
+            //     printf("--\n");
+            //     printf("A_register_0[%d] = %f\n", 0, A_register_0[0]);
+            //     printf("A_register_0[%d] = %f\n", 1, A_register_0[1]);
+            //     printf("A_register_0[%d] = %f\n", 2, A_register_0[2]);
+            //     printf("A_register_0[%d] = %f\n", 3, A_register_0[3]);
+            //     printf("A_register_0[%d] = %f\n", 4, A_register_0[4]);
+            //     printf("A_register_0[%d] = %f\n", 5, A_register_0[5]);
+            //     printf("A_register_0[%d] = %f\n", 6, A_register_0[6]);
+            //     printf("A_register_0[%d] = %f\n", 7, A_register_0[7]);
+            //     printf("--\n");
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0, B_Shared[B_Shared_Offset_0]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 1, B_Shared[B_Shared_Offset_0 + 1]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 2, B_Shared[B_Shared_Offset_0 + 2]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 3, B_Shared[B_Shared_Offset_0 + 3]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 32, B_Shared[B_Shared_Offset_0 + 32]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 33, B_Shared[B_Shared_Offset_0 + 33]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 34, B_Shared[B_Shared_Offset_0 + 34]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 35, B_Shared[B_Shared_Offset_0 + 35]);
+            //     printf("--\n");
+            //     printf("B_register_0[%d] = %f\n", 0, (*(&B_register_0))[0]);
+            //     printf("B_register_0[%d] = %f\n", 1, B_register_0[1]);
+            //     printf("B_register_0[%d] = %f\n", 2, B_register_0[2]);
+            //     printf("B_register_0[%d] = %f\n", 3, B_register_0[3]);
+            //     printf("B_register_0[%d] = %f\n", 4, B_register_0[4]);
+            //     printf("B_register_0[%d] = %f\n", 5, B_register_0[5]);
+            //     printf("B_register_0[%d] = %f\n", 6, B_register_0[6]);
+            //     printf("B_register_0[%d] = %f\n", 7, B_register_0[7]);
+            //     printf("--------------------------------------------------------------------\n");
+            // }
         } else {
             compute_inner(&A_register_1, &B_register_1, &Thread_Tile);
-            if(block_idx_x == 0 && block_idx_y == 0 && threadIdx.x == 0 && k == 1) {
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0, A_Shared[A_Shared_Offset_0]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 1, A_Shared[A_Shared_Offset_0 + 1]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 2, A_Shared[A_Shared_Offset_0 + 2]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 3, A_Shared[A_Shared_Offset_0 + 3]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 16, A_Shared[A_Shared_Offset_0 + 16]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 17, A_Shared[A_Shared_Offset_0 + 17]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 18, A_Shared[A_Shared_Offset_0 + 18]);
-                printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 19, A_Shared[A_Shared_Offset_0 + 19]);
-                printf("--\n");
-                printf("A_register_1[%d] = %f\n", 0, A_register_1[0]);
-                printf("A_register_1[%d] = %f\n", 1, A_register_1[1]);
-                printf("A_register_1[%d] = %f\n", 2, A_register_1[2]);
-                printf("A_register_1[%d] = %f\n", 3, A_register_1[3]);
-                printf("A_register_1[%d] = %f\n", 4, A_register_1[4]);
-                printf("A_register_1[%d] = %f\n", 5, A_register_1[5]);
-                printf("A_register_1[%d] = %f\n", 6, A_register_1[6]);
-                printf("A_register_1[%d] = %f\n", 7, A_register_1[7]);
-                printf("--\n");
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128, B_Shared[B_Shared_Offset_0]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 1, B_Shared[B_Shared_Offset_0 + 128 + 1]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 2, B_Shared[B_Shared_Offset_0 + 128 + 2]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 3, B_Shared[B_Shared_Offset_0 + 128 + 3]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 32, B_Shared[B_Shared_Offset_0 + 128 + 32]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 33, B_Shared[B_Shared_Offset_0 + 128 + 33]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 34, B_Shared[B_Shared_Offset_0 + 128 + 34]);
-                printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 35, B_Shared[B_Shared_Offset_0 + 128 + 35]);
-                printf("--\n");
-                printf("B_register_1[%d] = %f\n", 0, B_register_1[0]);
-                printf("B_register_1[%d] = %f\n", 1, B_register_1[1]);
-                printf("B_register_1[%d] = %f\n", 2, B_register_1[2]);
-                printf("B_register_1[%d] = %f\n", 3, B_register_1[3]);
-                printf("B_register_1[%d] = %f\n", 4, B_register_1[4]);
-                printf("B_register_1[%d] = %f\n", 5, B_register_1[5]);
-                printf("B_register_1[%d] = %f\n", 6, B_register_1[6]);
-                printf("B_register_1[%d] = %f\n", 7, B_register_1[7]);
-                printf("--------------------------------------------------------------------\n");
-            }
+            // if(block_idx_x == 0 && block_idx_y == 0 && threadIdx.x == 0 && k == 1) {
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0, A_Shared[A_Shared_Offset_0]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 1, A_Shared[A_Shared_Offset_0 + 1]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 2, A_Shared[A_Shared_Offset_0 + 2]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 3, A_Shared[A_Shared_Offset_0 + 3]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 16, A_Shared[A_Shared_Offset_0 + 16]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 17, A_Shared[A_Shared_Offset_0 + 17]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 18, A_Shared[A_Shared_Offset_0 + 18]);
+            //     printf("A_Shared[%d] = %f\n", A_Shared_Offset_0 + 19, A_Shared[A_Shared_Offset_0 + 19]);
+            //     printf("--\n");
+            //     printf("A_register_1[%d] = %f\n", 0, A_register_1[0]);
+            //     printf("A_register_1[%d] = %f\n", 1, A_register_1[1]);
+            //     printf("A_register_1[%d] = %f\n", 2, A_register_1[2]);
+            //     printf("A_register_1[%d] = %f\n", 3, A_register_1[3]);
+            //     printf("A_register_1[%d] = %f\n", 4, A_register_1[4]);
+            //     printf("A_register_1[%d] = %f\n", 5, A_register_1[5]);
+            //     printf("A_register_1[%d] = %f\n", 6, A_register_1[6]);
+            //     printf("A_register_1[%d] = %f\n", 7, A_register_1[7]);
+            //     printf("--\n");
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128, B_Shared[B_Shared_Offset_0]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 1, B_Shared[B_Shared_Offset_0 + 128 + 1]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 2, B_Shared[B_Shared_Offset_0 + 128 + 2]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 3, B_Shared[B_Shared_Offset_0 + 128 + 3]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 32, B_Shared[B_Shared_Offset_0 + 128 + 32]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 33, B_Shared[B_Shared_Offset_0 + 128 + 33]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 34, B_Shared[B_Shared_Offset_0 + 128 + 34]);
+            //     printf("B_Shared[%d] = %f\n", B_Shared_Offset_0 + 128 + 35, B_Shared[B_Shared_Offset_0 + 128 + 35]);
+            //     printf("--\n");
+            //     printf("B_register_1[%d] = %f\n", 0, B_register_1[0]);
+            //     printf("B_register_1[%d] = %f\n", 1, B_register_1[1]);
+            //     printf("B_register_1[%d] = %f\n", 2, B_register_1[2]);
+            //     printf("B_register_1[%d] = %f\n", 3, B_register_1[3]);
+            //     printf("B_register_1[%d] = %f\n", 4, B_register_1[4]);
+            //     printf("B_register_1[%d] = %f\n", 5, B_register_1[5]);
+            //     printf("B_register_1[%d] = %f\n", 6, B_register_1[6]);
+            //     printf("B_register_1[%d] = %f\n", 7, B_register_1[7]);
+            //     printf("--------------------------------------------------------------------\n");
+            // }
         }
     }
 
@@ -3482,9 +3485,9 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     load_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
 
     store_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
-    if(block_idx_x == 0 && block_idx_y == 0 && threadIdx.x == 0) {
-        printf("output[0] = %f\n", output[0]);
-    }
+    // if(block_idx_x == 0 && block_idx_y == 0 && threadIdx.x == 0) {
+    //     printf("output[0] = %f\n", output[0]);
+    // }
 
     // end of trying cucosma code
 
