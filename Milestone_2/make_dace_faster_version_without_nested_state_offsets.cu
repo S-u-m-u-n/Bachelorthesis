@@ -1920,9 +1920,6 @@ __device__ __inline__ void load_A_Shared(const TYPE (* __restrict__ A_Shared)[2 
     for (int i = 0; i < TIMES; i++) {
         const int Shared_i = WarpIdy * WARP_TILE_M + i * M_THREADS * 4 + LaneIdy * 4;
         const TYPE* shared_mem_pointer = &(*A_Shared)[A_Shared_Offset + Shared_i + (THREADBLOCK_TILE_M + A_OFFSET) * Shared_j];
-        if (threadIdx.x == 0 && blockIdx.x == 0 && blockIdx.y == 0) {
-            printf("Current k: %d. Loading from Address %d in shared memory A.\n", k, A_Shared_Offset + Shared_i + (THREADBLOCK_TILE_M + A_OFFSET) * Shared_j);
-        }
         const VECTORTYPE4 a = reinterpret_cast<const VECTORTYPE4*>(shared_mem_pointer)[0];
 
         TYPE* register_ptr = &(*A_register)[i * 4];
@@ -1970,9 +1967,6 @@ __device__ __inline__ void load_B_Shared(TYPE (* __restrict__ B_Shared)[2 * LOAD
     for (int i = 0; i < TIMES; i++) {
         const int Shared_j = WarpIdx * WARP_TILE_N + LaneIdx * 4 + i * N_THREADS * 4;
         const TYPE* shared_mem_pointer = &(*B_Shared)[B_Shared_Offset + Shared_i * (THREADBLOCK_TILE_N + B_OFFSET) + Shared_j];
-        // if (threadIdx.x == 32 && blockIdx.x == 0 && blockIdx.y == 0) {
-            // printf("Current k: %d. Loading from Address %d in shared memory B.\n", k, B_Shared_Offset + Shared_i * (THREADBLOCK_TILE_N + B_OFFSET) + Shared_j);
-        // }
         const VECTORTYPE4 a = reinterpret_cast<const VECTORTYPE4*>(shared_mem_pointer)[0];
         TYPE* register_ptr = &(*B_register)[i * 4];
         reinterpret_cast<VECTORTYPE4*>(register_ptr)[0] = a;
@@ -3659,11 +3653,6 @@ __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, cons
                                     // &input_B[(size_thread_block_tile_n * thread_block_j)],
                                     // &output[(((N * ((size_thread_block_tile_m * thread_block_i) + (size_thread_tile_m * bitwise_and(right_shift(0, 1), (warp_height - 1))))) + (size_thread_block_tile_n * thread_block_j)) + (size_thread_tile_n * bitwise_or(right_shift(bitwise_and(0, 24), 2), bitwise_and(0, 1))))],
                                     // K, M, N);
-            // if(threadIdx.x == 0 && thread_block_j == 0 && thread_block_i == 0) {
-                // printf("input_A[0] = %f\n", input_A[0]);
-                // printf("input_B[0] = %f\n", input_B[0]);
-                // printf("output[0] = %f\n", output[0]);
-            // }
 
             nested_nested_state_1_1_5(input_A,
                                     input_B,
@@ -3681,9 +3670,9 @@ void __dace_runkernel_Thread_block_grid_1_1_3(gemm_t *__state, const float * __r
     void  *Thread_block_grid_1_1_3_args[] = { (void *)&input_A, (void *)&input_B, (void *)&output, (void *)&K, (void *)&M, (void *)&N };
 
     // can use this line as a correctness check
-    cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
+    // cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
 
-    /*
+    // /*
     // Warmup
     for (int i = 0; i < 1000; ++i) {
         cudaLaunchKernel((void*)Thread_block_grid_1_1_3, dim3(int_ceil(num_thread_blocks_n, 1), int_ceil(num_thread_blocks_m, 1), 1), dim3(max(1, num_threads_per_threadblock), 1, 1), Thread_block_grid_1_1_3_args, 0, __state->gpu_context->streams[0]);
