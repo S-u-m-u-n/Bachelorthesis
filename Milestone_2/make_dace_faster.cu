@@ -1970,7 +1970,7 @@ __device__ __inline__ void load_B_Shared(TYPE (* __restrict__ B_Shared)[2 * LOAD
     for (int i = 0; i < TIMES; i++) {
         const int Shared_j = WarpIdx * WARP_TILE_N + LaneIdx * 4 + i * N_THREADS * 4;
         const TYPE* shared_mem_pointer = &(*B_Shared)[B_Shared_Offset + Shared_i * (THREADBLOCK_TILE_N + B_OFFSET) + Shared_j];
-        if (threadIdx.x == 0 && blockIdx.x == 0 && blockIdx.y == 0) {
+        if (threadIdx.x == 1 && blockIdx.x == 1 && blockIdx.y == 1) {
             printf("Current k: %d. Loading from Address %d in shared memory B.\n", k, B_Shared_Offset + Shared_i * (THREADBLOCK_TILE_N + B_OFFSET) + Shared_j);
         }
         const VECTORTYPE4 a = reinterpret_cast<const VECTORTYPE4*>(shared_mem_pointer)[0];
