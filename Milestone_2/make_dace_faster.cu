@@ -3478,7 +3478,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     // load_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
 
     // store_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
-    store_C_Vector(Thread_Tile, C, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y);
+    store_C_Vector(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y);
     // if(block_idx_x == 0 && block_idx_y == 0 && threadIdx.x == 0) {
     //     printf("output[0] = %f\n", output[0]);
     // }
