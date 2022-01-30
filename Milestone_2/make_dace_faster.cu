@@ -1920,9 +1920,9 @@ __device__ __inline__ void load_A_Shared(const TYPE (* __restrict__ A_Shared)[2 
     for (int i = 0; i < TIMES; i++) {
         const int Shared_i = WarpIdy * WARP_TILE_M + i * M_THREADS * 4 + LaneIdy * 4;
         const TYPE* shared_mem_pointer = &(*A_Shared)[A_Shared_Offset + Shared_i + (THREADBLOCK_TILE_M + A_OFFSET) * Shared_j];
-        if (threadIdx.x == 0 && blockIdx.x == 0 && blockIdx.y == 0) {
-            printf("Current k: %d. Loading from Address %d in shared memory A.\n", k, A_Shared_Offset + Shared_i + (THREADBLOCK_TILE_M + A_OFFSET) * Shared_j);
-        }
+        // if (threadIdx.x == 0 && blockIdx.x == 0 && blockIdx.y == 0) {
+            // printf("Current k: %d. Loading from Address %d in shared memory A.\n", k, A_Shared_Offset + Shared_i + (THREADBLOCK_TILE_M + A_OFFSET) * Shared_j);
+        // }
         const VECTORTYPE4 a = reinterpret_cast<const VECTORTYPE4*>(shared_mem_pointer)[0];
 
         TYPE* register_ptr = &(*A_register)[i * 4];
