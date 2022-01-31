@@ -335,8 +335,7 @@ nested_initstate.add_memlet_path(tasklet,
 #     nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
 # else:
 # nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared)
-nested_sdfg.add_transient('shared_memory_A', shape=[schedule.load_k, schedule.thread_block_tile_m], dtype=dtype, storage=dace.StorageType.GPU_Shared) # Note: we store the shared memory A in a column-major fashion
-shared_memory_A.strides = (1024, 1, 128)
+nested_sdfg.add_transient('shared_memory_A', shape=[schedule.load_k, schedule.thread_block_tile_m], dtype=dtype, storage=dace.StorageType.GPU_Shared, strides=[1, 128]) # Note: we store the shared memory A in a column-major fashion
 nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dtype, storage=dace.StorageType.GPU_Shared)
 
 nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m], dtype=dtype, storage=dace.StorageType.Register)
