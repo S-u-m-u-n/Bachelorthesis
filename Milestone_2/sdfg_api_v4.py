@@ -338,8 +338,8 @@ nested_initstate.add_memlet_path(tasklet,
 nested_sdfg.add_transient('shared_memory_A', shape=[schedule.load_k, schedule.thread_block_tile_m], dtype=dtype, storage=dace.StorageType.GPU_Shared) # Note: we store the shared memory A in a column-major fashion
 nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dtype, storage=dace.StorageType.GPU_Shared)
 
-nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m, 1], dtype=dtype, storage=dace.StorageType.Register)
-nested_sdfg.add_transient('register_storage_B', shape=[1, schedule.thread_tile_n], dtype=dtype, storage=dace.StorageType.Register)
+nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m], dtype=dtype, storage=dace.StorageType.Register)
+nested_sdfg.add_transient('register_storage_B', shape=[schedule.thread_tile_n], dtype=dtype, storage=dace.StorageType.Register)
 nested_sdfg.add_transient('register_storage_C', shape=[schedule.thread_tile_m, schedule.thread_tile_n], dtype=dtype, storage=dace.StorageType.Register)
 
 if args.split_k > 1:
@@ -526,7 +526,7 @@ nested_state.add_memlet_path(register_storage_A,
                         thread_map_entry,
                         tasklet,
                         dst_conn='__a',
-                        memlet=dace.Memlet(f"{register_storage_A.data}[i, 0]"))
+                        memlet=dace.Memlet(f"{register_storage_A.data}[i]"))
 
 ####################################################################################################################
 ### Data Movement: _B
@@ -544,7 +544,7 @@ nested_state.add_memlet_path(register_storage_B,
                         thread_map_entry,
                         tasklet,
                         dst_conn='__b',
-                        memlet=dace.Memlet(f"{register_storage_B.data}[0, j]"))
+                        memlet=dace.Memlet(f"{register_storage_B.data}[j]"))
 
 ####################################################################################################################
 ### Data Movement: output
@@ -669,12 +669,12 @@ if args.double_buffering:
 
 nested_sdfg.fill_scope_connectors()
 sdfg.fill_scope_connectors()
-sdfg.save('sdfg_api_v3.sdfg')
+sdfg.save('sdfg_api_v4.sdfg')
 nested_sdfg.validate()
 sdfg.validate()
 
 sdfg.arg_names = ['A', 'B', 'C', 'alpha', 'beta']
-sdfg.save('sdfg_api_v3.sdfg')
+sdfg.save('sdfg_api_v4.sdfg')
 csdfg = sdfg.compile()
 
 for i in range(args.repetitions):
