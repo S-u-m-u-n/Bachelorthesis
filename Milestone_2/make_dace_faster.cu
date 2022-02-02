@@ -3493,58 +3493,57 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     // int global_j = ((((128 * k) + (size_thread_tile_n / 2 * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))));
     int global_j = (size_thread_block_tile_n * block_idx_x) + (size_thread_tile_n / 2 * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1))) + (size_warp_tile_n * ((thread / 32) % num_warps_n));
 
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 0 + 0, output + (global_i + 0) * M + global_j + 0, 1);
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 0 + 4, output + (global_i + 0) * M + global_j + 32, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 0 + 0, output + (global_i + 0) * M + global_j + 0, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 0 + 4, output + (global_i + 0) * M + global_j + 32, 1);
 
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 8 + 0, output + (global_i + 1) * M + global_j + 0, 1);
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 8 + 4, output + (global_i + 1) * M + global_j + 32, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 8 + 0, output + (global_i + 1) * M + global_j + 0, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 8 + 4, output + (global_i + 1) * M + global_j + 32, 1);
 
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 16 + 0, output + (global_i + 2) * M + global_j + 0, 1);
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 16 + 4, output + (global_i + 2) * M + global_j + 32, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 16 + 0, output + (global_i + 2) * M + global_j + 0, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 16 + 4, output + (global_i + 2) * M + global_j + 32, 1);
 
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 24 + 0, output + (global_i + 3) * M + global_j + 0, 1);
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 24 + 4, output + (global_i + 3) * M + global_j + 32, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 24 + 0, output + (global_i + 3) * M + global_j + 0, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 24 + 4, output + (global_i + 3) * M + global_j + 32, 1);
 
-    //////////////////////////////////////////////////////////////
-    global_i = global_i + 16;
+    // //////////////////////////////////////////////////////////////
 
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 32 + 0, output + (global_i + 16 + 0) * M + global_j + 0, 1);
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 32 + 4, output + (global_i + 16 + 0) * M + global_j + 32, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 32 + 0, output + (global_i + 16 + 0) * M + global_j + 0, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 32 + 4, output + (global_i + 16 + 0) * M + global_j + 32, 1);
 
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 40 + 0, output + (global_i + 16 + 1) * M + global_j + 0, 1);
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 40 + 4, output + (global_i + 16 + 1) * M + global_j + 32, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 40 + 0, output + (global_i + 16 + 1) * M + global_j + 0, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 40 + 4, output + (global_i + 16 + 1) * M + global_j + 32, 1);
 
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 48 + 0, output + (global_i + 16 + 2) * M + global_j + 0, 1);
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 48 + 4, output + (global_i + 16 + 2) * M + global_j + 32, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 48 + 0, output + (global_i + 16 + 2) * M + global_j + 0, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 48 + 4, output + (global_i + 16 + 2) * M + global_j + 32, 1);
 
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 56 + 0, output + (global_i + 16 + 3) * M + global_j + 0, 1);
-    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-        Thread_Tile + 56 + 4, output + (global_i + 16 + 3) * M + global_j + 32, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 56 + 0, output + (global_i + 16 + 3) * M + global_j + 0, 1);
+    // dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+    //     Thread_Tile + 56 + 4, output + (global_i + 16 + 3) * M + global_j + 32, 1);
 
     
-    // for (int i = 0; i < 2; ++i) {
-    //     for (int j = 0; j < 4; ++j) {
-    //         for (int k = 0; k < 2; ++k) {
-    //             dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-    //                 Thread_Tile + 8 * j + 4 * k, output + (global_i + 16 * i + j) * M + global_j + 32 * k, 1);
-    //         }
-    //     }
-    // }
+    for (int i = 0; i < 2; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            for (int k = 0; k < 2; ++k) {
+                dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+                    Thread_Tile + 8 * j + 4 * k, output + (global_i + 16 * i + j) * M + global_j + 32 * k, 1);
+            }
+        }
+    }
 
 
     // store_C_OneRow_Vector(
