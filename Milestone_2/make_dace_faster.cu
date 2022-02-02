@@ -2541,8 +2541,8 @@ __device__ __inline__ void load_C(TYPE * __restrict__ Thread_Tile,
 * @param block_idx_x		The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 */
 __device__ __inline__ void store_C_OneRow_Vector(const TYPE * __restrict__ Thread_Tile, TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int LaneIdx, const int global_i, const int Threadtile_i, const int block_idx_x) {
-    constexpr int N_TIMES = THREAD_TILE_N / 4;
-    constexpr int N_THREADS = WARP_TILE_N / THREAD_TILE_N;
+    constexpr int N_TIMES = THREAD_TILE_N / 4; // = 2
+    constexpr int N_THREADS = WARP_TILE_N / THREAD_TILE_N; // = 64 / 8 = 8
     const int global_j_upleft = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N;
     // const int global_j_upleft = WarpIdx * WARP_TILE_N;
 
@@ -3008,12 +3008,12 @@ TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy,
 * @param block_idx_y 	The blockId in the y dimension of the current block, it has not to be equal to blockIdx.y because we can manually remap it
 */
 __device__ __inline__ void store_C_Vector(const TYPE * __restrict__ Thread_Tile, TYPE * __restrict__ C, const int ldc, const int WarpIdx, const int WarpIdy, const int LaneIdx, const int LaneIdy, const int block_idx_x, const int block_idx_y) {
-    constexpr int M_THREADS = WARP_TILE_M / THREAD_TILE_M;
+    constexpr int M_THREADS = WARP_TILE_M / THREAD_TILE_M; // = 32 / 8 = 4
 
     const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
     // const int global_i_upleft = WarpIdy * WARP_TILE_M;
 
-    constexpr int M_times = THREAD_TILE_M / 4;
+    constexpr int M_times = THREAD_TILE_M / 4; // = 2
 
 #pragma unroll
     for (int i = 0; i < M_times; i++) {
@@ -3324,9 +3324,15 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
                 load_Shared(&A_Shared, &A_register_0, &B_Shared, &B_register_0, k, WarpIdx, WarpIdy, LaneIdx, LaneIdy, A_Shared_Offset_0, B_Shared_Offset_0);
                 // // load_A_Shared(&A_Shared, &A_register_0, k, WarpIdy, LaneIdy, A_Shared_Offset_0);
                 // dace::CopyND<float, 1, false, size_thread_tile_m / 2>::template ConstDst<1>::Copy(
-                //     A_Shared + (((128 * k + ((size_thread_tile_m / 2) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((size_warp_tile_m) * ((thread / 32) / num_warps_n))) + A_Shared_Offset_0), A_register_0, 1);
+                    // A_Shared + (((128 * k + ((size_thread_tile_m / 2) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((size_warp_tile_m) * ((thread / 32) / num_warps_n))) + A_Shared_Offset_0), A_register_0, 1);
                 // dace::CopyND<float, 1, false, size_thread_tile_m / 2>::template ConstDst<1>::Copy(
-                //     A_Shared + (((128 * k + ((size_thread_tile_m / 2) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((size_warp_tile_m) * ((thread / 32) / num_warps_n))) + A_Shared_Offset_0 + 16), A_register_0 + 4, 1);
+                    // A_Shared + (((128 * k + ((size_thread_tile_m / 2) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((size_warp_tile_m) * ((thread / 32) / num_warps_n))) + A_Shared_Offset_0 + 16), A_register_0 + 4, 1);
+
+                // dace::CopyND<float, 1, false, size_thread_tile_m / 2>::template ConstDst<1>::Copy(A_Shared + /*<a complicated offset term>*/), A_register, 1);
+                // dace::CopyND<float, 1, false, size_thread_tile_m / 2>::template ConstDst<1>::Copy(A_Shared + /*<a complicated offset term>*/ + warp_height * 4), A_register + 4, 1);
+                // dace::CopyND<float, 1, false, size_thread_tile_n / 2>::template ConstDst<1>::Copy(B_Shared + /*<another complicated offset term>*/), B_register, 1);
+                // dace::CopyND<float, 1, false, size_thread_tile_n / 2>::template ConstDst<1>::Copy(B_Shared + /*<another complicated offset term>*/ + warp_width * 4), B_register + 4, 1);
+
                 //     // A_Shared + A_Shared_Offset_0 + 128 * k + WarpIdy * size_warp_tile_m + 4 * LaneIdy + 16, A_register_0 + 4, 1);
                 //     // A_Shared + A_Shared_Offset_0 + 128 * k + WarpIdy * size_warp_tile_m + 4 * LaneIdy, A_register_0, 1);
                 // dace::CopyND<float, 1, false, size_thread_tile_n / 2>::template ConstDst<1>::Copy(
@@ -3469,7 +3475,70 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     // load_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
 
     // store_C(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y, &C_Shared);
-    store_C_Vector(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y);
+    // store_C_Vector(Thread_Tile, output, ldc, WarpIdx, WarpIdy, LaneIdx, LaneIdy, block_idx_x, block_idx_y);
+
+    // const int global_i_upleft = block_idx_y * THREADBLOCK_TILE_M + WarpIdy * WARP_TILE_M;
+    // const int global_i = global_i_upleft + LaneIdy * 4 + i * M_THREADS * 4 + ii;
+
+    // constexpr int N_TIMES = THREAD_TILE_N / 4; // = 2
+    // constexpr int N_THREADS = WARP_TILE_N / THREAD_TILE_N; // = 64 / 8 = 8
+    // const int global_j_upleft = block_idx_x * THREADBLOCK_TILE_N + WarpIdx * WARP_TILE_N;
+    // const int global_j = global_j_upleft + LaneIdx * 4 + j * N_THREADS * 4;
+
+
+    //////////////////////////////////////////////////////////////
+    // int global_i = (((128 * k + ((size_thread_tile_m / 2) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1)))) + ((size_warp_tile_m) * ((thread / 32) / num_warps_n))));
+    int global_i = (size_thread_block_tile_m * block_idx_y) + ((size_thread_tile_m / 2) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1))) + ((size_warp_tile_m) * ((thread / 32) / num_warps_n));
+
+    // int global_j = ((((128 * k) + (size_thread_tile_n / 2 * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1)))) + (size_warp_tile_n * ((thread / 32) % num_warps_n))));
+    int global_j = (size_thread_block_tile_n * block_idx_x) + (size_thread_tile_n / 2 * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1))) + (size_warp_tile_n * ((thread / 32) % num_warps_n));
+
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 0 + 0, output + (global_i + 0) * M + global_j + 0, 1);
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 0 + 4, output + (global_i + 0) * M + global_j + 32, 1);
+
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 8 + 0, output + (global_i + 1) * M + global_j + 0, 1);
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 8 + 4, output + (global_i + 1) * M + global_j + 32, 1);
+
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 16 + 0, output + (global_i + 2) * M + global_j + 0, 1);
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 16 + 4, output + (global_i + 2) * M + global_j + 32, 1);
+
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 24 + 0, output + (global_i + 3) * M + global_j + 0, 1);
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 24 + 4, output + (global_i + 3) * M + global_j + 32, 1);
+
+    //////////////////////////////////////////////////////////////
+    global_i = global_i + 16;
+
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 32 + 0, output + (global_i + 16 + 0) * M + global_j + 0, 1);
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 32 + 4, output + (global_i + 16 + 0) * M + global_j + 32, 1);
+
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 40 + 0, output + (global_i + 16 + 1) * M + global_j + 0, 1);
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 40 + 4, output + (global_i + 16 + 1) * M + global_j + 32, 1);
+
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 48 + 0, output + (global_i + 16 + 2) * M + global_j + 0, 1);
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 48 + 4, output + (global_i + 16 + 2) * M + global_j + 32, 1);
+
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 56 + 0, output + (global_i + 16 + 3) * M + global_j + 0, 1);
+    dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+        Thread_Tile + 56 + 4, output + (global_i + 16 + 3) * M + global_j + 32, 1);
+
+
+    // store_C_OneRow_Vector(
+
     // if(block_idx_x == 0 && block_idx_y == 0 && threadIdx.x == 0) {
     //     printf("output[0] = %f\n", output[0]);
     // }

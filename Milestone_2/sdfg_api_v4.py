@@ -514,12 +514,16 @@ thread_y_offset = '(' + LaneIdy + ' * size_thread_tile_m)'
 ### Data Movement: _A
 # _A -> shared_memory_A
 if args.split_k_seq:
-    nested_state.add_memlet_path(_A, split_k_map_entry, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, k_tile_range + ', ' + thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m'))
+    nested_state.add_memlet_path(_A, split_k_map_entry, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, k_tile_range + ', ' + thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m', strides=(128, 1)))
+    # nested_state.add_memlet_path(_A, split_k_map_entry, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m, ' + k_tile_range, strides=(128, 1)))
 else:
     nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m, ' + k_tile_range))
 
 # shared_memory_A -> register_storage_A (load size_thread_tile_m elements into register storage)
 nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, 'k, ' + warp_y_offset + ' + ' + thread_y_offset + ':' + warp_y_offset + ' + ' + thread_y_offset + '+size_thread_tile_m'))
+# offset: M_THREADS * 4 = warp_height * 4
+additional_offset = 'warp_height * 4'
+nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, 'k, ' + additional_offset + ' + ' + warp_y_offset + ' + ' + thread_y_offset + ':' + additional_offset + ' + ' + warp_y_offset + ' + ' + thread_y_offset + '+size_thread_tile_m/2'))
 
 # register_storage_A -> tasklet
 nested_state.add_memlet_path(register_storage_A,
@@ -538,6 +542,10 @@ else:
 
 # shared_memory_B -> register_storage_B (load size_thread_tile_n elements into register storage)
 nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, 'k, ' + warp_x_offset + ' + ' + thread_x_offset + ':' + warp_x_offset + ' + ' + thread_x_offset + '+size_thread_tile_n'))
+# offset: N_THREADS * 4 = warp_width * 4
+additional_offset = 'warp_width * 4'
+nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, 'k, ' + additional_offset + ' + ' + warp_x_offset + ' + ' + thread_x_offset + ':' + additional_offset + ' + ' + warp_x_offset + ' + ' + thread_x_offset + '+size_thread_tile_n/2'))
+
 
 # register_storage_B -> tasklet
 nested_state.add_memlet_path(register_storage_B,
@@ -558,7 +566,15 @@ wcr_no_conflicts = False
 if num_threads_per_threadblock == 32 or args.double_buffering:
     wcr_no_conflicts = True
 
-nested_state.add_memlet_path(tasklet,
+if (math.fabs(args.beta) < 1e-6):
+    nested_state.add_memlet_path(tasklet,
+                            thread_map_exit,
+                            thread_K_map_exit,
+                            register_storage_C,
+                            src_conn='__out',
+                            memlet=dace.Memlet(f"{register_storage_C.data}[i, j]"))
+else:
+    nested_state.add_memlet_path(tasklet,
                         thread_map_exit,
                         thread_K_map_exit,
                         register_storage_C,
@@ -571,17 +587,25 @@ nested_state.add_memlet_path(tasklet,
 
 # register_storage_C -> A_matmul_B_nested_state (= result that will be transferred to outer sdfg)
 if args.split_k == 1:
-    nested_state.add_memlet_path(register_storage_C,
-                            thread_tile_map_exit,
-                            K_tile_map_exit,
-                            thread_block_grid_map_exit,
-                            A_matmul_B_nested_state,
-                            memlet=dace.Memlet(
-                                data=A_matmul_B_nested_state.data,
-                                subset= subset,
-                                wcr='(lambda x, y: (x + y))',
-                                wcr_nonatomic=wcr_no_conflicts) # needed so we have a non-atomic accumulate accross thread blocks
-                            )
+    if (math.fabs(args.beta) < 1e-6):
+        nested_state.add_memlet_path(register_storage_C,
+                                thread_tile_map_exit,
+                                K_tile_map_exit,
+                                thread_block_grid_map_exit,
+                                A_matmul_B_nested_state,
+                                memlet=dace.Memlet(data=A_matmul_B_nested_state.data, subset=subset))
+    else:
+        nested_state.add_memlet_path(register_storage_C,
+                                thread_tile_map_exit,
+                                K_tile_map_exit,
+                                thread_block_grid_map_exit,
+                                A_matmul_B_nested_state,
+                                memlet=dace.Memlet(
+                                    data=A_matmul_B_nested_state.data,
+                                    subset=subset,
+                                    wcr='(lambda x, y: (x + y))',
+                                    wcr_nonatomic=wcr_no_conflicts) # needed so we have a non-atomic accumulate accross thread blocks
+                                )
 else:
     if args.split_k_seq:
         nested_state.add_memlet_path(register_storage_C,
@@ -665,7 +689,9 @@ __out[1] = __in[1]''')
         
 if args.double_buffering:
     helpers.print_info("Applying Double Buffering...", False)
-    DoubleBuffering.apply_to(nested_state.parent, _map_entry=K_tile_map_entry, _transient=shared_memory_A)
+    DoubleBuffering.apply_to(nested_sdfg, _map_entry=thread_K_map_entry, _transient=register_storage_A) # Double buffering on the registers
+    # DoubleBuffering.apply_to(nested_sdfg, _map_entry=K_tile_map_entry, _transient=register_storage_A) # Double buffering on the registers
+    DoubleBuffering.apply_to(nested_sdfg, _map_entry=K_tile_map_entry, _transient=shared_memory_A) # Double buffering on the shared memory
 
 nested_sdfg.fill_scope_connectors()
 sdfg.fill_scope_connectors()
@@ -675,7 +701,7 @@ sdfg.validate()
 
 sdfg.arg_names = ['A', 'B', 'C', 'alpha', 'beta']
 sdfg.save('sdfg_api_v4.sdfg')
-csdfg = sdfg.compile()
+# csdfg = sdfg.compile()
 
 for i in range(args.repetitions):
     A = np.random.rand(args.M, args.K).astype(ndtype)
