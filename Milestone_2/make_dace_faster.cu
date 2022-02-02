@@ -3540,7 +3540,7 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
         for (int j = 0; j < 4; ++j) {
             for (int k = 0; k < 2; ++k) {
                 dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
-                    Thread_Tile + 8 * j + 4 * k, output + (global_i + 16 * i + j) * M + global_j + 32 * k, 1);
+                    Thread_Tile + 32 * i + 8 * j + 4 * k, output + (global_i + 16 * i + j) * M + global_j + 32 * k, 1);
             }
         }
     }
