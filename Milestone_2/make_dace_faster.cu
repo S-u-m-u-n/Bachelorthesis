@@ -3286,7 +3286,8 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
     TYPE B_register_1[THREAD_TILE_N] DACE_ALIGN(64);
 
     constexpr int K_START = (((THREADBLOCK_TILE_K + LOAD_K - 1) / LOAD_K) - 1) * LOAD_K;
-    int cta_k = K_START;
+    // int cta_k = K_START;
+    int cta_k = 0;
 
     int shared_memory_stage = 1;
 
@@ -3304,17 +3305,19 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
 
     // load_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_0, B_Shared_Offset_0);
-    // load_A_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, input_A, lda, cta_k, block_idx_y, A_Shared_Offset_0);
-    // load_B_Global<B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&B_Shared, input_B, ldb, cta_k, block_idx_x, B_Shared_Offset_0);
-    dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 1, 128, true>(input_A + ((K * size_thread_block_tile_m) * block_idx_y) + cta_k, K, 1, A_Shared + A_Shared_Offset_0);
-    dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + (K * cta_k) + (size_thread_block_tile_n * block_idx_x), N, 1, B_Shared + B_Shared_Offset_0);
+    load_A_Global<A_VECTOR_4_LAST, A_VECTOR_2_LAST, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&A_Shared, input_A, lda, cta_k, block_idx_y, A_Shared_Offset_0);
+    load_B_Global<B_VECTOR_4, B_VECTOR_2, K_CHECK, THREADBLOCK_TILE_K_CHECK>(&B_Shared, input_B, ldb, cta_k, block_idx_x, B_Shared_Offset_0);
+    // dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 1, 128, true>(input_A + ((K * size_thread_block_tile_m) * block_idx_y) + cta_k, K, 1, A_Shared + A_Shared_Offset_0);
+    // dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + (K * cta_k) + (size_thread_block_tile_n * block_idx_x), N, 1, B_Shared + B_Shared_Offset_0);
 
     __syncthreads();
 
-    cta_k -= LOAD_K;
+    // cta_k -= LOAD_K;
+    cta_k += LOAD_K;
 
 #pragma unroll 1
-    for (; cta_k >= 0; cta_k -= LOAD_K) {
+    // for (; cta_k >= 0; cta_k -= LOAD_K) {
+    for (; cta_k <= K_START; cta_k += LOAD_K) {
 
 #pragma unroll
         for (int k = 0; k < LOAD_K; k++) {
@@ -3346,10 +3349,10 @@ DACE_DFI void nested_nested_state_1_1_5(const float * input_A, const float * inp
 
             if (k == LOAD_K - 1) {
                 // load_Global<A_VECTOR_4, A_VECTOR_2, B_VECTOR_4, B_VECTOR_2, (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(&A_Shared, &B_Shared, input_A, input_B, lda, ldb, cta_k, block_idx_x, block_idx_y, A_Shared_Offset_1, B_Shared_Offset_1);
-                // load_A_Global<A_VECTOR_4, A_VECTOR_2, (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(&A_Shared, input_A, lda, cta_k, block_idx_y, A_Shared_Offset_1);
-                // load_B_Global<B_VECTOR_4, B_VECTOR_2, (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(&B_Shared, input_B, ldb, cta_k, block_idx_x, B_Shared_Offset_1);
-                dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 1, 128, true>(input_A + ((K * size_thread_block_tile_m) * block_idx_y) + cta_k, K, 1, A_Shared + A_Shared_Offset_1);
-                dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + (K * cta_k) + (size_thread_block_tile_n * block_idx_x), N, 1, B_Shared + B_Shared_Offset_1);
+                load_A_Global<A_VECTOR_4, A_VECTOR_2, (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(&A_Shared, input_A, lda, cta_k, block_idx_y, A_Shared_Offset_1);
+                load_B_Global<B_VECTOR_4, B_VECTOR_2, (THREADBLOCK_TILE_K * SPLIT_K - K_ > LOAD_K), false>(&B_Shared, input_B, ldb, cta_k, block_idx_x, B_Shared_Offset_1);
+                // dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_thread_block_tile_m, size_K_tile, 1, 128, true>(input_A + ((K * size_thread_block_tile_m) * block_idx_y) + cta_k, K, 1, A_Shared + A_Shared_Offset_1);
+                // dace::GlobalToShared2D<float, max(1, num_threads_per_threadblock), 1, 1, size_K_tile, size_thread_block_tile_n, 128, 1, true>(input_B + (K * cta_k) + (size_thread_block_tile_n * block_idx_x), N, 1, B_Shared + B_Shared_Offset_1);
                 __syncthreads();
             }
 
@@ -3808,7 +3811,7 @@ void __dace_runkernel_initialize_matmul_result_1_0_1(gemm_t *__state, float * __
     cudaLaunchKernel((void*)initialize_matmul_result_1_0_1, dim3(int_ceil(int_ceil(N, 1), 32), int_ceil(int_ceil(M, 1), 1), int_ceil(1, 1)), dim3(32, 1, 1), initialize_matmul_result_1_0_1_args, 0, __state->gpu_context->streams[0]);
 }
 
-__launch_bounds__(256, 2)
+// __launch_bounds__(256, 2)
 __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, const float * __restrict__ input_B, float * __restrict__ output, int K, int M, int N) {
     constexpr long long VECLEN = 4;
     constexpr long long size_thread_block_tile_m = 128;
