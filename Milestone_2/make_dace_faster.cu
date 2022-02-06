@@ -3808,7 +3808,7 @@ void __dace_runkernel_initialize_matmul_result_1_0_1(gemm_t *__state, float * __
     cudaLaunchKernel((void*)initialize_matmul_result_1_0_1, dim3(int_ceil(int_ceil(N, 1), 32), int_ceil(int_ceil(M, 1), 1), int_ceil(1, 1)), dim3(32, 1, 1), initialize_matmul_result_1_0_1_args, 0, __state->gpu_context->streams[0]);
 }
 
-// __launch_bounds__(256, 2)
+__launch_bounds__(256, 2)
 __global__ void Thread_block_grid_1_1_3(const float * __restrict__ input_A, const float * __restrict__ input_B, float * __restrict__ output, int K, int M, int N) {
     constexpr long long VECLEN = 4;
     constexpr long long size_thread_block_tile_m = 128;
