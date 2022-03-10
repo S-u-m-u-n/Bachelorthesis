@@ -334,8 +334,8 @@ nested_initstate.add_memlet_path(tasklet,
 #     nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
 #     nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
 # else:
-# nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared)
-nested_sdfg.add_transient('shared_memory_A', shape=[schedule.load_k, schedule.thread_block_tile_m], dtype=dtype, storage=dace.StorageType.GPU_Shared, strides=[1, 128]) # Note: we store the shared memory A in a column-major fashion
+nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared)
+# nested_sdfg.add_transient('shared_memory_A', shape=[schedule.load_k, schedule.thread_block_tile_m], dtype=dtype, storage=dace.StorageType.GPU_Shared, strides=[1, 128]) # Note: we store the shared memory A in a column-major fashion
 nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dtype, storage=dace.StorageType.GPU_Shared)
 
 nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m], dtype=dtype, storage=dace.StorageType.Register)
@@ -403,7 +403,7 @@ if args.split_k_seq:
     helpers.print_info("Using a Sequential Map to split k", args.colorless)
     split_k_map_entry, split_k_map_exit = nested_state.add_map(
         'Split_K',
-        dict(thread_block_k='0:SPLIT_K'), # TODO: thread_block_k is a bad name here
+        dict(thread_block_k='0:SPLIT_K'), # TODO: thread_block_k is a bad name here, because we are not launching a 3 dimensional thread block grid
         schedule=dace.dtypes.ScheduleType.Sequential)
 
 # This map creates threadblocks
@@ -415,6 +415,7 @@ thread_block_grid_map_entry, thread_block_grid_map_exit = nested_state.add_map(
 
 K_tile_map_entry, K_tile_map_exit = nested_state.add_map(
         'K_tile',
+        # dict(k_tile='num_K_tiles:0:-1'),
         dict(k_tile='0:num_K_tiles'),
         schedule=dace.dtypes.ScheduleType.Sequential)
 
@@ -510,21 +511,35 @@ thread_y_offset = '(' + LaneIdy + ' * size_thread_tile_m)'
 # thread_x_range = warp_x_offset + ' + ' + thread_x_offset + ':' + warp_x_offset + ' + ' + thread_x_offset + '+size_thread_tile_n'
 # thread_y_range = warp_y_offset + ' + ' + thread_y_offset + ':' + warp_y_offset + ' + ' + thread_y_offset + '+size_thread_tile_m'
 
+
 ####################################################################################################################
 ### Data Movement: _A
 # _A -> shared_memory_A
+
+print("we are here")
+sdfg.save('sdfg_api_v4.sdfg')
+
 if args.split_k_seq:
-    nested_state.add_memlet_path(_A, split_k_map_entry, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, k_tile_range + ', ' + thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m', strides=(128, 1)))
-    # nested_state.add_memlet_path(_A, split_k_map_entry, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m, ' + k_tile_range, strides=(128, 1)))
+    # nested_state.add_memlet_path(_A, split_k_map_entry, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, k_tile_range + ', ' + thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m', strides=(128, 1)))
+    nested_state.add_memlet_path(_A, split_k_map_entry, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m, ' + k_tile_range))
 else:
-    # nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m, ' + k_tile_range))
-    nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, '0:M, 0:K'))
+    nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m, ' + k_tile_range))
+    # nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, k_tile_range + ', ' + thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m'))
+    # nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, '0:M, 0:K'))
 
 # shared_memory_A -> register_storage_A (load size_thread_tile_m elements into register storage)
+
+# print("we are here")
+# sdfg.save('sdfg_api_v4.sdfg')
 nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, 'k, ' + warp_y_offset + ' + ' + thread_y_offset + ':' + warp_y_offset + ' + ' + thread_y_offset + '+size_thread_tile_m'))
-# offset: M_THREADS * 4 = warp_height * 4
-additional_offset = 'warp_height * 4'
-nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet.simple(shared_memory_A, 'k, ' + additional_offset + ' + ' + warp_y_offset + ' + ' + thread_y_offset + ':' + additional_offset + ' + ' + warp_y_offset + ' + ' + thread_y_offset + '+size_thread_tile_m/2'))
+
+# print("we are here")
+# sdfg.save('sdfg_api_v4.sdfg')
+
+# TODO: for double precision, we probably want four memlets here to load 8 elements
+# nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet(f"{shared_memory_A}[k, {warp_y_offset} + {thread_y_offset} : {warp_y_offset} + {thread_y_offset} + size_thread_tile_m/2] -> 0:3"))
+# additional_offset = 'warp_height * VECLEN'
+# nested_state.add_memlet_path(shared_memory_A, thread_tile_map_entry, thread_K_map_entry, register_storage_A, memlet=dace.Memlet(f"{shared_memory_A}[k, {additional_offset} + {warp_y_offset} + {thread_y_offset} : {additional_offset} + {warp_y_offset} + {thread_y_offset} + size_thread_tile_m/2] -> 4:7"))
 
 # register_storage_A -> tasklet
 nested_state.add_memlet_path(register_storage_A,
@@ -533,9 +548,14 @@ nested_state.add_memlet_path(register_storage_A,
                         dst_conn='__a',
                         memlet=dace.Memlet(f"{register_storage_A.data}[i]"))
 
+# print("we are here")
+# sdfg.save('sdfg_api_v4.sdfg')
+
 ####################################################################################################################
 ### Data Movement: _B
 # _B -> shared_memory_B
+
+
 if args.split_k_seq:
     nested_state.add_memlet_path(_B, split_k_map_entry, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_B, memlet=dace.Memlet.simple(_B.data, k_tile_range + ', ' + thread_block_j_offset  + ':' + thread_block_j_offset + '+size_thread_block_tile_n'))
 else:
@@ -543,10 +563,11 @@ else:
 
 # shared_memory_B -> register_storage_B (load size_thread_tile_n elements into register storage)
 nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, 'k, ' + warp_x_offset + ' + ' + thread_x_offset + ':' + warp_x_offset + ' + ' + thread_x_offset + '+size_thread_tile_n'))
-# offset: N_THREADS * 4 = warp_width * 4
-additional_offset = 'warp_width * 4'
-nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet.simple(shared_memory_B, 'k, ' + additional_offset + ' + ' + warp_x_offset + ' + ' + thread_x_offset + ':' + additional_offset + ' + ' + warp_x_offset + ' + ' + thread_x_offset + '+size_thread_tile_n/2'))
 
+# TODO: for double precision, we probably want four memlets here to load 8 elements
+# nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet(f"{shared_memory_B}[k, {warp_x_offset} + {thread_x_offset} : {warp_x_offset} + {thread_x_offset} + size_thread_tile_n/2] -> 0:3"))
+# additional_offset = 'warp_width * VECLEN'
+# nested_state.add_memlet_path(shared_memory_B, thread_tile_map_entry, thread_K_map_entry, register_storage_B, memlet=dace.Memlet(f"{shared_memory_B}[k, {additional_offset} + {warp_x_offset} + {thread_x_offset} : {additional_offset} + {warp_x_offset} + {thread_x_offset} + size_thread_tile_n/2] -> 4:7"))
 
 # register_storage_B -> tasklet
 nested_state.add_memlet_path(register_storage_B,
@@ -559,6 +580,7 @@ nested_state.add_memlet_path(register_storage_B,
 ### Data Movement: output
 # tasklet -> register_storage_C
 subset = thread_block_i_offset + ' + ' + warp_y_offset + ' + ' + thread_y_offset + ':' + thread_block_i_offset + ' + ' + warp_y_offset + ' + ' + thread_y_offset + '+size_thread_tile_m' + ', ' + thread_block_j_offset + ' + ' + warp_x_offset + ' + ' + thread_x_offset + ':' + thread_block_j_offset + ' + ' + warp_x_offset + ' + ' + thread_x_offset + '+size_thread_tile_n'
+
 
 if args.split_k > 1:
     subset = 'thread_block_k, ' + subset
@@ -586,27 +608,56 @@ else:
                             wcr_nonatomic=True)
                         )
 
+    
+# int global_i = (size_thread_block_tile_m * block_idx_y) + ((size_thread_tile_m / 2) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1))) + ((size_warp_tile_m) * ((thread / 32) / num_warps_n));
+
+# int global_j = (size_thread_block_tile_n * block_idx_x) + (size_thread_tile_n / 2 * bitwise_or(right_shift(bitwise_and((thread % 32), 24), 2), bitwise_and((thread % 32), 1))) + (size_warp_tile_n * ((thread / 32) % num_warps_n));
+
+# for (int i = 0; i < 2; ++i) {
+#     for (int j = 0; j < 4; ++j) {
+#         for (int k = 0; k < 2; ++k) {
+#             dace::CopyND<float, 1, false, 4>::template ConstDst<1>::Copy(
+#                 Thread_Tile + 32 * i + 8 * j + 4 * k, output + (global_i + 16 * i + j) * M + global_j + 32 * k, 1);
+#         }
+#     }
+# }
+
 # register_storage_C -> A_matmul_B_nested_state (= result that will be transferred to outer sdfg)
+
+
 if args.split_k == 1:
     if (math.fabs(args.beta) < 1e-6):
-        nested_state.add_memlet_path(register_storage_C,
-                                thread_tile_map_exit,
-                                K_tile_map_exit,
-                                thread_block_grid_map_exit,
-                                A_matmul_B_nested_state,
-                                memlet=dace.Memlet(data=A_matmul_B_nested_state.data, subset=subset))
+        nested_state.add_memlet_path(tasklet,
+                            thread_map_exit,
+                            thread_K_map_exit,
+                            register_storage_C,
+                            src_conn='__out',
+                            memlet=dace.Memlet(f"{register_storage_C.data}[i, j]"))
     else:
-        nested_state.add_memlet_path(register_storage_C,
-                                thread_tile_map_exit,
-                                K_tile_map_exit,
-                                thread_block_grid_map_exit,
-                                A_matmul_B_nested_state,
-                                memlet=dace.Memlet(
-                                    data=A_matmul_B_nested_state.data,
-                                    subset=subset,
-                                    wcr='(lambda x, y: (x + y))',
-                                    wcr_nonatomic=wcr_no_conflicts) # needed so we have a non-atomic accumulate accross thread blocks
-                                )
+        nested_state.add_memlet_path(tasklet,
+                        thread_map_exit,
+                        thread_K_map_exit,
+                        register_storage_C,
+                        src_conn='__out',
+                        memlet=dace.Memlet(
+                            f"{register_storage_C.data}[i, j]",
+                            wcr='(lambda x, y: (x + y))',
+                            wcr_nonatomic=True)
+                        )
+
+    # if (math.fabs(args.beta) < 1e-6):
+        # for i in range(2):
+            # for j in range(4):
+                # for k in range(2):
+                    # nested_state.add_memlet_path(register_storage_C, thread_tile_map_exit, K_tile_map_exit, thread_block_grid_map_exit, A_matmul_B_nested_state,
+                        # memlet=dace.Memlet(f"{register_storage_C}[4*i + j, 4*k:4*k+4] -> {thread_block_i_offset} + {warp_y_offset} + 16*i + j, {thread_block_j_offset} + {warp_x_offset} + 32*k:{thread_block_j_offset} + {warp_x_offset} + 32*k+4"))
+    # else:
+        # for i in range(2):
+            # for j in range(4):
+                # for k in range(2):
+                    # nested_state.add_memlet_path(register_storage_C, thread_tile_map_exit, K_tile_map_exit, thread_block_grid_map_exit, A_matmul_B_nested_state,
+                        # memlet=dace.Memlet(f"{register_storage_C}[4*i + j, 4*k:4*k+4] -> [{thread_block_i_offset} + {warp_y_offset} + 16*i + j, {thread_block_j_offset} + {warp_x_offset} + 32*k:{thread_block_j_offset} + {warp_x_offset} + 32*k+4]", wcr='(lambda x, y: (x + y))', wcr_nonatomic=wcr_no_conflicts))
+
 else:
     if args.split_k_seq:
         nested_state.add_memlet_path(register_storage_C,
@@ -619,7 +670,7 @@ else:
                             data=partial_split_k_output.data,
                             # subset= '0:1, 0:1, 0:1',
                             # subset= '0:SPLIT_K, 0:M, 0:N',
-                            subset= subset,
+                            subset=subset,
                             wcr='(lambda x, y: (x + y))',
                             wcr_nonatomic=wcr_no_conflicts) # needed so we have a non-atomic accumulate accross thread blocks
                         )
@@ -631,7 +682,7 @@ else:
                         partial_split_k_output,
                         memlet=dace.Memlet(
                             data=partial_split_k_output.data,
-                            subset= subset,
+                            subset=subset,
                             wcr='(lambda x, y: (x + y))',
                             wcr_nonatomic=wcr_no_conflicts) # needed so we have a non-atomic accumulate accross thread blocks
                         )
@@ -688,14 +739,19 @@ __out[1] = __in[1]''')
                 # _tasklet=state.out_edges(entry)[0].dst,
                 # _map_exit=state.exit_node(entry))
         
+print("we are here")
+sdfg.save('sdfg_api_v4.sdfg')
+# nested_sdfg.validate()
+# sdfg.validate()
+
 if args.double_buffering:
     helpers.print_info("Applying Double Buffering...", False)
-    DoubleBuffering.apply_to(nested_sdfg, _map_entry=thread_K_map_entry, _transient=register_storage_A) # Double buffering on the registers
-    # DoubleBuffering.apply_to(nested_sdfg, _map_entry=K_tile_map_entry, _transient=register_storage_A) # Double buffering on the registers
-    DoubleBuffering.apply_to(nested_sdfg, _map_entry=K_tile_map_entry, _transient=shared_memory_A) # Double buffering on the shared memory
+    DoubleBuffering.apply_to(nested_sdfg, dict(reversed=False, full_data=True), _map_entry=thread_K_map_entry, _transient=register_storage_A) # Double buffering on the registers
+    DoubleBuffering.apply_to(nested_sdfg, dict(reversed=True, full_data=True), _map_entry=K_tile_map_entry, _transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
 
 nested_sdfg.fill_scope_connectors()
 sdfg.fill_scope_connectors()
+print("we are here")
 sdfg.save('sdfg_api_v4.sdfg')
 nested_sdfg.validate()
 sdfg.validate()

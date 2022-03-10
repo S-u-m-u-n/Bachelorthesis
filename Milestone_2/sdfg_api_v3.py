@@ -512,6 +512,9 @@ thread_y_offset = '(' + LaneIdy + ' * size_thread_tile_m)'
 ####################################################################################################################
 ### Data Movement: _A
 # _A -> shared_memory_A
+
+print("we are here")
+sdfg.save('sdfg_api_v3.sdfg')
 if args.split_k_seq:
     nested_state.add_memlet_path(_A, split_k_map_entry, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m, ' + k_tile_range))
 else:
@@ -661,6 +664,9 @@ __out[1] = __in[1]''')
                 # _map_entry=entry,
                 # _tasklet=state.out_edges(entry)[0].dst,
                 # _map_exit=state.exit_node(entry))
+
+print("we are here")
+sdfg.save('sdfg_api_v3.sdfg')
         
 if args.double_buffering:
     helpers.print_info("Applying Double Buffering...", False)

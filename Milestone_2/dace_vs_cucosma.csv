@@ -1,14 +1,16 @@
 Row Number,load_A_Global,load_B_Global,load_A_Shared,load_B_Shared,store_C,Average Performance,Comments
 1,cuCOSMA,cuCOSMA,cuCOSMA,cuCOSMA,cuCOSMA,10.446ms,Performance Goal
-2,DaCe,cuCOSMA,cuCOSMA,cuCOSMA,cuCOSMA,10.433ms,Ok
-3,cuCOSMA,DaCe,cuCOSMA,cuCOSMA,cuCOSMA,10.440ms,Ok
-4,cuCOSMA,DaCe (Vectorized),cuCOSMA,cuCOSMA,cuCOSMA,10.339ms,Ok
-5,cuCOSMA,cuCOSMA,DaCe,cuCOSMA,cuCOSMA,10.535ms,Possibly we are losing a bit of performance here
-6,cuCOSMA,cuCOSMA,cuCOSMA,DaCe,cuCOSMA,10.232ms,Possibly we are gaining a bit of performance here
-7,cuCOSMA,DaCe (Vectorized),cuCOSMA,DaCe,cuCOSMA,10.307ms,Ok
-8,cuCOSMA,cuCOSMA,cuCOSMA,cuCOSMA,DaCe,10.673ms,Need to check how to make the store_C more performant in DaCe?
-9,DaCe,DaCe,cuCOSMA,cuCOSMA,cuCOSMA,11.027ms,"While the DaCe loads are fine on their own, they do not seem to play together well - according to the metrics, there is some local memory overhead introduced"
-10,DaCe,DaCe (Vectorized),cuCOSMA,cuCOSMA,cuCOSMA,11.020ms,
-11,cuCOSMA,cuCOSMA,DaCe,DaCe,cuCOSMA,10.440ms,
-12,DaCe,DaCe,DaCe,DaCe,cuCOSMA,11.199ms,
-13,DaCe,DaCe,DaCe,DaCe,DaCe,11.530ms,Overall we are losing about 1.1ms. Is this due to inefficient DaCe implementations?
+2,cuCOSMA,cuCOSMA,cuCOSMA,cuCOSMA,cuCOSMA,10.561ms,Reversed K order
+3,DaCe,cuCOSMA,cuCOSMA,cuCOSMA,cuCOSMA,10.433ms,Ok
+4,cuCOSMA,DaCe,cuCOSMA,cuCOSMA,cuCOSMA,10.440ms,Ok
+5,cuCOSMA,DaCe (Vectorized),cuCOSMA,cuCOSMA,cuCOSMA,10.339ms,Ok
+6,cuCOSMA,cuCOSMA,DaCe,cuCOSMA,cuCOSMA,10.535ms,Possibly we are losing a bit of performance here
+7,cuCOSMA,cuCOSMA,cuCOSMA,DaCe,cuCOSMA,10.232ms,Possibly we are gaining a bit of performance here
+8,cuCOSMA,DaCe (Vectorized),cuCOSMA,DaCe,cuCOSMA,10.307ms,Ok
+9,cuCOSMA,cuCOSMA,cuCOSMA,cuCOSMA,DaCe,10.673ms,Need to make the store_C more performant in DaCe
+10,DaCe,DaCe,cuCOSMA,cuCOSMA,cuCOSMA,11.027ms,"While the DaCe loads are fine on their own, they do not seem to play together well - according to the metrics, there is some local memory overhead introduced"
+11,DaCe,DaCe,cuCOSMA,cuCOSMA,cuCOSMA,10.890ms,"With --maxrregcount 120 and launch bounds we are doing slightly better"
+12,DaCe,DaCe (Vectorized),cuCOSMA,cuCOSMA,cuCOSMA,11.020ms,
+13,cuCOSMA,cuCOSMA,DaCe,DaCe,cuCOSMA,10.440ms,
+14,DaCe,DaCe,DaCe,DaCe,cuCOSMA,11.199ms,
+15,DaCe,DaCe,DaCe,DaCe,DaCe,11.530ms,Overall we are losing about 1.1ms
