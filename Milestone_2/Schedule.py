@@ -1,18 +1,15 @@
 class Schedule:
-    def __init__(self, load_k=1, thread_tile_m=1, thread_tile_n=1, thread_tile_k=1, warp_tile_m=1, warp_tile_n=1, thread_block_tile_m=1, thread_block_tile_n=1, thread_block_tile_k=1, splice_k = 1, split_k=1, double_buffering=False, SWIZZLE_thread_block=1, SWIZZLE_thread_tile=False):
+    def __init__(self, load_k=1, thread_tile_m=1, thread_tile_n=1, thread_tile_k=1, warp_tile_m=1, warp_tile_n=1, thread_block_tile_m=1, thread_block_tile_n=1, thread_block_tile_k=1, split_k=1, SWIZZLE_thread_block=1, SWIZZLE_thread_tile=False):
         self.load_k = load_k
         self.thread_tile_m = thread_tile_m
         self.thread_tile_n = thread_tile_n
         self.thread_tile_k = thread_tile_k
         self.warp_tile_m = warp_tile_m
         self.warp_tile_n = warp_tile_n
-        self.warp_tile_k = thread_tile_k / split_k
         self.thread_block_tile_m = thread_block_tile_m
         self.thread_block_tile_n = thread_block_tile_n
         self.thread_block_tile_k = thread_block_tile_k
         self.split_k = split_k
-        self.splice_k = splice_k
-        self.double_buffering = double_buffering
         self.SWIZZLE_thread_block = SWIZZLE_thread_block
         self.SWIZZLE_thread_tile = SWIZZLE_thread_tile
 
@@ -54,9 +51,8 @@ class Schedule:
         thread_block_tile_n: %d
         thread_block_tile_k: %d
         split_k: %d
-        double_buffering: %d
         SWIZZLE_thread_block: %d
-        """ % (self.load_k, self.thread_tile_m, self.thread_tile_n, self.warp_tile_m, self.warp_tile_n, self.thread_block_tile_m, self.thread_block_tile_n, self.thread_block_tile_k, self.split_k, self.double_buffering, self.SWIZZLE_thread_block)
+        """ % (self.load_k, self.thread_tile_m, self.thread_tile_n, self.warp_tile_m, self.warp_tile_n, self.thread_block_tile_m, self.thread_block_tile_n, self.thread_block_tile_k, self.split_k, self.SWIZZLE_thread_block)
 
     def num_threads_used(self):
         numTilesM = math.ceil(M / dace.float64(self.thread_tile_m))
