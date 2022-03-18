@@ -5,7 +5,7 @@ import dace
 import math
 from Schedule import Schedule
 import helpers
-from dace.transformation.dataflow import Vectorization, DoubleBuffering
+from dace.transformation.dataflow import Vectorization, DoubleBuffering, MapToForLoop
 
 parser = ArgumentParser()
 parser.add_argument("-v", "--verbose",
@@ -689,10 +689,15 @@ else:
 # nested_sdfg.validate()
 # sdfg.validate()
 
+# Reverse K map:
+# MapToForLoop.apply_to(nested_sdfg, dict(reversed=True, full_data=True), _map_entry=K_tile_map_entry)
+
 if args.double_buffering:
     helpers.print_info("Applying Double Buffering...", False)
-    DoubleBuffering.apply_to(nested_sdfg, dict(reversed=False, full_data=True), _map_entry=thread_K_map_entry, _transient=register_storage_A) # Double buffering on the registers
-    DoubleBuffering.apply_to(nested_sdfg, dict(reversed=True, full_data=True), _map_entry=K_tile_map_entry, _transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
+    # DoubleBuffering.apply_to(nested_sdfg, dict(reversed=False, full_data=True), _map_entry=thread_K_map_entry, _transient=register_storage_A) # Double buffering on the registers
+    DoubleBuffering.apply_to(nested_sdfg, _map_entry=thread_K_map_entry, _transient=register_storage_A) # Double buffering on the registers
+    # DoubleBuffering.apply_to(nested_sdfg, dict(reversed=True, full_data=True), _map_entry=K_tile_map_entry, _transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
+    DoubleBuffering.apply_to(nested_sdfg, _map_entry=K_tile_map_entry, _transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
 
 nested_sdfg.fill_scope_connectors()
 sdfg.fill_scope_connectors()
