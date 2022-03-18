@@ -556,19 +556,10 @@ subset = thread_block_i_offset + ' + ' + warp_y_offset + ' + ' + thread_y_offset
 
 wcr_no_conflicts = False 
 if num_threads_per_thread_block == 32 or args.double_buffering_shared:
-    print("We do not have any write conflicts inside of a thread block!")
     wcr_no_conflicts = True
 
 # print('No write conflicts: ' + str(wcr_no_conflicts))
 
-# if (math.fabs(args.beta) < 1e-6):
-#     nested_state.add_memlet_path(tasklet,
-#                             thread_map_exit,
-#                             thread_K_map_exit,
-#                             register_storage_C,
-#                             src_conn='__out',
-#                             memlet=dace.Memlet(f"{register_storage_C.data}[i, j]"))
-# else:
 nested_state.add_memlet_path(tasklet,
                     thread_map_exit,
                     thread_K_map_exit,
@@ -695,13 +686,13 @@ else:
 
 if args.double_buffering_register:
     helpers.print_info("Applying Double Buffering on the registers...", False)
-    # DoubleBuffering.apply_to(nested_sdfg, dict(reversed=False, full_data=True), _map_entry=thread_K_map_entry, _transient=register_storage_A) # Double buffering on the registers
-    DoubleBuffering.apply_to(nested_sdfg, _map_entry=thread_K_map_entry, _transient=register_storage_A) # Double buffering on the registers
+    # DoubleBuffering.apply_to(nested_sdfg, dict(reversed=False, full_data=True), map_entry=thread_K_map_entry, transient=register_storage_A) # Double buffering on the registers
+    DoubleBuffering.apply_to(nested_sdfg, map_entry=thread_K_map_entry, transient=register_storage_A) # Double buffering on the registers
 
 if args.double_buffering_shared:
     helpers.print_info("Applying Double Buffering on the shared memory...", False)
-    # DoubleBuffering.apply_to(nested_sdfg, dict(reversed=True, full_data=True), _map_entry=K_tile_map_entry, _transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
-    DoubleBuffering.apply_to(nested_sdfg, _map_entry=K_tile_map_entry, _transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
+    # DoubleBuffering.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
+    DoubleBuffering.apply_to(nested_sdfg, map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
 
 
 nested_sdfg.fill_scope_connectors()
