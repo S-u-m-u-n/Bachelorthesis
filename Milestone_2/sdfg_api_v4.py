@@ -383,7 +383,7 @@ nested_sdfg.add_constant('size_thread_tile_n', schedule.thread_tile_n)
 # nested_sdfg.add_constant('size_thread_tile_k', schedule.thread_tile_k) # = size_K_tile
 nested_sdfg.add_constant('warp_width', math.ceil(schedule.warp_tile_n / schedule.thread_tile_n))
 nested_sdfg.add_constant('warp_height', math.ceil(schedule.warp_tile_m / schedule.thread_tile_m))
-nested_sdfg.add_constant('load_k', schedule.load_k)
+nested_sdfg.add_constant('size_K_tile', schedule.load_k)
 nested_sdfg.add_constant('size_K_split', args.K // args.split_k)
 nested_sdfg.add_constant('SWIZZLE', args.swizzle_thread_blocks)
 nested_sdfg.add_constant('SPLIT_K', args.split_k)
