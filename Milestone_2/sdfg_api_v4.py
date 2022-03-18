@@ -390,7 +390,7 @@ nested_sdfg.add_constant('SPLIT_K', args.split_k)
 nested_sdfg.add_constant('ACCUMULATOR_SIZE', args.accumulator_split_k)
 
 sdfg.add_constant('num_threads_per_thread_block', num_threads_per_thread_block)
-nested_sdfg.add_constant('num_threads_per_threadblock', num_threads_per_thread_block)
+nested_sdfg.add_constant('num_threads_per_thread_block', num_threads_per_thread_block)
 
 tasklet = nested_state.add_tasklet('matrix_multiplication', {'__a', '__b'}, {'__out'}, '__out = (__a * __b)')
 
@@ -503,9 +503,6 @@ thread_y_offset = '(' + LaneIdy + ' * size_thread_tile_m)'
 ### Data Movement: _A
 # _A -> shared_memory_A
 
-print("we are here")
-sdfg.save('sdfg_api_v4.sdfg')
-
 nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m, ' + k_tile_range))
 # nested_state.add_memlet_path(_A, thread_block_grid_map_entry, K_tile_map_entry, shared_memory_A, memlet=dace.Memlet.simple(_A.data, k_tile_range + ', ' + thread_block_i_offset + ':' + thread_block_i_offset + '+size_thread_block_tile_m'))
 
@@ -524,9 +521,6 @@ nested_state.add_memlet_path(register_storage_A,
                         tasklet,
                         dst_conn='__a',
                         memlet=dace.Memlet(f"{register_storage_A.data}[i]"))
-
-# print("we are here")
-# sdfg.save('sdfg_api_v4.sdfg')
 
 ####################################################################################################################
 ### Data Movement: _B
