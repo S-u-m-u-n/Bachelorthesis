@@ -551,28 +551,29 @@ subset = thread_block_i_offset + ' + ' + warp_y_offset + ' + ' + thread_y_offset
 
 wcr_no_conflicts = False 
 if num_threads_per_thread_block == 32 or args.double_buffering:
+    print("We do not have any write conflicts inside of a thread block!")
     wcr_no_conflicts = True
 
 # print('No write conflicts: ' + str(wcr_no_conflicts))
 
-if (math.fabs(args.beta) < 1e-6):
-    nested_state.add_memlet_path(tasklet,
-                            thread_map_exit,
-                            thread_K_map_exit,
-                            register_storage_C,
-                            src_conn='__out',
-                            memlet=dace.Memlet(f"{register_storage_C.data}[i, j]"))
-else:
-    nested_state.add_memlet_path(tasklet,
-                        thread_map_exit,
-                        thread_K_map_exit,
-                        register_storage_C,
-                        src_conn='__out',
-                        memlet=dace.Memlet(
-                            f"{register_storage_C.data}[i, j]",
-                            wcr='(lambda x, y: (x + y))',
-                            wcr_nonatomic=True)
-                        )
+# if (math.fabs(args.beta) < 1e-6):
+#     nested_state.add_memlet_path(tasklet,
+#                             thread_map_exit,
+#                             thread_K_map_exit,
+#                             register_storage_C,
+#                             src_conn='__out',
+#                             memlet=dace.Memlet(f"{register_storage_C.data}[i, j]"))
+# else:
+nested_state.add_memlet_path(tasklet,
+                    thread_map_exit,
+                    thread_K_map_exit,
+                    register_storage_C,
+                    src_conn='__out',
+                    memlet=dace.Memlet(
+                        f"{register_storage_C.data}[i, j]",
+                        wcr='(lambda x, y: (x + y))',
+                        wcr_nonatomic=True)
+                    )
 
     
 # int global_i = (size_thread_block_tile_m * block_idx_y) + ((size_thread_tile_m / 2) * bitwise_and(right_shift((thread % 32), 1), (warp_height - 1))) + ((size_warp_tile_m) * ((thread / 32) / num_warps_n));
