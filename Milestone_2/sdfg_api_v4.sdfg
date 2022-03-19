@@ -544,7 +544,7 @@
     "transformation_hist": [],
     "openmp_sections": true,
     "name": "gemm",
-    "hash": "c8d80f004a4e579c1b2fa7a32379268a10b98c772a5d005ed3bb897f2f066943"
+    "hash": "b3caebcdbf57c04300c7b6638185d0e1224747c60e2a08a40961d319adb37430"
   },
   "nodes": [
     {
@@ -1158,7 +1158,7 @@
                     "attributes": {
                       "allow_conflicts": false,
                       "strides": [
-                        "128",
+                        "8",
                         "1"
                       ],
                       "total_size": "1024",
@@ -1170,8 +1170,8 @@
                       "alignment": 0,
                       "dtype": "float32",
                       "shape": [
-                        "8",
-                        "128"
+                        "128",
+                        "8"
                       ],
                       "transient": true,
                       "storage": "GPU_Shared",
@@ -1722,8 +1722,8 @@
                         "setzero": false,
                         "debuginfo": {
                           "type": "DebugInfo",
-                          "start_line": 351,
-                          "end_line": 351,
+                          "start_line": 352,
+                          "end_line": 352,
                           "start_column": 0,
                           "end_column": 0,
                           "filename": "sdfg_api_v4.py"
@@ -1744,8 +1744,8 @@
                         "setzero": false,
                         "debuginfo": {
                           "type": "DebugInfo",
-                          "start_line": 352,
-                          "end_line": 352,
+                          "start_line": 353,
+                          "end_line": 353,
                           "start_column": 0,
                           "end_column": 0,
                           "filename": "sdfg_api_v4.py"
@@ -1766,8 +1766,8 @@
                         "setzero": false,
                         "debuginfo": {
                           "type": "DebugInfo",
-                          "start_line": 353,
-                          "end_line": 353,
+                          "start_line": 354,
+                          "end_line": 354,
                           "start_column": 0,
                           "end_column": 0,
                           "filename": "sdfg_api_v4.py"
@@ -1788,8 +1788,8 @@
                         "setzero": false,
                         "debuginfo": {
                           "type": "DebugInfo",
-                          "start_line": 354,
-                          "end_line": 354,
+                          "start_line": 355,
+                          "end_line": 355,
                           "start_column": 0,
                           "end_column": 0,
                           "filename": "sdfg_api_v4.py"
@@ -1810,8 +1810,8 @@
                         "setzero": true,
                         "debuginfo": {
                           "type": "DebugInfo",
-                          "start_line": 355,
-                          "end_line": 355,
+                          "start_line": 356,
+                          "end_line": 356,
                           "start_column": 0,
                           "end_column": 0,
                           "filename": "sdfg_api_v4.py"
@@ -1847,8 +1847,8 @@
                         },
                         "debuginfo": {
                           "type": "DebugInfo",
-                          "start_line": 401,
-                          "end_line": 401,
+                          "start_line": 402,
+                          "end_line": 402,
                           "start_column": 0,
                           "end_column": 0,
                           "filename": "sdfg_api_v4.py"
@@ -1900,8 +1900,8 @@
                         "collapse": 1,
                         "debuginfo": {
                           "type": "DebugInfo",
-                          "start_line": 405,
-                          "end_line": 405,
+                          "start_line": 406,
+                          "end_line": 406,
                           "start_column": 0,
                           "end_column": 0,
                           "filename": "sdfg_api_v4.py"
@@ -1960,8 +1960,8 @@
                         "collapse": 1,
                         "debuginfo": {
                           "type": "DebugInfo",
-                          "start_line": 411,
-                          "end_line": 411,
+                          "start_line": 412,
+                          "end_line": 412,
                           "start_column": 0,
                           "end_column": 0,
                           "filename": "sdfg_api_v4.py"
@@ -2020,8 +2020,8 @@
                         "collapse": 1,
                         "debuginfo": {
                           "type": "DebugInfo",
-                          "start_line": 417,
-                          "end_line": 417,
+                          "start_line": 418,
+                          "end_line": 418,
                           "start_column": 0,
                           "end_column": 0,
                           "filename": "sdfg_api_v4.py"
@@ -2080,8 +2080,8 @@
                         "collapse": 1,
                         "debuginfo": {
                           "type": "DebugInfo",
-                          "start_line": 422,
-                          "end_line": 422,
+                          "start_line": 423,
+                          "end_line": 423,
                           "start_column": 0,
                           "end_column": 0,
                           "filename": "sdfg_api_v4.py"
@@ -2147,8 +2147,8 @@
                         "collapse": 1,
                         "debuginfo": {
                           "type": "DebugInfo",
-                          "start_line": 427,
-                          "end_line": 427,
+                          "start_line": 428,
+                          "end_line": 428,
                           "start_column": 0,
                           "end_column": 0,
                           "filename": "sdfg_api_v4.py"
@@ -2198,13 +2198,13 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "num_K_tiles*size_K_tile - 1",
+                                  "end": "num_thread_blocks_m*size_thread_block_tile_m - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "num_thread_blocks_m*size_thread_block_tile_m - 1",
+                                  "end": "num_K_tiles*size_K_tile - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -2221,13 +2221,13 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "num_K_tiles*size_K_tile - 1",
+                                  "end": "num_thread_blocks_m*size_thread_block_tile_m - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "num_thread_blocks_m*size_thread_block_tile_m - 1",
+                                  "end": "num_K_tiles*size_K_tile - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -2464,13 +2464,13 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "size_K_tile - 1",
+                                  "end": "size_thread_tile_m*floor(Mod(num_threads_per_thread_block + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_thread_block/32 - 1/32)/num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "size_thread_tile_m*floor(Mod(num_threads_per_thread_block + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_thread_block/32 - 1/32)/num_warps_n) - 1",
+                                  "end": "size_K_tile - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -2487,13 +2487,13 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "size_K_tile - 1",
+                                  "end": "size_thread_tile_m*floor(Mod(num_threads_per_thread_block + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_thread_block/32 - 1/32)/num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "size_thread_tile_m*floor(Mod(num_threads_per_thread_block + 31, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_thread_block/32 - 1/32)/num_warps_n) - 1",
+                                  "end": "size_K_tile - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -2579,14 +2579,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "k_tile*size_K_tile",
-                                  "end": "k_tile*size_K_tile + size_K_tile - 1",
+                                  "start": "size_thread_block_tile_m*thread_block_i",
+                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_block_tile_m - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_block_tile_m*thread_block_i",
-                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_block_tile_m - 1",
+                                  "start": "k_tile*size_K_tile",
+                                  "end": "k_tile*size_K_tile + size_K_tile - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -2602,14 +2602,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "k_tile*size_K_tile",
-                                  "end": "k_tile*size_K_tile + size_K_tile - 1",
+                                  "start": "size_thread_block_tile_m*thread_block_i",
+                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_block_tile_m - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_block_tile_m*thread_block_i",
-                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_block_tile_m - 1",
+                                  "start": "k_tile*size_K_tile",
+                                  "end": "k_tile*size_K_tile + size_K_tile - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -2637,14 +2637,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "0",
-                                  "end": "num_K_tiles*size_K_tile - 1",
+                                  "start": "size_thread_block_tile_m*thread_block_i",
+                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_block_tile_m - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_block_tile_m*thread_block_i",
-                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_block_tile_m - 1",
+                                  "start": "0",
+                                  "end": "num_K_tiles*size_K_tile - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -2660,14 +2660,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "0",
-                                  "end": "num_K_tiles*size_K_tile - 1",
+                                  "start": "size_thread_block_tile_m*thread_block_i",
+                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_block_tile_m - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_block_tile_m*thread_block_i",
-                                  "end": "size_thread_block_tile_m*thread_block_i + size_thread_block_tile_m - 1",
+                                  "start": "0",
+                                  "end": "num_K_tiles*size_K_tile - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -3193,14 +3193,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "k",
-                                  "end": "k",
+                                  "start": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
+                                  "end": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
-                                  "end": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
+                                  "start": "k",
+                                  "end": "k",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -3216,14 +3216,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "k",
-                                  "end": "k",
+                                  "start": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
+                                  "end": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
-                                  "end": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
+                                  "start": "k",
+                                  "end": "k",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -3251,14 +3251,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "0",
-                                  "end": "size_K_tile - 1",
+                                  "start": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
+                                  "end": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
-                                  "end": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
+                                  "start": "0",
+                                  "end": "size_K_tile - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -3274,14 +3274,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "0",
-                                  "end": "size_K_tile - 1",
+                                  "start": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
+                                  "end": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
-                                  "end": "size_thread_tile_m*floor(Mod(thread, 32)/warp_width) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
+                                  "start": "0",
+                                  "end": "size_K_tile - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
