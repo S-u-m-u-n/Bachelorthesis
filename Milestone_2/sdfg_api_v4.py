@@ -691,18 +691,18 @@ else:
 # Reverse K map:
 if args.reverse_k and not args.double_buffering_shared:
     print("Reversing K map")
-    MapToForLoop.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry)
+    MapToForLoop.apply_to(nested_sdfg, dict(reverse=True, full_data=True), map_entry=K_tile_map_entry)
 
 if args.double_buffering_register:
     helpers.print_info("Applying Double Buffering on the registers...", False)
-    # DoubleBuffering.apply_to(nested_sdfg, dict(reversed=False, full_data=True), map_entry=thread_K_map_entry, transient=register_storage_A) # Double buffering on the registers
-    DoubleBuffering.apply_to(nested_sdfg, map_entry=thread_K_map_entry, transient=register_storage_A) # Double buffering on the registers
+    DoubleBuffering.apply_to(nested_sdfg, dict(full_data=True), map_entry=thread_K_map_entry, transient=register_storage_A) # Double buffering on the registers
+    # DoubleBuffering.apply_to(nested_sdfg, map_entry=thread_K_map_entry, transient=register_storage_A) # Double buffering on the registers
 
 if args.double_buffering_shared:
     # DoubleBuffering.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
     if args.reverse_k:
         helpers.print_info("Applying Double Buffering on the shared memory with reversed K map...", False)
-        DoubleBuffering.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
+        DoubleBuffering.apply_to(nested_sdfg, dict(reverse=True, full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
     else:
         helpers.print_info("Applying Double Buffering on the shared memory...", False)
         DoubleBuffering.apply_to(nested_sdfg, dict(full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory
