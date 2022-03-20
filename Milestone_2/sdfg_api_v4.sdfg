@@ -4578,7 +4578,7 @@
     "_rdistrarrays": {},
     "callback_mapping": {},
     "name": "gemm",
-    "hash": "48c0c2aa092b14e56823840208c1042a0919f20b0ca67cf6f6197868b5579b39"
+    "hash": "79a477cb55a3b857859c04c90763ed43b02b418d210ba0f09bfc489e80fcc595"
   },
   "nodes": [
     {
@@ -6070,15 +6070,15 @@
                               ]
                             },
                             "_arrays": {
-                              "register_storage_C": {
+                              "shared_memory_A": {
                                 "type": "Array",
                                 "attributes": {
                                   "allow_conflicts": false,
                                   "strides": [
-                                    "8",
-                                    "1"
+                                    "1",
+                                    "128"
                                   ],
-                                  "total_size": "64",
+                                  "total_size": "1024",
                                   "offset": [
                                     "0",
                                     "0"
@@ -6088,7 +6088,32 @@
                                   "start_offset": 0,
                                   "dtype": "float32",
                                   "shape": [
-                                    "8",
+                                    "128",
+                                    "8"
+                                  ],
+                                  "transient": true,
+                                  "storage": "GPU_Shared",
+                                  "lifetime": "Scope",
+                                  "location": {},
+                                  "debuginfo": null
+                                }
+                              },
+                              "register_storage_A": {
+                                "type": "Array",
+                                "attributes": {
+                                  "allow_conflicts": false,
+                                  "strides": [
+                                    "1"
+                                  ],
+                                  "total_size": "8",
+                                  "offset": [
+                                    "0"
+                                  ],
+                                  "may_alias": false,
+                                  "alignment": 0,
+                                  "start_offset": 0,
+                                  "dtype": "float32",
+                                  "shape": [
                                     "8"
                                   ],
                                   "transient": true,
@@ -6123,15 +6148,15 @@
                                   "debuginfo": null
                                 }
                               },
-                              "shared_memory_A": {
+                              "register_storage_C": {
                                 "type": "Array",
                                 "attributes": {
                                   "allow_conflicts": false,
                                   "strides": [
-                                    "1",
-                                    "128"
+                                    "8",
+                                    "1"
                                   ],
-                                  "total_size": "1024",
+                                  "total_size": "64",
                                   "offset": [
                                     "0",
                                     "0"
@@ -6141,11 +6166,11 @@
                                   "start_offset": 0,
                                   "dtype": "float32",
                                   "shape": [
-                                    "128",
+                                    "8",
                                     "8"
                                   ],
                                   "transient": true,
-                                  "storage": "GPU_Shared",
+                                  "storage": "Register",
                                   "lifetime": "Scope",
                                   "location": {},
                                   "debuginfo": null
@@ -6174,31 +6199,6 @@
                                   ],
                                   "transient": true,
                                   "storage": "GPU_Shared",
-                                  "lifetime": "Scope",
-                                  "location": {},
-                                  "debuginfo": null
-                                }
-                              },
-                              "register_storage_A": {
-                                "type": "Array",
-                                "attributes": {
-                                  "allow_conflicts": false,
-                                  "strides": [
-                                    "1"
-                                  ],
-                                  "total_size": "8",
-                                  "offset": [
-                                    "0"
-                                  ],
-                                  "may_alias": false,
-                                  "alignment": 0,
-                                  "start_offset": 0,
-                                  "dtype": "float32",
-                                  "shape": [
-                                    "8"
-                                  ],
-                                  "transient": true,
-                                  "storage": "Register",
                                   "lifetime": "Scope",
                                   "location": {},
                                   "debuginfo": null
@@ -7793,14 +7793,14 @@
                                   "type": "InterstateEdge",
                                   "attributes": {
                                     "assignments": {
-                                      "k_tile": "0"
+                                      "k_tile": "(num_K_tiles - 1)"
                                     },
                                     "condition": {
                                       "string_data": "1",
                                       "language": "Python"
                                     }
                                   },
-                                  "label": "k_tile=0"
+                                  "label": "k_tile=(num_K_tiles - 1)"
                                 }
                               },
                               "src": "1",
@@ -7814,11 +7814,11 @@
                                   "attributes": {
                                     "assignments": {},
                                     "condition": {
-                                      "string_data": "(k_tile > (num_K_tiles - 2))",
+                                      "string_data": "(k_tile > (- 1))",
                                       "language": "Python"
                                     }
                                   },
-                                  "label": "(k_tile > (num_K_tiles - 2))"
+                                  "label": "(k_tile > (- 1))"
                                 }
                               },
                               "src": "3",
@@ -7832,11 +7832,11 @@
                                   "attributes": {
                                     "assignments": {},
                                     "condition": {
-                                      "string_data": "(not (k_tile > (num_K_tiles - 2)))",
+                                      "string_data": "(not (k_tile > (- 1)))",
                                       "language": "Python"
                                     }
                                   },
-                                  "label": "(not (k_tile > (num_K_tiles - 2)))"
+                                  "label": "(not (k_tile > (- 1)))"
                                 }
                               },
                               "src": "3",
@@ -7849,14 +7849,14 @@
                                   "type": "InterstateEdge",
                                   "attributes": {
                                     "assignments": {
-                                      "k_tile": "k_tile - -1"
+                                      "k_tile": "k_tile - 1"
                                     },
                                     "condition": {
                                       "string_data": "1",
                                       "language": "Python"
                                     }
                                   },
-                                  "label": "k_tile=k_tile - -1"
+                                  "label": "k_tile=k_tile - 1"
                                 }
                               },
                               "src": "0",
