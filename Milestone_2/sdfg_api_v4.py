@@ -684,7 +684,7 @@ else:
 # sdfg.validate()
 
 # Reverse K map:
-# MapToForLoop.apply_to(nested_sdfg, dict(reversed=True, full_data=True), _map_entry=K_tile_map_entry)
+MapToForLoop.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry)
 
 if args.double_buffering_register:
     helpers.print_info("Applying Double Buffering on the registers...", False)

@@ -4,6 +4,9 @@ Get location of dace folder:
 import dace; print("Using this dace: " + str(dace.__file__))
 
 ===
+New additions to map to for loop and double buffering.
+
+===
 When applying double buffering, I received the following error:
   File "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/sdfg/validation.py", line 594, in validate_state
     raise error
@@ -13,8 +16,6 @@ This error can be ignored by commenting the "raise error".
 
 ===
 If --split-k-seq doesn't work, change this in cpp.py:
-
-
             # If a view, get the relevant access node
             dstnode = edge.dst
             if isinstance(dstnode, nodes.AccessNode):
