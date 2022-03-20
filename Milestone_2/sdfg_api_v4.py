@@ -109,9 +109,9 @@ else:
     ndtype = np.float64
     veclen = 2
     # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
-    schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=32, warp_tile_n=64, thread_block_tile_m=128, thread_block_tile_n=64)
+    # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=32, warp_tile_n=64, thread_block_tile_m=128, thread_block_tile_n=64)
     # schedule = Schedule(load_k=16, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=32)
-    # schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=128, thread_block_tile_n=64)
+    schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=128, thread_block_tile_n=64)
     # schedule = Schedule(load_k=8, thread_tile_m=2, thread_tile_n=2, warp_tile_m=16, warp_tile_n=8, thread_block_tile_m=128, thread_block_tile_n=64)
     # schedule = Schedule(load_k=8, thread_tile_m=1, thread_tile_n=1, warp_tile_m=8, warp_tile_n=4, thread_block_tile_m=128, thread_block_tile_n=64)
     # schedule = Schedule(load_k=4, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
@@ -349,13 +349,13 @@ nested_initstate.add_memlet_path(tasklet,
 #     nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
 # else:
 # nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared)
-# nested_sdfg.add_transient('shared_memory_A', shape=[schedule.load_k, schedule.thread_block_tile_m], dtype=dtype, storage=dace.StorageType.GPU_Shared, strides=[1, schedule.thread_block_tile_m]) # Note: we store the shared memory A in a column-major fashion
 if args.shared_A_column_major:
+    # nested_sdfg.add_transient('shared_memory_A', shape=[schedule.load_k, schedule.thread_block_tile_m], dtype=dtype, storage=dace.StorageType.GPU_Shared, strides=[1, schedule.thread_block_tile_m]) # Note: we store the shared memory A in a column-major fashion
+    # nested_sdfg.add_transient('shared_memory_A', shape=[schedule.load_k, schedule.thread_block_tile_m], dtype=dtype, storage=dace.StorageType.GPU_Shared) # Note: we store the shared memory A in a column-major fashion
     nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared, strides=[1, schedule.thread_block_tile_m]) # Note: we store the shared memory A in a column-major fashion
 else:
     nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared)
 
-# nested_sdfg.add_transient('shared_memory_A', shape=[schedule.load_k, schedule.thread_block_tile_m], dtype=dtype, storage=dace.StorageType.GPU_Shared) # Note: we store the shared memory A in a column-major fashion
 nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dtype, storage=dace.StorageType.GPU_Shared)
 
 nested_sdfg.add_transient('register_storage_A', shape=[schedule.thread_tile_m], dtype=dtype, storage=dace.StorageType.Register)
