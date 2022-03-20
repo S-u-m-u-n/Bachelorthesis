@@ -101,8 +101,8 @@ if args.precision == 32:
     args.alpha = ndtype(args.alpha)
     args.beta = ndtype(args.beta)
     # for split k scenarios, this schedule seems to be the best:
-    schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=64)
-    # schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=32)
+    # schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=64)
+    schedule = Schedule(load_k=4, thread_tile_m=8, thread_tile_n=4, warp_tile_m=64, warp_tile_n=16, thread_block_tile_m=128, thread_block_tile_n=64)
 
     # schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
     # schedule = Schedule(load_k=4, thread_tile_m=4, thread_tile_n=4, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=64)
