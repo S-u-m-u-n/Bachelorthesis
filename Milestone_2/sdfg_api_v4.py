@@ -73,7 +73,7 @@ parser.add_argument('--double-buffering-register',
                     help="Use double buffering on the register",
                     action="store_true",
                     default=False)
-parser.add_argument('--reverse-K',
+parser.add_argument('--reverse-k',
                     dest='reverse_k',
                     help="Reverse the outer K loop",
                     action="store_true",
