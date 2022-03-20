@@ -4579,7 +4579,7 @@
     "_rdistrarrays": {},
     "callback_mapping": {},
     "name": "gemm",
-    "hash": "112518058363dd386cf382596bab4ad8b0799dec217234c8b2aa02aaabe7deb3"
+    "hash": "a905752d82eacd2ce47978e4ef9aee1fa9888fe18f0798b015ca77100c96d3a5"
   },
   "nodes": [
     {
@@ -6102,59 +6102,6 @@
                                   "debuginfo": null
                                 }
                               },
-                              "register_storage_C": {
-                                "type": "Array",
-                                "attributes": {
-                                  "allow_conflicts": false,
-                                  "strides": [
-                                    "8",
-                                    "1"
-                                  ],
-                                  "total_size": "64",
-                                  "offset": [
-                                    "0",
-                                    "0"
-                                  ],
-                                  "may_alias": false,
-                                  "alignment": 0,
-                                  "start_offset": 0,
-                                  "dtype": "float32",
-                                  "shape": [
-                                    "8",
-                                    "8"
-                                  ],
-                                  "transient": true,
-                                  "storage": "Register",
-                                  "lifetime": "Scope",
-                                  "location": {},
-                                  "debuginfo": null
-                                }
-                              },
-                              "register_storage_B": {
-                                "type": "Array",
-                                "attributes": {
-                                  "allow_conflicts": false,
-                                  "strides": [
-                                    "1"
-                                  ],
-                                  "total_size": "8",
-                                  "offset": [
-                                    "0"
-                                  ],
-                                  "may_alias": false,
-                                  "alignment": 0,
-                                  "start_offset": 0,
-                                  "dtype": "float32",
-                                  "shape": [
-                                    "8"
-                                  ],
-                                  "transient": true,
-                                  "storage": "Register",
-                                  "lifetime": "Scope",
-                                  "location": {},
-                                  "debuginfo": null
-                                }
-                              },
                               "shared_memory_A": {
                                 "type": "Array",
                                 "attributes": {
@@ -6187,6 +6134,59 @@
                                 }
                               },
                               "register_storage_A": {
+                                "type": "Array",
+                                "attributes": {
+                                  "allow_conflicts": false,
+                                  "strides": [
+                                    "1"
+                                  ],
+                                  "total_size": "8",
+                                  "offset": [
+                                    "0"
+                                  ],
+                                  "may_alias": false,
+                                  "alignment": 0,
+                                  "start_offset": 0,
+                                  "dtype": "float32",
+                                  "shape": [
+                                    "8"
+                                  ],
+                                  "transient": true,
+                                  "storage": "Register",
+                                  "lifetime": "Scope",
+                                  "location": {},
+                                  "debuginfo": null
+                                }
+                              },
+                              "register_storage_C": {
+                                "type": "Array",
+                                "attributes": {
+                                  "allow_conflicts": false,
+                                  "strides": [
+                                    "8",
+                                    "1"
+                                  ],
+                                  "total_size": "64",
+                                  "offset": [
+                                    "0",
+                                    "0"
+                                  ],
+                                  "may_alias": false,
+                                  "alignment": 0,
+                                  "start_offset": 0,
+                                  "dtype": "float32",
+                                  "shape": [
+                                    "8",
+                                    "8"
+                                  ],
+                                  "transient": true,
+                                  "storage": "Register",
+                                  "lifetime": "Scope",
+                                  "location": {},
+                                  "debuginfo": null
+                                }
+                              },
+                              "register_storage_B": {
                                 "type": "Array",
                                 "attributes": {
                                   "allow_conflicts": false,
@@ -6856,8 +6856,8 @@
                                           "type": "Range",
                                           "ranges": [
                                             {
-                                              "start": "Mod(1 - k_tile, 2)",
-                                              "end": "Mod(1 - k_tile, 2)",
+                                              "start": "Mod(k_tile + 1, 2)",
+                                              "end": "Mod(k_tile + 1, 2)",
                                               "step": "1",
                                               "tile": "1"
                                             },
@@ -6901,8 +6901,8 @@
                                           "type": "Range",
                                           "ranges": [
                                             {
-                                              "start": "Mod(1 - k_tile, 2)",
-                                              "end": "Mod(1 - k_tile, 2)",
+                                              "start": "Mod(k_tile + 1, 2)",
+                                              "end": "Mod(k_tile + 1, 2)",
                                               "step": "1",
                                               "tile": "1"
                                             },
@@ -6958,8 +6958,8 @@
                                           "type": "Range",
                                           "ranges": [
                                             {
-                                              "start": "Mod(1 - k_tile, 2)",
-                                              "end": "Mod(1 - k_tile, 2)",
+                                              "start": "Mod(k_tile + 1, 2)",
+                                              "end": "Mod(k_tile + 1, 2)",
                                               "step": "1",
                                               "tile": "1"
                                             },
@@ -7003,8 +7003,8 @@
                                           "type": "Range",
                                           "ranges": [
                                             {
-                                              "start": "Mod(1 - k_tile, 2)",
-                                              "end": "Mod(1 - k_tile, 2)",
+                                              "start": "Mod(k_tile + 1, 2)",
+                                              "end": "Mod(k_tile + 1, 2)",
                                               "step": "1",
                                               "tile": "1"
                                             },
