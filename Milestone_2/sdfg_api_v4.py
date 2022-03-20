@@ -83,6 +83,12 @@ parser.add_argument('--nested-pointer-offset',
                     help="Calculate the offset for pointers passed to nested (device) functions inside of the nested function instead of the function calling the nested function",
                     action="store_true",
                     default=False)
+parser.add_argument('--shared-A-column',
+                    dest='shared_A_column_major',
+                    help="Store the shared memory of A in a column major order instead of row major",
+                    action="store_true",
+                    default=False)
+                    
 
 args = parser.parse_args()
 if args.verbose:
@@ -343,7 +349,11 @@ nested_initstate.add_memlet_path(tasklet,
 # else:
 # nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared)
 # nested_sdfg.add_transient('shared_memory_A', shape=[schedule.load_k, schedule.thread_block_tile_m], dtype=dtype, storage=dace.StorageType.GPU_Shared, strides=[1, schedule.thread_block_tile_m]) # Note: we store the shared memory A in a column-major fashion
-nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared, strides=[1, schedule.thread_block_tile_m]) # Note: we store the shared memory A in a column-major fashion
+if args.shared_A_column_major:
+    nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared, strides=[1, schedule.thread_block_tile_m]) # Note: we store the shared memory A in a column-major fashion
+else:
+    nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared)
+
 # nested_sdfg.add_transient('shared_memory_A', shape=[schedule.load_k, schedule.thread_block_tile_m], dtype=dtype, storage=dace.StorageType.GPU_Shared) # Note: we store the shared memory A in a column-major fashion
 nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dtype, storage=dace.StorageType.GPU_Shared)
 
