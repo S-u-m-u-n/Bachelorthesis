@@ -690,6 +690,7 @@ else:
 
 # Reverse K map:
 if args.reverse_k and not args.double_buffering_shared:
+    print("Reversing K map")
     MapToForLoop.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry)
 
 if args.double_buffering_register:
@@ -698,11 +699,12 @@ if args.double_buffering_register:
     DoubleBuffering.apply_to(nested_sdfg, map_entry=thread_K_map_entry, transient=register_storage_A) # Double buffering on the registers
 
 if args.double_buffering_shared:
-    helpers.print_info("Applying Double Buffering on the shared memory...", False)
     # DoubleBuffering.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
     if args.reverse_k:
+        helpers.print_info("Applying Double Buffering on the shared memory with reversed K map...", False)
         DoubleBuffering.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
     else:
+        helpers.print_info("Applying Double Buffering on the shared memory...", False)
         DoubleBuffering.apply_to(nested_sdfg, dict(full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory
 
 

@@ -1,7 +1,13 @@
 {
   "type": "SDFG",
   "attributes": {
-    "arg_names": [],
+    "arg_names": [
+      "A",
+      "B",
+      "C",
+      "alpha",
+      "beta"
+    ],
     "constants_prop": {
       "VECLEN": [
         {
@@ -4547,7 +4553,7 @@
       {
         "type": "PatternTransformation",
         "transformation": "DoubleBuffering",
-        "reversed": false,
+        "reversed": true,
         "full_data": true,
         "sdfg_id": 1,
         "state_id": 1,
@@ -4573,7 +4579,7 @@
     "_rdistrarrays": {},
     "callback_mapping": {},
     "name": "gemm",
-    "hash": "df16e0fc45521993ff4d288231084e80ca4386148390ed11ec6f1e3c1f52fe95"
+    "hash": "4bda698e389205173eb0799e3c6a3ebf4a2ce5c4ab00c5ea2637c4b10a34f09d"
   },
   "nodes": [
     {
@@ -6090,6 +6096,34 @@
                                   "debuginfo": null
                                 }
                               },
+                              "register_storage_C": {
+                                "type": "Array",
+                                "attributes": {
+                                  "allow_conflicts": false,
+                                  "strides": [
+                                    "8",
+                                    "1"
+                                  ],
+                                  "total_size": "64",
+                                  "offset": [
+                                    "0",
+                                    "0"
+                                  ],
+                                  "may_alias": false,
+                                  "alignment": 0,
+                                  "start_offset": 0,
+                                  "dtype": "float32",
+                                  "shape": [
+                                    "8",
+                                    "8"
+                                  ],
+                                  "transient": true,
+                                  "storage": "Register",
+                                  "lifetime": "Scope",
+                                  "location": {},
+                                  "debuginfo": null
+                                }
+                              },
                               "shared_memory_B": {
                                 "type": "Array",
                                 "attributes": {
@@ -6113,37 +6147,6 @@
                                     "2",
                                     "8",
                                     "128"
-                                  ],
-                                  "transient": true,
-                                  "storage": "GPU_Shared",
-                                  "lifetime": "Scope",
-                                  "location": {},
-                                  "debuginfo": null
-                                }
-                              },
-                              "shared_memory_A": {
-                                "type": "Array",
-                                "attributes": {
-                                  "allow_conflicts": false,
-                                  "strides": [
-                                    "1024",
-                                    "8",
-                                    "1"
-                                  ],
-                                  "total_size": "2048",
-                                  "offset": [
-                                    "0",
-                                    "0",
-                                    "0"
-                                  ],
-                                  "may_alias": false,
-                                  "alignment": 0,
-                                  "start_offset": 0,
-                                  "dtype": "float32",
-                                  "shape": [
-                                    "2",
-                                    "128",
-                                    "8"
                                   ],
                                   "transient": true,
                                   "storage": "GPU_Shared",
@@ -6177,16 +6180,18 @@
                                   "debuginfo": null
                                 }
                               },
-                              "register_storage_C": {
+                              "shared_memory_A": {
                                 "type": "Array",
                                 "attributes": {
                                   "allow_conflicts": false,
                                   "strides": [
+                                    "1024",
                                     "8",
                                     "1"
                                   ],
-                                  "total_size": "64",
+                                  "total_size": "2048",
                                   "offset": [
+                                    "0",
                                     "0",
                                     "0"
                                   ],
@@ -6195,11 +6200,12 @@
                                   "start_offset": 0,
                                   "dtype": "float32",
                                   "shape": [
-                                    "8",
+                                    "2",
+                                    "128",
                                     "8"
                                   ],
                                   "transient": true,
-                                  "storage": "Register",
+                                  "storage": "GPU_Shared",
                                   "lifetime": "Scope",
                                   "location": {},
                                   "debuginfo": null
@@ -6734,8 +6740,8 @@
                                     "setzero": false,
                                     "debuginfo": {
                                       "type": "DebugInfo",
-                                      "start_line": 184,
-                                      "end_line": 184,
+                                      "start_line": 192,
+                                      "end_line": 192,
                                       "start_column": 0,
                                       "end_column": 0,
                                       "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/dataflow/double_buffering.py"
@@ -6778,8 +6784,8 @@
                                     "setzero": false,
                                     "debuginfo": {
                                       "type": "DebugInfo",
-                                      "start_line": 184,
-                                      "end_line": 184,
+                                      "start_line": 192,
+                                      "end_line": 192,
                                       "start_column": 0,
                                       "end_column": 0,
                                       "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/dataflow/double_buffering.py"
@@ -7869,8 +7875,8 @@
                                     "setzero": false,
                                     "debuginfo": {
                                       "type": "DebugInfo",
-                                      "start_line": 144,
-                                      "end_line": 144,
+                                      "start_line": 152,
+                                      "end_line": 152,
                                       "start_column": 0,
                                       "end_column": 0,
                                       "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/dataflow/double_buffering.py"
@@ -7913,8 +7919,8 @@
                                     "setzero": false,
                                     "debuginfo": {
                                       "type": "DebugInfo",
-                                      "start_line": 144,
-                                      "end_line": 144,
+                                      "start_line": 152,
+                                      "end_line": 152,
                                       "start_column": 0,
                                       "end_column": 0,
                                       "filename": "/home/sumun/anaconda3/lib/python3.8/site-packages/dace/transformation/dataflow/double_buffering.py"
@@ -9486,14 +9492,14 @@
                                   "type": "InterstateEdge",
                                   "attributes": {
                                     "assignments": {
-                                      "k_tile": "0"
+                                      "k_tile": "(num_K_tiles - 2)"
                                     },
                                     "condition": {
                                       "string_data": "1",
                                       "language": "Python"
                                     }
                                   },
-                                  "label": "k_tile=0"
+                                  "label": "k_tile=(num_K_tiles - 2)"
                                 }
                               },
                               "src": "1",
@@ -9507,11 +9513,11 @@
                                   "attributes": {
                                     "assignments": {},
                                     "condition": {
-                                      "string_data": "(k_tile < (num_K_tiles - 1))",
+                                      "string_data": "(k_tile > (- 1))",
                                       "language": "Python"
                                     }
                                   },
-                                  "label": "(k_tile < (num_K_tiles - 1))"
+                                  "label": "(k_tile > (- 1))"
                                 }
                               },
                               "src": "3",
@@ -9525,11 +9531,11 @@
                                   "attributes": {
                                     "assignments": {},
                                     "condition": {
-                                      "string_data": "(not (k_tile < (num_K_tiles - 1)))",
+                                      "string_data": "(not (k_tile > (- 1)))",
                                       "language": "Python"
                                     }
                                   },
-                                  "label": "(not (k_tile < (num_K_tiles - 1)))"
+                                  "label": "(not (k_tile > (- 1)))"
                                 }
                               },
                               "src": "3",
@@ -9542,14 +9548,14 @@
                                   "type": "InterstateEdge",
                                   "attributes": {
                                     "assignments": {
-                                      "k_tile": "k_tile + 1"
+                                      "k_tile": "k_tile - 1"
                                     },
                                     "condition": {
                                       "string_data": "1",
                                       "language": "Python"
                                     }
                                   },
-                                  "label": "k_tile=k_tile + 1"
+                                  "label": "k_tile=k_tile - 1"
                                 }
                               },
                               "src": "0",
