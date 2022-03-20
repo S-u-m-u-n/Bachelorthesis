@@ -336,9 +336,9 @@ nested_initstate.add_memlet_path(tasklet,
 #     nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
 #     nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n // veclen], dtype=dace.vector(dtype, veclen), storage=dace.StorageType.GPU_Shared)
 # else:
-# nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared)
+nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared)
 # nested_sdfg.add_transient('shared_memory_A', shape=[schedule.load_k, schedule.thread_block_tile_m], dtype=dtype, storage=dace.StorageType.GPU_Shared, strides=[1, schedule.thread_block_tile_m]) # Note: we store the shared memory A in a column-major fashion
-nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared, strides=[1, schedule.thread_block_tile_m]) # Note: we store the shared memory A in a column-major fashion
+# nested_sdfg.add_transient('shared_memory_A', shape=[schedule.thread_block_tile_m, schedule.load_k], dtype=dtype, storage=dace.StorageType.GPU_Shared, strides=[1, schedule.thread_block_tile_m]) # Note: we store the shared memory A in a column-major fashion
 # nested_sdfg.add_transient('shared_memory_A', shape=[schedule.load_k, schedule.thread_block_tile_m], dtype=dtype, storage=dace.StorageType.GPU_Shared) # Note: we store the shared memory A in a column-major fashion
 nested_sdfg.add_transient('shared_memory_B', shape=[schedule.load_k, schedule.thread_block_tile_n], dtype=dtype, storage=dace.StorageType.GPU_Shared)
 
@@ -689,7 +689,7 @@ else:
 # sdfg.validate()
 
 # Reverse K map:
-if args.reverse_k:
+if args.reverse_k and not args.double_buffering_shared:
     MapToForLoop.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry)
 
 if args.double_buffering_register:
@@ -700,7 +700,11 @@ if args.double_buffering_register:
 if args.double_buffering_shared:
     helpers.print_info("Applying Double Buffering on the shared memory...", False)
     # DoubleBuffering.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
-    DoubleBuffering.apply_to(nested_sdfg, map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
+    if args.reverse_k:
+        DoubleBuffering.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
+    else:
+        DoubleBuffering.apply_to(nested_sdfg, dict(full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory
+
 
 
 nested_sdfg.fill_scope_connectors()
