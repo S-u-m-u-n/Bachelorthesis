@@ -78,6 +78,11 @@ parser.add_argument('--reverse-k',
                     help="Reverse the outer K loop",
                     action="store_true",
                     default=False)
+parser.add_argument('--nested-pointer-offset',
+                    dest='nested_pointer_offset',
+                    help="Calculate the offset for pointers passed to nested (device) functions inside of the nested function instead of the function calling the nested function",
+                    action="store_true",
+                    default=False)
 
 args = parser.parse_args()
 if args.verbose:
@@ -699,14 +704,8 @@ if args.double_buffering_register:
     # DoubleBuffering.apply_to(nested_sdfg, map_entry=thread_K_map_entry, transient=register_storage_A) # Double buffering on the registers
 
 if args.double_buffering_shared:
-    # DoubleBuffering.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
-    if args.reverse_k:
-        helpers.print_info("Applying Double Buffering on the shared memory with reversed K map...", False)
-        DoubleBuffering.apply_to(nested_sdfg, dict(reverse=True, full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
-    else:
-        helpers.print_info("Applying Double Buffering on the shared memory...", False)
-        DoubleBuffering.apply_to(nested_sdfg, dict(full_data=True), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory
-
+    helpers.print_info("Applying Double Buffering on the shared memory...", False)
+    DoubleBuffering.apply_to(nested_sdfg, dict(reverse=args.reverse_k, full_data=args.nested_pointer_offset), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
 
 
 nested_sdfg.fill_scope_connectors()
