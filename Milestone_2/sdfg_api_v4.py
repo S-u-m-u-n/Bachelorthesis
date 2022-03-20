@@ -73,6 +73,11 @@ parser.add_argument('--double-buffering-register',
                     help="Use double buffering on the register",
                     action="store_true",
                     default=False)
+parser.add_argument('--reverse-K',
+                    dest='reverse_k',
+                    help="Reverse the outer K loop",
+                    action="store_true",
+                    default=False)
 
 args = parser.parse_args()
 if args.verbose:
@@ -684,7 +689,8 @@ else:
 # sdfg.validate()
 
 # Reverse K map:
-MapToForLoop.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry)
+if args.reverse_k:
+    MapToForLoop.apply_to(nested_sdfg, dict(reversed=True, full_data=True), map_entry=K_tile_map_entry)
 
 if args.double_buffering_register:
     helpers.print_info("Applying Double Buffering on the registers...", False)
