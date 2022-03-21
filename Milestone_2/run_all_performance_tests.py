@@ -178,7 +178,7 @@ def run_1024_1024(precision):
     helpers.print_info("=" * 20, False)
     helpers.print_info("===== (1024 x 1024) x (1024 x 1024)" + str(precision) + "bit =====", False)
     helpers.print_info("=" * 20, False)
-    python_options = global_python_options + ["-M=1024", "-N=1024", "-K=1024", "--precision=" + str(precision)]
+    python_options = global_python_options + ["-M=1024", "-N=1024", "-K=1024", "--name=_1024_1024_" + str(precision), "--precision=" + str(precision)]
     path = str(args.path) + "1024_1024_1024_" + str(precision) + "bit/"
     subprocess.run(["mkdir", "-p", path])
 
@@ -198,7 +198,7 @@ def run_4096_4096(precision):
     helpers.print_info("=" * 20, False)
     helpers.print_info("===== (4096 x 4096) x (4096 x 4096)" + str(precision) + "bit =====", False)
     helpers.print_info("=" * 20, False)
-    python_options = global_python_options + ["-M=4096", "-N=4096", "-K=4096", "--precision=" + str(precision)]
+    python_options = global_python_options + ["-M=4096", "-N=4096", "-K=4096", "--name=_4096_4096_" + str(precision), "--precision=" + str(precision)]
     path = str(args.path) + "4096_4096_4096_" + str(precision) + "bit/"
     subprocess.run(["mkdir", "-p", path])
 
@@ -218,7 +218,7 @@ def run_1024_8192_1024(precision):
     helpers.print_info("=" * 20, False)
     helpers.print_info("===== (1024 x 8192) x (8192 x 1024)" + str(precision) + "bit =====", False)
     helpers.print_info("=" * 20, False)
-    python_options = global_python_options + ["-M=1024", "-N=1024", "-K=8192", "--double-buffering-shared", "--precision=" + str(precision)]
+    python_options = global_python_options + ["-M=1024", "-N=1024", "-K=8192", "--double-buffering-shared", "--name=_1024_8192_1024_" + str(precision), "--precision=" + str(precision)]
     path = str(args.path) + "1024_1024_8192_" + str(precision) + "bit/"
     subprocess.run(["mkdir", "-p", path])
 
@@ -241,7 +241,7 @@ def run_256_10240_256(precision):
     helpers.print_info("=" * 20, False)
     helpers.print_info("===== (256 x 10240) x (10240 x 256)" + str(precision) + "bit =====", False)
     helpers.print_info("=" * 20, False)
-    python_options = global_python_options + ["-M=256", "-N=256", "-K=10240", "--double-buffering-shared", "--precision=" + str(precision)]
+    python_options = global_python_options + ["-M=256", "-N=256", "-K=10240", "--double-buffering-shared", "--name=_256_10240_256_" + str(precision), "--precision=" + str(precision)]
     path = str(args.path) + "256_256_10240_" + str(precision) + "bit/"
     subprocess.run(["mkdir", "-p", path])
 

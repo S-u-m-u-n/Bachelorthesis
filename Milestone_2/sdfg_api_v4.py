@@ -88,6 +88,11 @@ parser.add_argument('--shared-A-column',
                     help="Store the shared memory of A in a column major order instead of row major",
                     action="store_true",
                     default=False)
+parser.add_argument('--name',
+                    dest='name',
+                    type=str,
+                    help="Add a suffix name to the SDFG and generated library/program. Useful for running multiple instances in parallel without interfering",
+                    default="")
                     
 
 args = parser.parse_args()
@@ -145,10 +150,10 @@ else:
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=16, warp_tile_n=16, thread_block_tile_m=32, thread_block_tile_n=128) # 526us, wrong
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=32, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # correct but not fast?
     elif args.M == 4096 and args.N == 4096 and args.K == 4096:
-        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 25ms
+        # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 25.28ms
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=16, warp_tile_n=16, thread_block_tile_m=32, thread_block_tile_n=128) # 24.455ms, wrong
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=32, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 27ms, correct
-        # schedule = Schedule(load_k=8, thread_tile_m=4, thread_tile_n=4, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 24.77, correct
+        schedule = Schedule(load_k=8, thread_tile_m=4, thread_tile_n=4, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 24.77, correct
         # schedule = Schedule(load_k=8, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=64) # 26.9ms
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=32, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 25.1ms
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=32, warp_tile_n=32, thread_block_tile_m=64, thread_block_tile_n=128) # 24.85ms
@@ -174,9 +179,9 @@ M = dace.symbol('M')
 N = dace.symbol('N')
 K = dace.symbol('K')
 
-sdfg = dace.SDFG('gemm')
-state = sdfg.add_state(label='gemm_state')
-nested_sdfg = dace.SDFG('nested_gemm')
+sdfg = dace.SDFG('gemm' + str(args.name))
+state = sdfg.add_state(label='gemm_state' + str(args.name))
+nested_sdfg = dace.SDFG('nested_gemm' + str(args.name))
 sdfg.add_constant('VECLEN', veclen)
 nested_sdfg.add_constant('VECLEN', veclen)
 
@@ -756,29 +761,31 @@ else:
 # nested_sdfg.validate()
 # sdfg.validate()
 
+if args.double_buffering_register:
+    helpers.print_info("Applying Double Buffering on the registers...", False)
+    DoubleBuffering.apply_to(nested_sdfg, dict(full_data=True), map_entry=thread_K_map_entry, transient=register_storage_A) # Double buffering on the registers
+    # DoubleBuffering.apply_to(nested_sdfg, map_entry=thread_K_map_entry, transient=register_storage_A) # Double buffering on the registers
+
 # Reverse K map:
 if args.reverse_k and not args.double_buffering_shared:
     print("Reversing K map")
     MapToForLoop.apply_to(nested_sdfg, dict(reverse=True, full_data=True), map_entry=K_tile_map_entry)
 
-if args.double_buffering_register:
-    helpers.print_info("Applying Double Buffering on the registers...", False)
-    DoubleBuffering.apply_to(nested_sdfg, dict(full_data=True), map_entry=thread_K_map_entry, transient=register_storage_A) # Double buffering on the registers
-    # DoubleBuffering.apply_to(nested_sdfg, map_entry=thread_K_map_entry, transient=register_storage_A) # Double buffering on the registers
+# sdfg.save('sdfg_api_v4_tmp.sdfg')
 
 if args.double_buffering_shared:
     helpers.print_info("Applying Double Buffering on the shared memory...", False)
     DoubleBuffering.apply_to(nested_sdfg, dict(reverse=args.reverse_k, full_data=args.nested_pointer_offset), map_entry=K_tile_map_entry, transient=shared_memory_A) # Double buffering on the shared memory (with reversed K map)
 
 
-nested_sdfg.fill_scope_connectors()
+# nested_sdfg.fill_scope_connectors()
 sdfg.fill_scope_connectors()
-sdfg.save('sdfg_api_v4.sdfg')
-nested_sdfg.validate()
+# sdfg.save('sdfg_api_v4.sdfg')
+# nested_sdfg.validate()
 sdfg.validate()
 
 sdfg.arg_names = ['A', 'B', 'C', 'alpha', 'beta']
-sdfg.save('sdfg_api_v4.sdfg')
+sdfg.save('sdfg_api_v4' + str(args.name) + '.sdfg')
 csdfg = sdfg.compile()
 
 for i in range(args.repetitions):
