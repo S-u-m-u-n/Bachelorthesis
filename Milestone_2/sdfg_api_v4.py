@@ -799,7 +799,7 @@ for i in range(args.repetitions):
         diff = np.linalg.norm(C - C_correct) / (args.M * args.N)
         helpers.print_info("Difference: ", False)
         print(diff)
-        if diff <= 1e-6:
+        if diff <= 10e-6:
             helpers.print_success("The SDFG is correct!", False)
         else:
             helpers.print_error("The SDFG is incorrect!", False)
