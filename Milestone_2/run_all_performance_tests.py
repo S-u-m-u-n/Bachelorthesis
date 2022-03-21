@@ -296,6 +296,16 @@ elif args.test == 34:
     run_256_10240_256(32)
     run_256_10240_256(64)
     helpers.print_success("Performance tests finished.", False)
+elif args.test == 1234:
+    run_1024_1024(32)
+    run_1024_1024(64)
+    run_4096_4096(32)
+    run_4096_4096(64)
+    run_1024_8192_1024(32)
+    run_1024_8192_1024(64)
+    run_256_10240_256(32)
+    run_256_10240_256(64)
+    helpers.print_success("Performance tests finished.", False)
 else:
     helpers.print_error("Invalid test number.", False)
 
