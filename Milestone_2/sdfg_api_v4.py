@@ -100,8 +100,17 @@ if args.precision == 32:
     veclen = 4
     args.alpha = ndtype(args.alpha)
     args.beta = ndtype(args.beta)
-    # for split k scenarios, this schedule seems to be the best:
-    schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
+
+    if args.M == 1024 and args.N == 1024 and args.K == 1024:
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
+    elif args.M == 4096 and args.N == 4096 and args.K == 4096:
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
+    elif args.M == 1024 and args.N == 1024 and args.K == 8192:
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
+    elif args.M == 256 and args.N == 256 and args.K == 10240:
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
+    else:
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=32, warp_tile_n=64, thread_block_tile_m=128, thread_block_tile_n=128)
 
     # More similar to cucosma:
     # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=32, warp_tile_n=64, thread_block_tile_m=128, thread_block_tile_n=128)
@@ -118,7 +127,17 @@ else:
     ndtype = np.float64
     veclen = 2
     # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
-    schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
+    # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
+    if args.M == 1024 and args.N == 1024 and args.K == 1024:
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
+    elif args.M == 4096 and args.N == 4096 and args.K == 4096:
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
+    elif args.M == 1024 and args.N == 1024 and args.K == 8192:
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
+    elif args.M == 256 and args.N == 256 and args.K == 10240:
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
+    else:
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=32, warp_tile_n=64, thread_block_tile_m=128, thread_block_tile_n=128)
 
     # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=32, warp_tile_n=64, thread_block_tile_m=128, thread_block_tile_n=64)
     # schedule = Schedule(load_k=16, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=32)
