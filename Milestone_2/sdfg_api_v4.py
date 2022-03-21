@@ -108,7 +108,7 @@ if args.precision == 32:
     elif args.M == 1024 and args.N == 1024 and args.K == 8192:
         # schedule = Schedule(load_k=8, thread_tile_m=4, thread_tile_n=8, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=64)
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=64, thread_block_tile_n=64) # Only uses 16 threads/warp, still fast... wtf?
-        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=16, warp_tile_n=16, thread_block_tile_m=32, thread_block_tile_n=64)
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=16, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=32)
     elif args.M == 256 and args.N == 256 and args.K == 10240:
         schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
     else:
