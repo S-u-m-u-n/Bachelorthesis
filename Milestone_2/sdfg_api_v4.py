@@ -136,9 +136,10 @@ else:
     if args.M == 1024 and args.N == 1024 and args.K == 1024:
         schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
     elif args.M == 4096 and args.N == 4096 and args.K == 4096:
-        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
+        # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 25ms
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 25ms
     elif args.M == 1024 and args.N == 1024 and args.K == 8192:
-        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=64, warp_tile_n=32, thread_block_tile_m=128, thread_block_tile_n=64)
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
     elif args.M == 256 and args.N == 256 and args.K == 10240:
         schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128)
     else:
