@@ -142,8 +142,7 @@ else:
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 3.7ms
         schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 3.65ms
     elif args.M == 256 and args.N == 256 and args.K == 10240:
-        # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 290us
-        schedule = Schedule(load_k=16, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 290us
     else:
         schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=8, warp_tile_m=32, warp_tile_n=64, thread_block_tile_m=128, thread_block_tile_n=128)
 
