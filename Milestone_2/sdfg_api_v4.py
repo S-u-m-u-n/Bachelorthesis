@@ -145,10 +145,10 @@ else:
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=16, warp_tile_n=16, thread_block_tile_m=32, thread_block_tile_n=128) # 526us, wrong
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=32, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # correct but not fast?
     elif args.M == 4096 and args.N == 4096 and args.K == 4096:
-        # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 25ms
+        schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=2, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 25ms
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=16, warp_tile_n=16, thread_block_tile_m=32, thread_block_tile_n=128) # 24.455ms, wrong
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=32, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 27ms, correct
-        schedule = Schedule(load_k=8, thread_tile_m=4, thread_tile_n=4, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 
+        # schedule = Schedule(load_k=8, thread_tile_m=4, thread_tile_n=4, warp_tile_m=16, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 24.77, correct
         # schedule = Schedule(load_k=8, thread_tile_m=4, thread_tile_n=4, warp_tile_m=32, warp_tile_n=16, thread_block_tile_m=64, thread_block_tile_n=64) # 26.9ms
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=32, warp_tile_n=32, thread_block_tile_m=32, thread_block_tile_n=128) # 25.1ms
         # schedule = Schedule(load_k=8, thread_tile_m=8, thread_tile_n=4, warp_tile_m=32, warp_tile_n=32, thread_block_tile_m=64, thread_block_tile_n=128) # 24.85ms
