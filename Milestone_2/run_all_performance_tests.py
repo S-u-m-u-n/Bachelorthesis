@@ -6,13 +6,13 @@ from argparse import ArgumentParser
 parser = ArgumentParser()
 parser.add_argument("-r", "--repetitions", type=int, dest='repetitions', nargs="?", default=200)
 parser.add_argument("-p", "--path", type=str, dest='path', nargs="?", default="/home/jacobsi/Bachelorthesis/Milestone_2/performance_test_results/final/")
-parser.add_argument("-t", "--test", type=int, dest='test', choices=[1, 2, 3, 4], required=True)
+parser.add_argument("-t", "--test", type=int, dest='test', choices=[1, 2, 3, 4, 12, 34], required=True)
 args = parser.parse_args()
 
 # helpers.print_info("Running performance tests...", False)
 
 nvprof_options = ["nvprof", "--print-gpu-trace", "--csv", "--log-file"]
-python_options = ["python3", "./sdfg_api_v4.py", "--repetitions=" + str(args.repetitions)]
+global_python_options = ["python3", "./sdfg_api_v4.py", "--repetitions=" + str(args.repetitions)]
 
 optimizations = {
         # Single optimization (5):
@@ -178,7 +178,7 @@ def run_1024_1024(precision):
     helpers.print_info("=" * 20, False)
     helpers.print_info("===== (1024 x 1024) x (1024 x 1024)" + str(precision) + "bit =====", False)
     helpers.print_info("=" * 20, False)
-    python_options += ["-M=1024", "-N=1024", "-K=1024", "--precision=" + str(precision)]
+    python_options = global_python_options + ["-M=1024", "-N=1024", "-K=1024", "--precision=" + str(precision)]
     path = str(args.path) + "1024_1024_1024_" + str(precision) + "bit/"
     subprocess.run(["mkdir", "-p", path])
 
@@ -198,7 +198,7 @@ def run_4096_4096(precision):
     helpers.print_info("=" * 20, False)
     helpers.print_info("===== (4096 x 4096) x (4096 x 4096)" + str(precision) + "bit =====", False)
     helpers.print_info("=" * 20, False)
-    python_options += ["-M=4096", "-N=4096", "-K=4096", "--precision=" + str(precision)]
+    python_options = global_python_options + ["-M=4096", "-N=4096", "-K=4096", "--precision=" + str(precision)]
     path = str(args.path) + "4096_4096_4096_" + str(precision) + "bit/"
     subprocess.run(["mkdir", "-p", path])
 
@@ -218,7 +218,7 @@ def run_1024_8192_1024(precision):
     helpers.print_info("=" * 20, False)
     helpers.print_info("===== (1024 x 8192) x (8192 x 1024)" + str(precision) + "bit =====", False)
     helpers.print_info("=" * 20, False)
-    python_options += ["-M=1024", "-N=1024", "-K=8192", "--double-buffering-shared", "--precision=" + str(precision)]
+    python_options = global_python_options + ["-M=1024", "-N=1024", "-K=8192", "--double-buffering-shared", "--precision=" + str(precision)]
     path = str(args.path) + "1024_1024_8192_" + str(precision) + "bit/"
     subprocess.run(["mkdir", "-p", path])
 
@@ -241,7 +241,7 @@ def run_256_10240_256(precision):
     helpers.print_info("=" * 20, False)
     helpers.print_info("===== (256 x 10240) x (10240 x 256)" + str(precision) + "bit =====", False)
     helpers.print_info("=" * 20, False)
-    python_options += ["-M=256", "-N=256", "-K=10240", "--double-buffering-shared", "--precision=" + str(precision)]
+    python_options = global_python_options + ["-M=256", "-N=256", "-K=10240", "--double-buffering-shared", "--precision=" + str(precision)]
     path = str(args.path) + "256_256_10240_" + str(precision) + "bit/"
     subprocess.run(["mkdir", "-p", path])
 
@@ -281,6 +281,18 @@ elif args.test == 3:
     run_1024_8192_1024(64)
     helpers.print_success("Performance tests finished.", False)
 elif args.test == 4:
+    run_256_10240_256(32)
+    run_256_10240_256(64)
+    helpers.print_success("Performance tests finished.", False)
+elif args.test == 12:
+    run_1024_1024(32)
+    run_1024_1024(64)
+    run_4096_4096(32)
+    run_4096_4096(64)
+    helpers.print_success("Performance tests finished.", False)
+elif args.test == 34:
+    run_1024_8192_1024(32)
+    run_1024_8192_1024(64)
     run_256_10240_256(32)
     run_256_10240_256(64)
     helpers.print_success("Performance tests finished.", False)
