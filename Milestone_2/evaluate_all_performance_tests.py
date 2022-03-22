@@ -37,7 +37,7 @@ def read_nvprof_data(path_to_csv, warmup_already_removed=False):
         df /= 1000
 
     # print(df['Duration'])
-    return df
+    return df.values
     # return df['Duration']
 
 
@@ -52,7 +52,7 @@ def eval_1024_1024(precision):
     for file in os.listdir(path):
         if file.endswith('csv') and not file.startswith('cu'):
             tmp = read_nvprof_data(path + str(file))
-            avg_perf = tmp['Duration'].mean()
+            avg_perf = tmp.mean()
             if avg_perf < best_avg_perf:
                 best_avg_perf = avg_perf
                 best_name = str(file)
@@ -69,12 +69,12 @@ def eval_1024_1024(precision):
         precision_str = "Double precision: "
 
     # Single optimization or no optimizations (5 + 1):
-    unoptimized = read_nvprof_data(path + "unoptimized.csv").values
-    _st = read_nvprof_data(path + "_st.csv").values
-    _stb = read_nvprof_data(path + "_stb.csv").values
-    _rev = read_nvprof_data(path + "_rev.csv").values
-    _col = read_nvprof_data(path + "_col.csv").values
-    _dbr = read_nvprof_data(path + "_dbr.csv").values
+    unoptimized = read_nvprof_data(path + "unoptimized.csv")
+    _st = read_nvprof_data(path + "_st.csv")
+    _stb = read_nvprof_data(path + "_stb.csv")
+    _rev = read_nvprof_data(path + "_rev.csv")
+    _col = read_nvprof_data(path + "_col.csv")
+    _dbr = read_nvprof_data(path + "_dbr.csv")
 
     # print(unoptimized.values)
 
@@ -85,19 +85,19 @@ def eval_1024_1024(precision):
     fig_1.savefig(path + "comparison_0_1.png")
 
     # Two optimizations (10):
-    _st_stb = read_nvprof_data(path + "_st_stb.csv").values
-    _st_rev = read_nvprof_data(path + "_st_rev.csv").values
-    _st_col = read_nvprof_data(path + "_st_col.csv").values
-    _st_dbr = read_nvprof_data(path + "_st_dbr.csv").values
+    _st_stb = read_nvprof_data(path + "_st_stb.csv")
+    _st_rev = read_nvprof_data(path + "_st_rev.csv")
+    _st_col = read_nvprof_data(path + "_st_col.csv")
+    _st_dbr = read_nvprof_data(path + "_st_dbr.csv")
 
-    _stb_rev = read_nvprof_data(path + "_stb_rev.csv").values
-    _stb_col = read_nvprof_data(path + "_stb_col.csv").values
-    _stb_dbr = read_nvprof_data(path + "_stb_dbr.csv").values
+    _stb_rev = read_nvprof_data(path + "_stb_rev.csv")
+    _stb_col = read_nvprof_data(path + "_stb_col.csv")
+    _stb_dbr = read_nvprof_data(path + "_stb_dbr.csv")
     
-    _rev_col = read_nvprof_data(path + "_rev_col.csv").values
-    _rev_dbr = read_nvprof_data(path + "_rev_dbr.csv").values
+    _rev_col = read_nvprof_data(path + "_rev_col.csv")
+    _rev_dbr = read_nvprof_data(path + "_rev_dbr.csv")
 
-    _col_dbr = read_nvprof_data(path + "_col_dbr.csv").values
+    _col_dbr = read_nvprof_data(path + "_col_dbr.csv")
 
     combined_df = pd.concat([_st_stb, _st_rev, _st_col, _st_dbr, _stb_rev, _stb_col, _stb_dbr, _rev_col, _rev_dbr, _col_dbr], axis=1)
     fig_2 = plt.figure()
