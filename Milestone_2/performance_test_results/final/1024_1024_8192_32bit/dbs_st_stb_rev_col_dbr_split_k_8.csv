@@ -1,0 +1,1405 @@
+==121668== NVPROF is profiling process 121668, command: python3 ./sdfg_api_v4.py --repetitions=200 -M=1024 -N=1024 -K=8192 --double-buffering-shared --name=_1024_8192_1024_32 --precision=32 --split-k 8 --swizzle-threads --swizzle-thread-blocks 2 --reverse-k --shared-A-column --double-buffering-register
+==121668== Profiling application: python3 ./sdfg_api_v4.py --repetitions=200 -M=1024 -N=1024 -K=8192 --double-buffering-shared --name=_1024_8192_1024_32 --precision=32 --split-k 8 --swizzle-threads --swizzle-thread-blocks 2 --reverse-k --shared-A-column --double-buffering-register
+==121668== Profiling result:
+"Start","Duration","Grid X","Grid Y","Grid Z","Block X","Block Y","Block Z","Registers Per Thread","Static SMem","Dynamic SMem","Size","Throughput","SrcMemType","DstMemType","Device","Context","Stream","Name","Correlation_ID"
+s,ms,,,,,,,,KB,B,MB,GB/s,,,,,,,
+0.428644,3.950165,,,,,,,,,,32.000000,7.911062,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",443
+0.432655,3.637237,,,,,,,,,,32.000000,8.591686,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",444
+0.436319,0.062080,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",447
+0.436731,1.769979,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",449
+0.438502,0.058400,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",450
+0.438827,0.018496,,,,,,,,,,4.000000,211.194312,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",453
+0.438854,0.365855,,,,,,,,,,4.000000,10.677044,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",454
+0.568625,3.080375,,,,,,,,,,32.000000,10.144869,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",464
+0.571709,2.733816,,,,,,,,,,32.000000,11.430908,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",465
+0.574452,0.060480,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",468
+0.574827,1.693051,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",470
+0.576522,0.058112,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",471
+0.576979,0.019007,,,,,,,,,,4.000000,205.516389,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",474
+0.577004,0.325919,,,,,,,,,,4.000000,11.985340,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",475
+0.705193,2.745304,,,,,,,,,,32.000000,11.383075,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",485
+0.707942,2.732088,,,,,,,,,,32.000000,11.438138,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",486
+0.710683,0.060608,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",489
+0.711047,1.762267,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",491
+0.712810,0.057056,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",492
+0.713137,0.016832,,,,,,,,,,4.000000,232.072837,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",495
+0.713162,0.326207,,,,,,,,,,4.000000,11.974758,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",496
+0.840419,2.757208,,,,,,,,,,32.000000,11.333929,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",506
+0.843180,2.733337,,,,,,,,,,32.000000,11.432911,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",507
+0.845923,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",510
+0.846290,1.758075,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",512
+0.848049,0.058464,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",513
+0.848379,0.016832,,,,,,,,,,4.000000,232.072837,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",516
+0.848403,0.325695,,,,,,,,,,4.000000,11.993583,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",517
+0.975596,2.770264,,,,,,,,,,32.000000,11.280513,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",527
+0.978370,2.733400,,,,,,,,,,32.000000,11.432648,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",528
+0.981113,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",531
+0.981502,1.705050,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",533
+0.983208,0.056480,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",534
+0.984521,0.017183,,,,,,,,,,4.000000,227.332247,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",537
+0.984545,0.325600,,,,,,,,,,4.000000,11.997082,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",538
+1.111833,2.763544,,,,,,,,,,32.000000,11.307944,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",548
+1.114600,2.734008,,,,,,,,,,32.000000,11.430106,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",549
+1.117343,0.060576,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",552
+1.118191,1.744539,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",554
+1.119937,0.057248,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",555
+1.120262,0.017633,,,,,,,,,,4.000000,221.530653,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",558
+1.120285,0.325822,,,,,,,,,,4.000000,11.988908,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",559
+1.249204,2.748952,,,,,,,,,,32.000000,11.367969,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",569
+1.251957,2.732184,,,,,,,,,,32.000000,11.437736,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",570
+1.254699,0.060416,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",573
+1.255079,1.749563,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",575
+1.256829,0.058431,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",576
+1.258616,0.018912,,,,,,,,,,4.000000,206.548752,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",579
+1.258642,0.335008,,,,,,,,,,4.000000,11.660169,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",580
+1.390773,2.743864,,,,,,,,,,32.000000,11.389048,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",590
+1.393521,2.731927,,,,,,,,,,32.000000,11.438812,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",591
+1.396262,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",594
+1.396640,1.753499,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",596
+1.398394,0.056736,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",597
+1.398730,0.016959,,,,,,,,,,4.000000,230.334925,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",600
+1.398753,0.325183,,,,,,,,,,4.000000,12.012467,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",601
+1.526464,2.785175,,,,,,,,,,32.000000,11.220121,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",611
+1.529253,2.732505,,,,,,,,,,32.000000,11.436393,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",612
+1.531996,0.060159,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",615
+1.532371,1.750299,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",617
+1.534123,0.056704,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",618
+1.534441,0.016352,,,,,,,,,,4.000000,238.885152,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",621
+1.534465,0.324927,,,,,,,,,,4.000000,12.021931,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",622
+1.661727,2.746776,,,,,,,,,,32.000000,11.376974,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",632
+1.664477,2.733368,,,,,,,,,,32.000000,11.432782,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",633
+1.667220,0.060193,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",636
+1.667590,1.743259,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",638
+1.669334,0.058015,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",639
+1.670609,0.017151,,,,,,,,,,4.000000,227.756399,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",642
+1.670632,0.325567,,,,,,,,,,4.000000,11.998298,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",643
+1.797939,2.747800,,,,,,,,,,32.000000,11.372735,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",653
+1.800690,2.732504,,,,,,,,,,32.000000,11.436397,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",654
+1.803433,0.060160,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",657
+1.803818,1.751003,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",659
+1.805570,0.056671,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",660
+1.805897,0.017952,,,,,,,,,,4.000000,217.594140,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",663
+1.805921,0.325408,,,,,,,,,,4.000000,12.004161,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",664
+1.933236,2.753432,,,,,,,,,,32.000000,11.349472,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",674
+1.935993,2.732792,,,,,,,,,,32.000000,11.435192,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",675
+1.938732,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",678
+1.939113,1.699195,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",680
+1.940814,0.056832,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",681
+1.941147,0.017280,,,,,,,,,,4.000000,226.056134,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",684
+1.941170,0.325855,,,,,,,,,,4.000000,11.987694,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",685
+2.068421,2.759544,,,,,,,,,,32.000000,11.324335,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",695
+2.071184,2.733208,,,,,,,,,,32.000000,11.433451,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",696
+2.073927,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",699
+2.074300,1.699355,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",701
+2.076000,0.057312,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",702
+2.076325,0.016960,,,,,,,,,,4.000000,230.321344,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",705
+2.076348,0.325183,,,,,,,,,,4.000000,12.012467,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",706
+2.203470,2.755704,,,,,,,,,,32.000000,11.340115,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",716
+2.206230,2.734808,,,,,,,,,,32.000000,11.426762,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",717
+2.208975,0.060448,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",720
+2.209355,1.755451,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",722
+2.211111,0.057600,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",723
+2.211432,0.016992,,,,,,,,,,4.000000,229.887594,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",726
+2.211455,0.325439,,,,,,,,,,4.000000,12.003017,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",727
+2.338855,2.760920,,,,,,,,,,32.000000,11.318691,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",737
+2.341620,2.732856,,,,,,,,,,32.000000,11.434924,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",738
+2.344359,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",741
+2.344739,1.703067,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",743
+2.346443,0.057376,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",744
+2.347736,0.017440,,,,,,,,,,4.000000,223.982225,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",747
+2.347759,0.326559,,,,,,,,,,4.000000,11.961851,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",748
+2.482724,3.091991,,,,,,,,,,32.000000,10.106756,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",758
+2.485840,2.735032,,,,,,,,,,32.000000,11.425826,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",759
+2.488581,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",762
+2.489028,1.765178,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",764
+2.490795,0.057184,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",765
+2.492131,0.017984,,,,,,,,,,4.000000,217.206962,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",768
+2.492157,0.325695,,,,,,,,,,4.000000,11.993583,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",769
+2.619598,2.963736,,,,,,,,,,32.000000,10.544124,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",779
+2.622565,2.734456,,,,,,,,,,32.000000,11.428233,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",780
+2.625309,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",783
+2.625718,1.700795,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",785
+2.627419,0.057184,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",786
+2.627752,0.016736,,,,,,,,,,4.000000,233.404039,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",789
+2.627771,0.326591,,,,,,,,,,4.000000,11.960679,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",790
+2.755218,2.971704,,,,,,,,,,32.000000,10.515852,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",800
+2.758193,2.733848,,,,,,,,,,32.000000,11.430774,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",801
+2.760938,0.060193,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",804
+2.761333,1.748059,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",806
+2.763082,0.057760,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",807
+2.763419,0.017983,,,,,,,,,,4.000000,217.219040,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",810
+2.763443,0.325407,,,,,,,,,,4.000000,12.004198,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",811
+2.890829,2.937624,,,,,,,,,,32.000000,10.637849,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",821
+2.893773,2.733624,,,,,,,,,,32.000000,11.431711,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",822
+2.896516,0.060416,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",825
+2.896927,1.702076,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",827
+2.898630,0.059808,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",828
+2.898963,0.017536,,,,,,,,,,4.000000,222.756045,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",831
+2.898987,0.326815,,,,,,,,,,4.000000,11.952481,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",832
+3.034107,3.274167,,,,,,,,,,32.000000,9.544412,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",842
+3.037412,2.738487,,,,,,,,,,32.000000,11.411411,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",843
+3.040154,0.060193,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",846
+3.041706,1.750939,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",848
+3.043458,0.057984,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",849
+3.043807,0.018400,,,,,,,,,,4.000000,212.296196,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",852
+3.043832,0.426559,,,,,,,,,,4.000000,9.157584,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",853
+3.174491,4.059444,,,,,,,,,,32.000000,7.698099,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",863
+3.178601,3.511733,,,,,,,,,,32.000000,8.898740,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",864
+3.182122,0.060448,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",867
+3.182515,1.705723,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",869
+3.184221,0.059424,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",870
+3.184553,0.017408,,,,,,,,,,4.000000,224.393957,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",873
+3.184577,0.380447,,,,,,,,,,4.000000,10.267527,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",874
+3.315364,3.143255,,,,,,,,,,32.000000,9.941923,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",884
+3.318523,2.734392,,,,,,,,,,32.000000,11.428500,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",885
+3.321267,0.060512,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",888
+3.322323,1.705723,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",890
+3.324029,0.056896,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",891
+3.324359,0.017376,,,,,,,,,,4.000000,224.807205,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",894
+3.324385,0.325215,,,,,,,,,,4.000000,12.011285,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",895
+3.452003,2.770040,,,,,,,,,,32.000000,11.281426,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",905
+3.454777,2.739000,,,,,,,,,,32.000000,11.409273,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",906
+3.457525,0.060256,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",909
+3.457930,1.766331,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",911
+3.459698,0.058176,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",912
+3.460023,0.017248,,,,,,,,,,4.000000,226.475533,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",915
+3.460046,0.325279,,,,,,,,,,4.000000,12.008922,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",916
+3.589067,2.762424,,,,,,,,,,32.000000,11.312528,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",926
+3.591834,2.733336,,,,,,,,,,32.000000,11.432916,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",927
+3.594576,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",930
+3.594954,1.699451,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",932
+3.596654,0.058688,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",933
+3.596991,0.017568,,,,,,,,,,4.000000,222.350296,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",936
+3.597015,0.325375,,,,,,,,,,4.000000,12.005378,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",937
+3.724577,2.752888,,,,,,,,,,32.000000,11.351715,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",947
+3.727334,2.733177,,,,,,,,,,32.000000,11.433581,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",948
+3.730077,0.060159,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",951
+3.730534,1.699451,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",953
+3.732234,0.057504,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",954
+3.732557,0.017280,,,,,,,,,,4.000000,226.056134,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",957
+3.732582,0.325215,,,,,,,,,,4.000000,12.011285,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",958
+3.861673,2.756248,,,,,,,,,,32.000000,11.337877,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",968
+3.864433,2.733560,,,,,,,,,,32.000000,11.431979,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",969
+3.867176,0.060256,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",972
+3.867578,1.701723,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",974
+3.869281,0.056352,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",975
+3.869607,0.017408,,,,,,,,,,4.000000,224.393957,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",978
+3.869631,0.325343,,,,,,,,,,4.000000,12.006559,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",979
+3.996955,2.750040,,,,,,,,,,32.000000,11.363471,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",989
+3.999709,2.732056,,,,,,,,,,32.000000,11.438272,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",990
+4.002451,0.060480,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",993
+4.003829,1.692283,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",995
+4.005522,0.057984,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",996
+4.005855,0.017376,,,,,,,,,,4.000000,224.807205,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",999
+4.005880,0.325759,,,,,,,,,,4.000000,11.991227,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1000
+4.133274,2.749944,,,,,,,,,,32.000000,11.363868,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1010
+4.136027,2.733592,,,,,,,,,,32.000000,11.431845,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1011
+4.138771,0.060320,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1014
+4.139173,1.754971,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1016
+4.140929,0.057088,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1017
+4.141250,0.017952,,,,,,,,,,4.000000,217.594140,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1020
+4.141273,0.326239,,,,,,,,,,4.000000,11.973584,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1021
+4.271866,3.037975,,,,,,,,,,32.000000,10.286457,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1031
+4.274934,2.945399,,,,,,,,,,32.000000,10.609768,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1032
+4.277886,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1035
+4.278319,1.697499,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1037
+4.280017,0.057920,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1038
+4.280357,0.017408,,,,,,,,,,4.000000,224.393957,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1041
+4.280382,0.425567,,,,,,,,,,4.000000,9.178931,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1042
+4.408837,3.583573,,,,,,,,,,32.000000,8.720347,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1052
+4.412442,2.738073,,,,,,,,,,32.000000,11.413136,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1053
+4.415190,0.060416,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1056
+4.415606,1.701083,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1058
+4.417308,0.057216,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1059
+4.417641,0.017824,,,,,,,,,,4.000000,219.156755,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1062
+4.417665,0.432479,,,,,,,,,,4.000000,9.032230,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1063
+4.546162,3.498902,,,,,,,,,,32.000000,8.931373,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1073
+4.549681,2.733784,,,,,,,,,,32.000000,11.431042,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1074
+4.552419,0.060512,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1077
+4.553183,1.704282,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1079
+4.554889,0.057728,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1080
+4.555226,0.017791,,,,,,,,,,4.000000,219.563262,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1083
+4.555251,0.428927,,,,,,,,,,4.000000,9.107028,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1084
+4.684328,3.534613,,,,,,,,,,32.000000,8.841138,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1094
+4.688096,2.734104,,,,,,,,,,32.000000,11.429704,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1095
+4.690839,0.060448,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1098
+4.691283,1.748507,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1100
+4.693033,0.056832,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1101
+4.693364,0.017952,,,,,,,,,,4.000000,217.594140,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1104
+4.693388,0.421823,,,,,,,,,,4.000000,9.260401,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1105
+4.821844,3.574966,,,,,,,,,,32.000000,8.741342,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1115
+4.825438,2.757144,,,,,,,,,,32.000000,11.334192,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1116
+4.828205,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1119
+4.828632,1.751386,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1121
+4.830385,0.058144,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1122
+4.830722,0.017888,,,,,,,,,,4.000000,218.372652,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1125
+4.830747,0.426623,,,,,,,,,,4.000000,9.156211,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1126
+4.958902,3.544086,,,,,,,,,,32.000000,8.817506,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1136
+4.962465,2.735480,,,,,,,,,,32.000000,11.423955,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1137
+4.965205,0.060768,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1140
+4.966087,1.764187,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1142
+4.967852,0.057952,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1143
+4.968199,0.018048,,,,,,,,,,4.000000,216.436724,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1146
+4.968224,0.426751,,,,,,,,,,4.000000,9.153464,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1147
+5.098567,3.888757,,,,,,,,,,32.000000,8.035987,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1157
+5.102506,3.499830,,,,,,,,,,32.000000,8.929005,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1158
+5.106018,0.060223,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1161
+5.106399,1.746427,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1163
+5.108147,0.056384,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1164
+5.108475,0.017120,,,,,,,,,,4.000000,228.168808,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1167
+5.108499,0.375615,,,,,,,,,,4.000000,10.399611,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1168
+5.239220,3.113367,,,,,,,,,,32.000000,10.037365,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1178
+5.242337,2.732824,,,,,,,,,,32.000000,11.435058,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1179
+5.245081,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1182
+5.246423,1.702299,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1184
+5.248126,0.057024,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1185
+5.248469,0.018112,,,,,,,,,,4.000000,215.671930,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1188
+5.248494,0.325279,,,,,,,,,,4.000000,12.008922,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1189
+5.376089,2.779096,,,,,,,,,,32.000000,11.244664,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1199
+5.378872,2.733336,,,,,,,,,,32.000000,11.432916,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1200
+5.381614,0.060480,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1203
+5.382011,1.749499,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1205
+5.383761,0.057087,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1206
+5.384084,0.017216,,,,,,,,,,4.000000,226.896492,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1209
+5.384108,0.326719,,,,,,,,,,4.000000,11.955993,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1210
+5.517485,2.749113,,,,,,,,,,32.000000,11.367303,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1220
+5.520238,2.734136,,,,,,,,,,32.000000,11.429570,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1221
+5.522981,0.060512,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1224
+5.523374,1.698491,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1226
+5.525074,0.058112,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1227
+5.526814,0.018912,,,,,,,,,,4.000000,206.548752,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1230
+5.526840,0.326015,,,,,,,,,,4.000000,11.981811,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1231
+5.654379,2.760696,,,,,,,,,,32.000000,11.319609,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1241
+5.657143,2.733112,,,,,,,,,,32.000000,11.433853,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1242
+5.659886,0.060223,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1245
+5.660265,1.698426,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1247
+5.661964,0.057441,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1248
+5.662289,0.018496,,,,,,,,,,4.000000,211.194312,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1251
+5.662313,0.325758,,,,,,,,,,4.000000,11.991263,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1252
+5.789980,2.746040,,,,,,,,,,32.000000,11.380024,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1262
+5.792729,2.733144,,,,,,,,,,32.000000,11.433719,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1263
+5.795472,0.060384,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1266
+5.795870,1.754555,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1268
+5.797626,0.057600,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1269
+5.799320,0.017728,,,,,,,,,,4.000000,220.343524,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1272
+5.799345,0.325631,,,,,,,,,,4.000000,11.995940,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1273
+5.928537,2.765879,,,,,,,,,,32.000000,11.298397,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1283
+5.931306,2.734360,,,,,,,,,,32.000000,11.428634,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1284
+5.934051,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1287
+5.934442,1.705371,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1289
+5.936148,0.056992,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1290
+5.936470,0.017248,,,,,,,,,,4.000000,226.475533,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1293
+5.936495,0.325567,,,,,,,,,,4.000000,11.998298,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1294
+6.064259,2.767064,,,,,,,,,,32.000000,11.293559,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1304
+6.067029,2.737656,,,,,,,,,,32.000000,11.414875,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1305
+6.069776,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1308
+6.070186,1.752923,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1310
+6.071940,0.057664,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1311
+6.072265,0.018048,,,,,,,,,,4.000000,216.436724,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1314
+6.072290,0.325983,,,,,,,,,,4.000000,11.982987,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1315
+6.200834,2.744889,,,,,,,,,,32.000000,11.384796,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1325
+6.203583,2.733272,,,,,,,,,,32.000000,11.433183,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1326
+6.206323,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1329
+6.206707,1.752059,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1331
+6.208460,0.057312,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1332
+6.208791,0.017568,,,,,,,,,,4.000000,222.350296,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1335
+6.208816,0.325215,,,,,,,,,,4.000000,12.011285,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1336
+6.337634,2.750776,,,,,,,,,,32.000000,11.360431,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1346
+6.340389,2.732952,,,,,,,,,,32.000000,11.434522,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1347
+6.343132,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1350
+6.343520,1.700571,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1352
+6.345222,0.057056,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1353
+6.345544,0.016896,,,,,,,,,,4.000000,231.193774,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1356
+6.345568,0.325503,,,,,,,,,,4.000000,12.000657,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1357
+6.473289,2.751128,,,,,,,,,,32.000000,11.358977,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1367
+6.476044,2.738392,,,,,,,,,,32.000000,11.411807,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1368
+6.478791,0.060384,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1371
+6.479182,1.702875,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1373
+6.480885,0.058592,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1374
+6.481210,0.016864,,,,,,,,,,4.000000,231.632472,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1377
+6.481235,0.325951,,,,,,,,,,4.000000,11.984163,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1378
+6.610544,4.789041,,,,,,,,,,32.000000,6.525315,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1388
+6.615414,3.946133,,,,,,,,,,32.000000,7.919145,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1389
+6.619374,0.060415,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1392
+6.621145,1.698844,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1394
+6.622845,0.057119,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1395
+6.623298,0.019872,,,,,,,,,,4.000000,196.570552,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1398
+6.623320,0.524479,,,,,,,,,,4.000000,7.447867,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1399
+6.756258,3.282070,,,,,,,,,,32.000000,9.521430,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1409
+6.759554,2.733720,,,,,,,,,,32.000000,11.431310,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1410
+6.762297,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1413
+6.762728,1.757435,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1415
+6.764487,0.056608,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1416
+6.764824,0.017440,,,,,,,,,,4.000000,223.982225,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1419
+6.764850,0.423807,,,,,,,,,,4.000000,9.217049,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1420
+6.893643,2.897848,,,,,,,,,,32.000000,10.783864,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1430
+6.896562,2.762104,,,,,,,,,,32.000000,11.313839,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1431
+6.899334,0.060576,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1434
+6.899756,1.760795,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1436
+6.901518,0.057216,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1437
+6.901858,0.017888,,,,,,,,,,4.000000,218.372652,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1440
+6.901883,0.427679,,,,,,,,,,4.000000,9.133603,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1441
+7.030796,3.583541,,,,,,,,,,32.000000,8.720425,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1451
+7.034397,2.758264,,,,,,,,,,32.000000,11.329590,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1452
+7.037162,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1455
+7.038127,1.699803,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1457
+7.039828,0.058112,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1458
+7.040480,0.020640,,,,,,,,,,4.000000,189.256298,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1461
+7.040512,0.365439,,,,,,,,,,4.000000,10.689198,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1462
+7.173981,2.743161,,,,,,,,,,32.000000,11.391967,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1472
+7.176728,2.732888,,,,,,,,,,32.000000,11.434790,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1473
+7.179471,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1476
+7.179888,1.697980,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1478
+7.181587,0.057503,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1479
+7.182443,0.017696,,,,,,,,,,4.000000,220.741976,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1482
+7.182468,0.325791,,,,,,,,,,4.000000,11.990049,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1483
+7.311126,2.750584,,,,,,,,,,32.000000,11.361224,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1493
+7.313880,2.732824,,,,,,,,,,32.000000,11.435058,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1494
+7.316623,0.060448,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1497
+7.317047,1.746811,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1499
+7.318795,0.057376,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1500
+7.319118,0.017120,,,,,,,,,,4.000000,228.168808,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1503
+7.319141,0.325695,,,,,,,,,,4.000000,11.993583,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1504
+7.446464,2.772536,,,,,,,,,,32.000000,11.271269,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1514
+7.449240,2.733816,,,,,,,,,,32.000000,11.430908,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1515
+7.451983,0.060480,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1518
+7.452373,1.701883,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1520
+7.454075,0.057440,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1521
+7.454409,0.017536,,,,,,,,,,4.000000,222.756045,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1524
+7.454433,0.325311,,,,,,,,,,4.000000,12.007740,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1525
+7.583769,2.747128,,,,,,,,,,32.000000,11.375517,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1535
+7.586520,2.737176,,,,,,,,,,32.000000,11.416876,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1536
+7.589266,0.060160,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1539
+7.589750,1.744155,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1541
+7.591495,0.058752,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1542
+7.591881,0.018241,,,,,,,,,,4.000000,214.146702,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1545
+7.591900,0.329983,,,,,,,,,,4.000000,11.837731,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1546
+7.721466,2.770936,,,,,,,,,,32.000000,11.277778,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1556
+7.724241,2.735064,,,,,,,,,,32.000000,11.425692,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1557
+7.726985,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1560
+7.727377,1.705403,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1562
+7.729084,0.057600,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1563
+7.729405,0.017440,,,,,,,,,,4.000000,223.982225,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1566
+7.729430,0.325887,,,,,,,,,,4.000000,11.986517,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1567
+7.858116,2.750169,,,,,,,,,,32.000000,11.362938,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1577
+7.860870,2.732407,,,,,,,,,,32.000000,11.436803,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1578
+7.863612,0.060288,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1581
+7.863986,1.699291,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1583
+7.865686,0.057600,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1584
+7.866016,0.018048,,,,,,,,,,4.000000,216.436724,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1587
+7.866040,0.326367,,,,,,,,,,4.000000,11.968888,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1588
+7.993546,2.751096,,,,,,,,,,32.000000,11.359109,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1598
+7.996300,2.737592,,,,,,,,,,32.000000,11.415141,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1599
+7.999048,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1602
+8.000829,1.702747,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1604
+8.002533,0.056448,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1605
+8.003888,0.017856,,,,,,,,,,4.000000,218.764001,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1608
+8.003912,0.327391,,,,,,,,,,4.000000,11.931452,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1609
+8.135611,2.782872,,,,,,,,,,32.000000,11.229406,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1619
+8.138397,2.734200,,,,,,,,,,32.000000,11.429303,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1620
+8.141142,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1623
+8.141540,1.701787,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1625
+8.143243,0.057504,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1626
+8.144045,0.017536,,,,,,,,,,4.000000,222.756045,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1629
+8.144068,0.326622,,,,,,,,,,4.000000,11.959543,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1630
+8.271446,2.746904,,,,,,,,,,32.000000,11.376444,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1640
+8.274196,2.733144,,,,,,,,,,32.000000,11.433719,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1641
+8.276939,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1644
+8.277351,1.699036,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1646
+8.279050,0.057695,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1647
+8.279374,0.017311,,,,,,,,,,4.000000,225.651320,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1650
+8.279399,0.326336,,,,,,,,,,4.000000,11.970025,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1651
+8.406711,2.753496,,,,,,,,,,32.000000,11.349208,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1661
+8.409468,2.733656,,,,,,,,,,32.000000,11.431577,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1662
+8.412213,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1665
+8.412607,1.758139,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1667
+8.414367,0.057375,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1668
+8.414693,0.017632,,,,,,,,,,4.000000,221.543217,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1671
+8.414717,0.325632,,,,,,,,,,4.000000,11.995903,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1672
+8.543291,2.745144,,,,,,,,,,32.000000,11.383738,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1682
+8.546066,2.738936,,,,,,,,,,32.000000,11.409540,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1683
+8.548813,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1686
+8.549256,1.704251,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1688
+8.550961,0.058048,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1689
+8.552756,0.017600,,,,,,,,,,4.000000,221.946023,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1692
+8.552802,0.342176,,,,,,,,,,4.000000,11.415909,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1693
+8.681589,3.122903,,,,,,,,,,32.000000,10.006715,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1703
+8.684716,2.733048,,,,,,,,,,32.000000,11.434120,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1704
+8.687459,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1707
+8.687851,1.760795,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1709
+8.689613,0.058368,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1710
+8.689942,0.018272,,,,,,,,,,4.000000,213.783384,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1713
+8.689966,0.326015,,,,,,,,,,4.000000,11.981811,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1714
+8.817362,2.770072,,,,,,,,,,32.000000,11.281295,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1724
+8.820136,2.733880,,,,,,,,,,32.000000,11.430641,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1725
+8.822879,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1728
+8.823304,1.708188,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1730
+8.825013,0.056575,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1731
+8.826355,0.020000,,,,,,,,,,4.000000,195.312500,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1734
+8.826385,0.345471,,,,,,,,,,4.000000,11.307027,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1735
+8.959994,2.796311,,,,,,,,,,32.000000,11.175438,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1745
+8.962818,2.735479,,,,,,,,,,32.000000,11.423959,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1746
+8.965563,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1749
+8.966434,1.748443,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1751
+8.968183,0.058176,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1752
+8.968515,0.017216,,,,,,,,,,4.000000,226.896492,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1755
+8.968539,0.326623,,,,,,,,,,4.000000,11.959507,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1756
+9.095975,2.900087,,,,,,,,,,32.000000,10.775539,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1766
+9.098899,2.782904,,,,,,,,,,32.000000,11.229277,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1767
+9.101692,0.060160,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1770
+9.102980,1.752507,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1772
+9.104734,0.057568,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1773
+9.106857,0.021440,,,,,,,,,,4.000000,182.194496,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1776
+9.106879,0.331359,,,,,,,,,,4.000000,11.788574,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1777
+9.234626,2.755544,,,,,,,,,,32.000000,11.340773,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1787
+9.237385,2.732120,,,,,,,,,,32.000000,11.438004,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1788
+9.240127,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1791
+9.240517,1.753850,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1793
+9.242272,0.058913,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1794
+9.242749,0.017056,,,,,,,,,,4.000000,229.024977,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1797
+9.242769,0.361471,,,,,,,,,,4.000000,10.806538,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1798
+9.372599,2.880952,,,,,,,,,,32.000000,10.847109,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1808
+9.375497,2.733208,,,,,,,,,,32.000000,11.433451,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1809
+9.378235,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1812
+9.378659,1.699099,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1814
+9.380359,0.057312,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1815
+9.380713,0.017632,,,,,,,,,,4.000000,221.543217,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1818
+9.380737,0.325759,,,,,,,,,,4.000000,11.991227,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1819
+9.508451,2.764503,,,,,,,,,,32.000000,11.304021,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1829
+9.511219,2.732856,,,,,,,,,,32.000000,11.434924,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1830
+9.513962,0.060544,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1833
+9.514349,1.745435,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1835
+9.516096,0.058048,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1836
+9.516425,0.017376,,,,,,,,,,4.000000,224.807205,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1839
+9.516448,0.325663,,,,,,,,,,4.000000,11.994761,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1840
+9.644534,2.754104,,,,,,,,,,32.000000,11.346703,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1850
+9.647292,2.732792,,,,,,,,,,32.000000,11.435192,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1851
+9.650034,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1854
+9.650452,1.702555,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1856
+9.652156,0.058528,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1857
+9.652482,0.017824,,,,,,,,,,4.000000,219.156755,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1860
+9.652505,0.325791,,,,,,,,,,4.000000,11.990049,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1861
+9.779871,2.748600,,,,,,,,,,32.000000,11.369424,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1871
+9.782637,2.732760,,,,,,,,,,32.000000,11.435325,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1872
+9.785379,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1875
+9.785779,1.752955,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1877
+9.787533,0.057120,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1878
+9.787858,0.017376,,,,,,,,,,4.000000,224.807205,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1881
+9.787882,0.325887,,,,,,,,,,4.000000,11.986517,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1882
+9.916634,2.761720,,,,,,,,,,32.000000,11.315412,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1892
+9.919399,2.732440,,,,,,,,,,32.000000,11.436665,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1893
+9.922141,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1896
+9.922527,1.761563,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1898
+9.924289,0.057024,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1899
+9.924613,0.017184,,,,,,,,,,4.000000,227.319018,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1902
+9.924635,0.325758,,,,,,,,,,4.000000,11.991263,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1903
+10.052085,2.761080,,,,,,,,,,32.000000,11.318035,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1913
+10.054850,2.745049,,,,,,,,,,32.000000,11.384132,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1914
+10.057606,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1917
+10.058034,1.756507,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1919
+10.059792,0.057088,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1920
+10.060114,0.017504,,,,,,,,,,4.000000,223.163277,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1923
+10.060138,0.325631,,,,,,,,,,4.000000,11.995940,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1924
+10.187827,2.749624,,,,,,,,,,32.000000,11.365190,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1934
+10.190580,2.732632,,,,,,,,,,32.000000,11.435861,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1935
+10.193322,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1938
+10.193709,1.697723,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1940
+10.195408,0.057152,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1941
+10.195739,0.018400,,,,,,,,,,4.000000,212.296196,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1944
+10.195764,0.343999,,,,,,,,,,4.000000,11.355411,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1945
+10.325807,2.947512,,,,,,,,,,32.000000,10.602162,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1955
+10.328758,2.920823,,,,,,,,,,32.000000,10.699039,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1956
+10.331689,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1959
+10.332076,1.753115,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1961
+10.333830,0.058016,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1962
+10.334161,0.017376,,,,,,,,,,4.000000,224.807205,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1965
+10.334185,0.325567,,,,,,,,,,4.000000,11.998298,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1966
+10.471711,2.906583,,,,,,,,,,32.000000,10.751456,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1976
+10.474637,2.758360,,,,,,,,,,32.000000,11.329196,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1977
+10.477403,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",1980
+10.477841,1.758906,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",1982
+10.479600,0.056800,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",1983
+10.479953,0.018367,,,,,,,,,,4.000000,212.677628,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",1986
+10.479978,0.427359,,,,,,,,,,4.000000,9.140442,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",1987
+10.610084,4.209172,,,,,,,,,,32.000000,7.424263,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",1997
+10.614343,3.327799,,,,,,,,,,32.000000,9.390591,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",1998
+10.617680,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2001
+10.618121,1.699099,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2003
+10.619821,0.057664,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2004
+10.620148,0.017120,,,,,,,,,,4.000000,228.168808,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2007
+10.620172,0.374143,,,,,,,,,,4.000000,10.440527,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2008
+10.751372,3.124247,,,,,,,,,,32.000000,10.002410,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2018
+10.754500,2.738232,,,,,,,,,,32.000000,11.412473,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2019
+10.757248,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2022
+10.757636,1.704955,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2024
+10.759342,0.057056,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2025
+10.759672,0.018016,,,,,,,,,,4.000000,216.821159,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2028
+10.759697,0.324991,,,,,,,,,,4.000000,12.019564,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2029
+10.887503,2.760183,,,,,,,,,,32.000000,11.321713,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2039
+10.890267,2.733209,,,,,,,,,,32.000000,11.433447,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2040
+10.893010,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2043
+10.893404,1.755066,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2045
+10.895160,0.057568,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2046
+10.895484,0.017376,,,,,,,,,,4.000000,224.807205,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2049
+10.895508,0.326175,,,,,,,,,,4.000000,11.975933,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2050
+11.024458,2.775928,,,,,,,,,,32.000000,11.257497,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2060
+11.027238,2.733784,,,,,,,,,,32.000000,11.431042,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2061
+11.029981,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2064
+11.031275,1.702139,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2066
+11.032979,0.056960,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2067
+11.033294,0.017376,,,,,,,,,,4.000000,224.807205,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2070
+11.033317,0.326399,,,,,,,,,,4.000000,11.967714,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2071
+11.160915,2.746616,,,,,,,,,,32.000000,11.377637,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2081
+11.163665,2.732856,,,,,,,,,,32.000000,11.434924,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2082
+11.166407,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2085
+11.166834,1.698331,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2087
+11.168533,0.057600,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2088
+11.168861,0.017088,,,,,,,,,,4.000000,228.596091,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2091
+11.168884,0.325183,,,,,,,,,,4.000000,12.012467,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2092
+11.296267,2.771352,,,,,,,,,,32.000000,11.276085,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2102
+11.299043,2.733688,,,,,,,,,,32.000000,11.431444,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2103
+11.301781,0.060352,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2106
+11.302206,1.747835,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2108
+11.303955,0.056608,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2109
+11.304289,0.017824,,,,,,,,,,4.000000,219.156755,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2112
+11.304314,0.325855,,,,,,,,,,4.000000,11.987694,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2113
+11.432690,2.764056,,,,,,,,,,32.000000,11.305849,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2123
+11.435457,2.737848,,,,,,,,,,32.000000,11.414074,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2124
+11.438205,0.060320,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2127
+11.438601,1.699003,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2129
+11.440301,0.057247,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2130
+11.440634,0.017312,,,,,,,,,,4.000000,225.638286,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2133
+11.440657,0.325247,,,,,,,,,,4.000000,12.010103,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2134
+11.573150,2.769400,,,,,,,,,,32.000000,11.284033,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2144
+11.575936,2.740472,,,,,,,,,,32.000000,11.403145,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2145
+11.578754,0.060161,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2148
+11.579335,1.699387,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2150
+11.581035,0.056864,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2151
+11.581476,0.019648,,,,,,,,,,4.000000,198.811584,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2154
+11.581504,0.325599,,,,,,,,,,4.000000,11.997119,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2155
+11.708890,2.754232,,,,,,,,,,32.000000,11.346176,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2165
+11.711648,2.733560,,,,,,,,,,32.000000,11.431979,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2166
+11.714391,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2169
+11.714800,1.748987,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2171
+11.716550,0.057760,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2172
+11.716897,0.017696,,,,,,,,,,4.000000,220.741976,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2175
+11.716921,0.325471,,,,,,,,,,4.000000,12.001837,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2176
+11.845902,2.787256,,,,,,,,,,32.000000,11.211744,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2186
+11.848694,2.733496,,,,,,,,,,32.000000,11.432246,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2187
+11.851438,0.060319,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2190
+11.852917,1.696219,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2192
+11.854614,0.056768,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2193
+11.854933,0.016960,,,,,,,,,,4.000000,230.321344,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2196
+11.854956,0.325663,,,,,,,,,,4.000000,11.994761,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2197
+11.982230,2.766872,,,,,,,,,,32.000000,11.294342,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2207
+11.985001,2.742583,,,,,,,,,,32.000000,11.394368,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2208
+11.987752,0.060384,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2211
+11.988536,1.703259,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2213
+11.990241,0.057472,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2214
+11.992283,0.017952,,,,,,,,,,4.000000,217.594140,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2217
+11.992306,0.326560,,,,,,,,,,4.000000,11.961814,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2218
+12.123798,2.764056,,,,,,,,,,32.000000,11.305849,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2228
+12.126566,2.735769,,,,,,,,,,32.000000,11.422748,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2229
+12.129311,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2232
+12.129696,1.699451,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2234
+12.131396,0.057920,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2235
+12.133341,0.018912,,,,,,,,,,4.000000,206.548752,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2238
+12.133366,0.325886,,,,,,,,,,4.000000,11.986554,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2239
+12.260974,2.747128,,,,,,,,,,32.000000,11.375517,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2249
+12.263725,2.733816,,,,,,,,,,32.000000,11.430908,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2250
+12.266469,0.060160,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2253
+12.266903,1.696987,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2255
+12.268601,0.057472,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2256
+12.269795,0.017440,,,,,,,,,,4.000000,223.982225,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2259
+12.269819,0.326303,,,,,,,,,,4.000000,11.971235,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2260
+12.397248,2.764056,,,,,,,,,,32.000000,11.305849,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2270
+12.400016,2.733368,,,,,,,,,,32.000000,11.432782,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2271
+12.402759,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2274
+12.403137,1.757819,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2276
+12.404896,0.056832,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2277
+12.405229,0.017536,,,,,,,,,,4.000000,222.756045,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2280
+12.405252,0.325823,,,,,,,,,,4.000000,11.988871,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2281
+12.534411,2.773432,,,,,,,,,,32.000000,11.267628,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2291
+12.537189,2.732504,,,,,,,,,,32.000000,11.436397,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2292
+12.539930,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2295
+12.540405,1.703995,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2297
+12.542110,0.057568,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2298
+12.542496,0.018272,,,,,,,,,,4.000000,213.783384,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2301
+12.542522,0.337151,,,,,,,,,,4.000000,11.586055,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2302
+12.671721,2.748600,,,,,,,,,,32.000000,11.369424,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2312
+12.674474,2.733080,,,,,,,,,,32.000000,11.433987,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2313
+12.677216,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2316
+12.677608,1.703131,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2318
+12.679312,0.056192,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2319
+12.680836,0.018208,,,,,,,,,,4.000000,214.534820,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2322
+12.680858,0.325503,,,,,,,,,,4.000000,12.000657,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2323
+12.811291,2.748791,,,,,,,,,,32.000000,11.368634,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2333
+12.814065,2.809240,,,,,,,,,,32.000000,11.124005,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2334
+12.816884,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2337
+12.817305,1.748827,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2339
+12.819055,0.056704,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2340
+12.819400,0.017408,,,,,,,,,,4.000000,224.393957,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2343
+12.819444,0.327422,,,,,,,,,,4.000000,11.930322,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2344
+12.951703,2.942008,,,,,,,,,,32.000000,10.621997,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2354
+12.954649,2.739768,,,,,,,,,,32.000000,11.406075,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2355
+12.957398,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2358
+12.957818,1.767771,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2360
+12.959586,0.056703,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2361
+12.961468,0.017408,,,,,,,,,,4.000000,224.393957,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2364
+12.961491,0.326239,,,,,,,,,,4.000000,11.973584,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2365
+13.089139,2.955224,,,,,,,,,,32.000000,10.574495,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2375
+13.092098,2.734136,,,,,,,,,,32.000000,11.429570,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2376
+13.094842,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2379
+13.095255,1.699898,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2381
+13.096956,0.056737,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2382
+13.097289,0.017216,,,,,,,,,,4.000000,226.896492,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2385
+13.097313,0.326430,,,,,,,,,,4.000000,11.966578,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2386
+13.224910,2.953559,,,,,,,,,,32.000000,10.580456,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2396
+13.227867,2.734040,,,,,,,,,,32.000000,11.429972,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2397
+13.230611,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2400
+13.231166,1.703675,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2402
+13.232871,0.057279,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2403
+13.233199,0.016736,,,,,,,,,,4.000000,233.404039,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2406
+13.233223,0.325440,,,,,,,,,,4.000000,12.002981,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2407
+13.363052,2.948471,,,,,,,,,,32.000000,10.598714,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2417
+13.366004,2.734456,,,,,,,,,,32.000000,11.428233,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2418
+13.368748,0.060160,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2421
+13.369163,1.762715,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2423
+13.370927,0.057728,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2424
+13.371858,0.017376,,,,,,,,,,4.000000,224.807205,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2427
+13.371881,0.325247,,,,,,,,,,4.000000,12.010103,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2428
+13.499485,3.005848,,,,,,,,,,32.000000,10.396401,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2438
+13.502494,2.735352,,,,,,,,,,32.000000,11.424489,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2439
+13.505239,0.060351,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2442
+13.505687,1.766491,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2444
+13.507455,0.058016,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2445
+13.507789,0.017536,,,,,,,,,,4.000000,222.756045,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2448
+13.507813,0.325375,,,,,,,,,,4.000000,12.005378,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2449
+13.637165,2.943128,,,,,,,,,,32.000000,10.617955,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2459
+13.640112,2.733496,,,,,,,,,,32.000000,11.432246,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2460
+13.642852,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2463
+13.643255,1.750107,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2465
+13.645007,0.058625,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2466
+13.645348,0.017632,,,,,,,,,,4.000000,221.543217,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2469
+13.645373,0.326046,,,,,,,,,,4.000000,11.980671,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2470
+13.773232,2.937560,,,,,,,,,,32.000000,10.638081,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2480
+13.776173,2.734456,,,,,,,,,,32.000000,11.428233,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2481
+13.778912,0.060223,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2484
+13.779356,1.758907,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2486
+13.781116,0.057536,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2487
+13.783313,0.020960,,,,,,,,,,4.000000,186.366889,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2490
+13.783343,0.588542,,,,,,,,,,4.000000,6.637164,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2491
+13.913426,2.899991,,,,,,,,,,32.000000,10.775896,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2501
+13.916347,2.760727,,,,,,,,,,32.000000,11.319482,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2502
+13.919113,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2505
+13.919546,1.699835,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2507
+13.921247,0.056672,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2508
+13.921579,0.017632,,,,,,,,,,4.000000,221.543217,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2511
+13.921605,0.433631,,,,,,,,,,4.000000,9.008235,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2512
+14.058064,4.318387,,,,,,,,,,32.000000,7.236498,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2522
+14.062459,3.907285,,,,,,,,,,32.000000,7.997881,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2523
+14.066378,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2526
+14.066948,1.757339,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2528
+14.068706,0.056511,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2529
+14.069032,0.016736,,,,,,,,,,4.000000,233.404039,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2532
+14.069055,0.381726,,,,,,,,,,4.000000,10.233125,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2533
+14.199559,2.930903,,,,,,,,,,32.000000,10.662243,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2543
+14.202493,2.926808,,,,,,,,,,32.000000,10.677161,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2544
+14.205430,0.060351,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2547
+14.205837,1.700794,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2549
+14.207539,0.057344,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2550
+14.207885,0.017759,,,,,,,,,,4.000000,219.958894,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2553
+14.207907,0.326047,,,,,,,,,,4.000000,11.980635,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2554
+14.335340,2.765688,,,,,,,,,,32.000000,11.299178,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2564
+14.338110,2.733976,,,,,,,,,,32.000000,11.430239,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2565
+14.340848,0.060384,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2568
+14.341250,1.757179,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2570
+14.343008,0.055936,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2571
+14.344817,0.017984,,,,,,,,,,4.000000,217.206962,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2574
+14.344852,0.325504,,,,,,,,,,4.000000,12.000621,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2575
+14.474394,2.760343,,,,,,,,,,32.000000,11.321057,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2585
+14.477186,2.740728,,,,,,,,,,32.000000,11.402080,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2586
+14.479931,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2589
+14.480365,1.700699,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2591
+14.482066,0.057472,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2592
+14.482399,0.016896,,,,,,,,,,4.000000,231.193774,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2595
+14.482423,0.325823,,,,,,,,,,4.000000,11.988871,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2596
+14.615399,2.954327,,,,,,,,,,32.000000,10.577705,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2606
+14.618372,2.735000,,,,,,,,,,32.000000,11.425960,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2607
+14.621113,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2610
+14.621698,1.697435,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2612
+14.623396,0.058304,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2613
+14.625564,0.020768,,,,,,,,,,4.000000,188.089850,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2616
+14.625592,0.597022,,,,,,,,,,4.000000,6.542891,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2617
+14.755236,3.262551,,,,,,,,,,32.000000,9.578394,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2627
+14.758520,2.741592,,,,,,,,,,32.000000,11.398487,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2628
+14.761289,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2631
+14.761739,1.753435,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2633
+14.763493,0.057343,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2634
+14.765552,0.017792,,,,,,,,,,4.000000,219.550922,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2637
+14.765577,0.433791,,,,,,,,,,4.000000,9.004913,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2638
+14.901298,3.396310,,,,,,,,,,32.000000,9.201162,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2648
+14.904729,2.756216,,,,,,,,,,32.000000,11.338008,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2649
+14.907500,0.060256,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2652
+14.907949,1.749178,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2654
+14.909699,0.057505,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2655
+14.910072,0.017728,,,,,,,,,,4.000000,220.343524,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2658
+14.910090,0.432031,,,,,,,,,,4.000000,9.041597,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2659
+15.039376,3.302966,,,,,,,,,,32.000000,9.461193,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2669
+15.042707,2.930872,,,,,,,,,,32.000000,10.662356,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2670
+15.045649,0.060352,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2673
+15.046075,1.699484,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2675
+15.047776,0.056735,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2676
+15.048119,0.018336,,,,,,,,,,4.000000,213.037195,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2679
+15.048144,0.426078,,,,,,,,,,4.000000,9.167922,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2680
+15.176717,3.648565,,,,,,,,,,32.000000,8.565011,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2690
+15.180384,2.737368,,,,,,,,,,32.000000,11.416076,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2691
+15.183131,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2694
+15.183546,1.755995,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2696
+15.185303,0.057440,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2697
+15.185637,0.017760,,,,,,,,,,4.000000,219.946509,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2700
+15.185662,0.433151,,,,,,,,,,4.000000,9.018218,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2701
+15.320255,2.764536,,,,,,,,,,32.000000,11.303886,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2711
+15.323023,2.732696,,,,,,,,,,32.000000,11.435593,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2712
+15.325766,0.060352,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2715
+15.326553,1.755739,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2717
+15.328309,0.057727,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2718
+15.328722,0.018943,,,,,,,,,,4.000000,206.210737,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2721
+15.328749,0.404255,,,,,,,,,,4.000000,9.662837,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2722
+15.460964,2.743448,,,,,,,,,,32.000000,11.390775,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2732
+15.463711,2.733753,,,,,,,,,,32.000000,11.431172,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2733
+15.466454,0.060288,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2736
+15.466885,1.696251,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2738
+15.468583,0.057248,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2739
+15.468927,0.017376,,,,,,,,,,4.000000,224.807205,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2742
+15.468951,0.325151,,,,,,,,,,4.000000,12.013649,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2743
+15.596354,2.770648,,,,,,,,,,32.000000,11.278950,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2753
+15.599128,2.732824,,,,,,,,,,32.000000,11.435058,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2754
+15.601870,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2757
+15.602262,1.698747,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2759
+15.603962,0.057696,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2760
+15.604297,0.017568,,,,,,,,,,4.000000,222.350296,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2763
+15.604320,0.326143,,,,,,,,,,4.000000,11.977108,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2764
+15.734453,3.252983,,,,,,,,,,32.000000,9.606567,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2774
+15.737727,2.733496,,,,,,,,,,32.000000,11.432246,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2775
+15.740508,0.060160,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2778
+15.740956,1.701211,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2780
+15.742659,0.057760,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2781
+15.742999,0.018272,,,,,,,,,,4.000000,213.783384,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2784
+15.743025,0.428511,,,,,,,,,,4.000000,9.115869,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2785
+15.871456,3.479318,,,,,,,,,,32.000000,8.981645,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2795
+15.874964,2.942935,,,,,,,,,,32.000000,10.618651,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2796
+15.877915,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2799
+15.878336,1.701659,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2801
+15.880038,0.056800,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2802
+15.880522,0.018401,,,,,,,,,,4.000000,212.284658,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2805
+15.880548,0.433982,,,,,,,,,,4.000000,9.000949,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2806
+16.008812,3.763477,,,,,,,,,,32.000000,8.303492,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2816
+16.012596,2.733656,,,,,,,,,,32.000000,11.431577,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2817
+16.015339,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2820
+16.016584,1.699292,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2822
+16.018284,0.057983,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2823
+16.018616,0.017440,,,,,,,,,,4.000000,223.982225,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2826
+16.018641,0.435551,,,,,,,,,,4.000000,8.968525,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2827
+16.148793,3.608342,,,,,,,,,,32.000000,8.660487,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2837
+16.152418,2.735192,,,,,,,,,,32.000000,11.425158,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2838
+16.155158,0.060576,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2841
+16.156916,1.703515,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2843
+16.158620,0.057279,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2844
+16.159017,0.018719,,,,,,,,,,4.000000,208.678348,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2847
+16.159037,0.446975,,,,,,,,,,4.000000,8.739303,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2848
+16.291453,3.489974,,,,,,,,,,32.000000,8.954221,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2858
+16.294969,2.943671,,,,,,,,,,32.000000,10.615996,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2859
+16.297922,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2862
+16.298359,1.702267,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2864
+16.300063,0.057760,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2865
+16.301638,0.017952,,,,,,,,,,4.000000,217.594140,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2868
+16.301664,0.432639,,,,,,,,,,4.000000,9.028890,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2869
+16.430027,3.566198,,,,,,,,,,32.000000,8.762834,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2879
+16.433616,2.738584,,,,,,,,,,32.000000,11.411007,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2880
+16.436364,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2883
+16.436816,1.751483,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2885
+16.438569,0.057760,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2886
+16.438905,0.018560,,,,,,,,,,4.000000,210.466056,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2889
+16.438932,0.427199,,,,,,,,,,4.000000,9.143865,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2890
+16.578371,2.747991,,,,,,,,,,32.000000,11.371944,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2900
+16.581123,2.733688,,,,,,,,,,32.000000,11.431444,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2901
+16.583866,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2904
+16.584243,1.756699,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2906
+16.586000,0.056512,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2907
+16.586340,0.016896,,,,,,,,,,4.000000,231.193774,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2910
+16.586365,0.397887,,,,,,,,,,4.000000,9.817486,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2911
+16.714245,2.753848,,,,,,,,,,32.000000,11.347758,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2921
+16.717003,2.732441,,,,,,,,,,32.000000,11.436660,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2922
+16.719746,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2925
+16.720156,1.694170,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2927
+16.721851,0.057089,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2928
+16.722192,0.017344,,,,,,,,,,4.000000,225.221979,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2931
+16.722215,0.325278,,,,,,,,,,4.000000,12.008958,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2932
+16.850131,2.762904,,,,,,,,,,32.000000,11.310563,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2942
+16.852898,2.733176,,,,,,,,,,32.000000,11.433585,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2943
+16.855641,0.060416,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2946
+16.856039,1.701403,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2948
+16.857741,0.056544,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2949
+16.858073,0.017920,,,,,,,,,,4.000000,217.982701,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2952
+16.858093,0.325919,,,,,,,,,,4.000000,11.985340,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2953
+16.985464,2.756088,,,,,,,,,,32.000000,11.338535,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2963
+16.988224,2.733144,,,,,,,,,,32.000000,11.433719,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2964
+16.990966,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2967
+16.991366,1.696251,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2969
+16.993063,0.057023,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2970
+16.993403,0.018752,,,,,,,,,,4.000000,208.311113,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2973
+16.993429,0.325471,,,,,,,,,,4.000000,12.001837,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2974
+17.123789,2.920024,,,,,,,,,,32.000000,10.701967,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",2984
+17.126720,2.932823,,,,,,,,,,32.000000,10.655263,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",2985
+17.129656,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",2988
+17.130168,1.752443,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",2990
+17.131921,0.056608,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",2991
+17.132328,0.019488,,,,,,,,,,4.000000,200.443863,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",2994
+17.132369,0.327935,,,,,,,,,,4.000000,11.911659,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",2995
+17.261758,2.762936,,,,,,,,,,32.000000,11.310432,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3005
+17.264524,2.733561,,,,,,,,,,32.000000,11.431975,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3006
+17.267268,0.060256,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3009
+17.267658,1.697563,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3011
+17.269356,0.058112,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3012
+17.269924,0.017408,,,,,,,,,,4.000000,224.393957,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3015
+17.269949,0.325503,,,,,,,,,,4.000000,12.000657,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3016
+17.397156,2.749144,,,,,,,,,,32.000000,11.367175,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3026
+17.399909,2.732280,,,,,,,,,,32.000000,11.437334,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3027
+17.402651,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3030
+17.403233,1.697914,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3032
+17.404932,0.057472,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3033
+17.405266,0.016415,,,,,,,,,,4.000000,237.968322,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3036
+17.405289,0.325023,,,,,,,,,,4.000000,12.018380,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3037
+17.532615,2.761271,,,,,,,,,,32.000000,11.317252,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3047
+17.535380,2.737209,,,,,,,,,,32.000000,11.416739,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3048
+17.538127,0.060159,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3051
+17.540221,1.701724,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3053
+17.541924,0.056351,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3054
+17.544071,0.019168,,,,,,,,,,4.000000,203.790171,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3057
+17.544094,0.326111,,,,,,,,,,4.000000,11.978283,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3058
+17.675400,2.774456,,,,,,,,,,32.000000,11.263469,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3068
+17.678179,2.732536,,,,,,,,,,32.000000,11.436263,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3069
+17.680920,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3072
+17.681324,1.747291,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3074
+17.683072,0.057024,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3075
+17.683398,0.017376,,,,,,,,,,4.000000,224.807205,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3078
+17.683421,0.325566,,,,,,,,,,4.000000,11.998335,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3079
+17.811751,2.765752,,,,,,,,,,32.000000,11.298916,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3089
+17.814521,2.734424,,,,,,,,,,32.000000,11.428367,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3090
+17.817264,0.060223,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3093
+17.817656,1.766682,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3095
+17.819424,0.056416,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3096
+17.820328,0.017184,,,,,,,,,,4.000000,227.319018,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3099
+17.820351,0.326783,,,,,,,,,,4.000000,11.953651,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3100
+17.947688,2.757560,,,,,,,,,,32.000000,11.332482,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3110
+17.950450,2.732344,,,,,,,,,,32.000000,11.437066,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3111
+17.953191,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3114
+17.953576,1.701755,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3116
+17.955279,0.056960,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3117
+17.955610,0.016832,,,,,,,,,,4.000000,232.072837,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3120
+17.955634,0.326271,,,,,,,,,,4.000000,11.972409,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3121
+18.082856,2.761848,,,,,,,,,,32.000000,11.314888,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3131
+18.085621,2.733336,,,,,,,,,,32.000000,11.432916,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3132
+18.088365,0.060480,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3135
+18.088758,1.750971,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3137
+18.090510,0.057952,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3138
+18.091612,0.017504,,,,,,,,,,4.000000,223.163277,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3141
+18.091635,0.325919,,,,,,,,,,4.000000,11.985340,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3142
+18.219136,2.749817,,,,,,,,,,32.000000,11.364393,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3152
+18.221889,2.734039,,,,,,,,,,32.000000,11.429976,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3153
+18.224633,0.060160,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3156
+18.225558,1.705851,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3158
+18.227265,0.058432,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3159
+18.227593,0.016960,,,,,,,,,,4.000000,230.321344,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3162
+18.227616,0.325183,,,,,,,,,,4.000000,12.012467,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3163
+18.354920,2.755288,,,,,,,,,,32.000000,11.341827,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3173
+18.357679,2.733144,,,,,,,,,,32.000000,11.433719,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3174
+18.360419,0.060288,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3177
+18.361269,1.697658,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3179
+18.362968,0.056960,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3180
+18.363293,0.016800,,,,,,,,,,4.000000,232.514881,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3183
+18.363316,0.326078,,,,,,,,,,4.000000,11.979496,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3184
+18.496392,2.775480,,,,,,,,,,32.000000,11.259314,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3194
+18.499171,2.732664,,,,,,,,,,32.000000,11.435727,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3195
+18.501914,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3198
+18.502311,1.697947,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3200
+18.504010,0.056255,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3201
+18.504331,0.017856,,,,,,,,,,4.000000,218.764001,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3204
+18.504354,0.325535,,,,,,,,,,4.000000,11.999478,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3205
+18.633651,4.245300,,,,,,,,,,32.000000,7.361082,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3215
+18.637961,3.644597,,,,,,,,,,32.000000,8.574336,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3216
+18.641615,0.060160,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3219
+18.642041,1.705627,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3221
+18.643748,0.060256,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3222
+18.644092,0.017824,,,,,,,,,,4.000000,219.156755,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3225
+18.644117,0.432223,,,,,,,,,,4.000000,9.037580,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3226
+18.776885,3.195479,,,,,,,,,,32.000000,9.779442,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3236
+18.780092,2.734584,,,,,,,,,,32.000000,11.427698,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3237
+18.782833,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3240
+18.783264,1.699771,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3242
+18.784964,0.058655,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3243
+18.786604,0.018272,,,,,,,,,,4.000000,213.783384,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3246
+18.786629,0.445310,,,,,,,,,,4.000000,8.771979,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3247
+18.915094,3.564789,,,,,,,,,,32.000000,8.766297,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3257
+18.918681,2.733944,,,,,,,,,,32.000000,11.430373,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3258
+18.921424,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3261
+18.921855,1.696795,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3263
+18.923552,0.056352,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3264
+18.923892,0.017984,,,,,,,,,,4.000000,217.206962,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3267
+18.923917,0.426911,,,,,,,,,,4.000000,9.150034,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3268
+19.054325,3.253047,,,,,,,,,,32.000000,9.606378,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3278
+19.057596,2.774712,,,,,,,,,,32.000000,11.262430,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3279
+19.060382,0.060223,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3282
+19.062677,1.751995,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3284
+19.064430,0.057280,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3285
+19.064909,0.020416,,,,,,,,,,4.000000,191.332778,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3288
+19.064931,0.358271,,,,,,,,,,4.000000,10.903059,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3289
+19.199149,2.951032,,,,,,,,,,32.000000,10.589516,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3299
+19.202104,2.733304,,,,,,,,,,32.000000,11.433050,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3300
+19.204846,0.060288,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3303
+19.205272,1.699227,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3305
+19.206973,0.057216,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3306
+19.207313,0.017696,,,,,,,,,,4.000000,220.741976,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3309
+19.207339,0.325439,,,,,,,,,,4.000000,12.003017,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3310
+19.335193,2.967864,,,,,,,,,,32.000000,10.529458,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3320
+19.338164,2.735384,,,,,,,,,,32.000000,11.424356,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3321
+19.340904,0.060416,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3324
+19.341327,1.701020,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3326
+19.343029,0.057343,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3327
+19.343355,0.017056,,,,,,,,,,4.000000,229.024977,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3330
+19.343378,0.332928,,,,,,,,,,4.000000,11.733017,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3331
+19.471210,2.960728,,,,,,,,,,32.000000,10.554837,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3341
+19.474174,2.740343,,,,,,,,,,32.000000,11.403682,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3342
+19.476925,0.060415,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3345
+19.477357,1.701242,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3347
+19.479059,0.057920,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3348
+19.479403,0.017951,,,,,,,,,,4.000000,217.606261,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3351
+19.479427,0.326079,,,,,,,,,,4.000000,11.979459,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3352
+19.609165,2.751831,,,,,,,,,,32.000000,11.356075,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3362
+19.611946,2.842872,,,,,,,,,,32.000000,10.992405,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3363
+19.614800,0.060256,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3366
+19.615297,1.699483,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3368
+19.616997,0.059423,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3369
+19.617411,0.018591,,,,,,,,,,4.000000,210.115109,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3372
+19.617437,0.355968,,,,,,,,,,4.000000,10.973599,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3373
+19.748431,3.123255,,,,,,,,,,32.000000,10.005587,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3383
+19.751558,2.733368,,,,,,,,,,32.000000,11.432782,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3384
+19.754300,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3387
+19.755356,1.701403,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3389
+19.757058,0.059648,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3390
+19.757429,0.020608,,,,,,,,,,4.000000,189.550175,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3393
+19.757455,0.325279,,,,,,,,,,4.000000,12.008922,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3394
+19.885939,2.781143,,,,,,,,,,32.000000,11.236387,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3404
+19.888724,2.733273,,,,,,,,,,32.000000,11.433179,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3405
+19.891468,0.060415,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3408
+19.891852,1.703131,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3410
+19.893556,0.058464,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3411
+19.895855,0.020704,,,,,,,,,,4.000000,188.671271,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3414
+19.895887,0.572575,,,,,,,,,,4.000000,6.822250,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3415
+20.029728,2.904951,,,,,,,,,,32.000000,10.757496,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3425
+20.032649,2.737880,,,,,,,,,,32.000000,11.413941,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3426
+20.035393,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3429
+20.035833,1.699387,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3431
+20.037534,0.059552,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3432
+20.037881,0.018432,,,,,,,,,,4.000000,211.927626,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3435
+20.037906,0.427423,,,,,,,,,,4.000000,9.139073,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3436
+20.166490,2.932024,,,,,,,,,,32.000000,10.658167,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3446
+20.169443,2.735768,,,,,,,,,,32.000000,11.422752,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3447
+20.172189,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3450
+20.172612,1.703259,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3452
+20.174316,0.057056,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3453
+20.176105,0.016960,,,,,,,,,,4.000000,230.321344,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3456
+20.176129,0.426910,,,,,,,,,,4.000000,9.150055,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3457
+20.305609,3.633525,,,,,,,,,,32.000000,8.600464,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3467
+20.309311,2.734392,,,,,,,,,,32.000000,11.428500,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3468
+20.312050,0.060193,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3471
+20.312475,1.701818,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3473
+20.314178,0.055809,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3474
+20.316186,0.017664,,,,,,,,,,4.000000,221.141870,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3477
+20.316210,0.427327,,,,,,,,,,4.000000,9.141126,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3478
+20.452672,3.255671,,,,,,,,,,32.000000,9.598636,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3488
+20.455992,2.734873,,,,,,,,,,32.000000,11.426490,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3489
+20.458790,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3492
+20.459243,1.760827,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3494
+20.461005,0.057248,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3495
+20.461460,0.018239,,,,,,,,,,4.000000,214.170185,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3498
+20.461479,0.429631,,,,,,,,,,4.000000,9.092105,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3499
+20.590830,3.618069,,,,,,,,,,32.000000,8.637204,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3509
+20.594464,2.744920,,,,,,,,,,32.000000,11.384667,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3510
+20.597252,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3513
+20.597676,1.701179,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3515
+20.599378,0.057312,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3516
+20.599711,0.017664,,,,,,,,,,4.000000,221.141870,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3519
+20.599737,0.425439,,,,,,,,,,4.000000,9.181692,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3520
+20.728050,3.565878,,,,,,,,,,32.000000,8.763620,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3530
+20.731632,2.738392,,,,,,,,,,32.000000,11.411807,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3531
+20.734380,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3534
+20.734800,1.697244,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3536
+20.736498,0.056831,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3537
+20.737350,0.017792,,,,,,,,,,4.000000,219.550922,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3540
+20.737376,0.425599,,,,,,,,,,4.000000,9.178241,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3541
+20.866673,3.624821,,,,,,,,,,32.000000,8.621115,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3551
+20.870363,2.734424,,,,,,,,,,32.000000,11.428367,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3552
+20.873107,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3555
+20.873529,1.701466,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3557
+20.875231,0.058369,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3558
+20.877275,0.018016,,,,,,,,,,4.000000,216.821159,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3561
+20.877300,0.425662,,,,,,,,,,4.000000,9.176882,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3562
+21.007027,3.395126,,,,,,,,,,32.000000,9.204371,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3572
+21.010451,2.922455,,,,,,,,,,32.000000,10.693065,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3573
+21.013378,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3576
+21.013805,1.744379,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3578
+21.015551,0.057280,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3579
+21.015894,0.017472,,,,,,,,,,4.000000,223.572001,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3582
+21.015919,0.425343,,,,,,,,,,4.000000,9.183765,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3583
+21.144173,3.379927,,,,,,,,,,32.000000,9.245762,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3593
+21.147577,2.928088,,,,,,,,,,32.000000,10.672493,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3594
+21.150515,0.060448,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3597
+21.150931,1.740283,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3599
+21.152672,0.057376,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3600
+21.153009,0.017600,,,,,,,,,,4.000000,221.946023,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3603
+21.153033,0.424127,,,,,,,,,,4.000000,9.210095,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3604
+21.281094,3.380982,,,,,,,,,,32.000000,9.242877,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3614
+21.284503,2.951767,,,,,,,,,,32.000000,10.586879,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3615
+21.287460,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3618
+21.287880,1.707515,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3620
+21.289589,0.057504,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3621
+21.291105,0.017921,,,,,,,,,,4.000000,217.970537,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3624
+21.291131,0.428766,,,,,,,,,,4.000000,9.110447,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3625
+21.419430,3.501974,,,,,,,,,,32.000000,8.923539,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3635
+21.422965,2.924151,,,,,,,,,,32.000000,10.686863,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3636
+21.425899,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3639
+21.427447,1.701755,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3641
+21.429150,0.057919,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3642
+21.429497,0.017824,,,,,,,,,,4.000000,219.156755,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3645
+21.429522,0.430399,,,,,,,,,,4.000000,9.075881,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3646
+21.559746,3.436726,,,,,,,,,,32.000000,9.092956,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3656
+21.563212,2.933592,,,,,,,,,,32.000000,10.652470,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3657
+21.566155,0.060257,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3660
+21.566553,1.701564,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3662
+21.568255,0.057023,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3663
+21.568590,0.017761,,,,,,,,,,4.000000,219.934125,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3666
+21.568616,0.433598,,,,,,,,,,4.000000,9.008921,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3667
+21.696706,3.656182,,,,,,,,,,32.000000,8.547168,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3677
+21.700412,2.734040,,,,,,,,,,32.000000,11.429972,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3678
+21.703155,0.060415,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3681
+21.703587,1.763963,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3683
+21.705352,0.057376,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3684
+21.705689,0.017088,,,,,,,,,,4.000000,228.596091,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3687
+21.705715,0.427583,,,,,,,,,,4.000000,9.135653,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3688
+21.833839,3.639318,,,,,,,,,,32.000000,8.586774,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3698
+21.837507,2.926712,,,,,,,,,,32.000000,10.677511,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3699
+21.840437,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3702
+21.840862,1.747739,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3704
+21.842611,0.057663,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3705
+21.842955,0.017985,,,,,,,,,,4.000000,217.194885,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3708
+21.842980,0.455966,,,,,,,,,,4.000000,8.566976,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3709
+21.971027,3.367542,,,,,,,,,,32.000000,9.279765,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3719
+21.974418,2.940695,,,,,,,,,,32.000000,10.626740,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3720
+21.977365,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3723
+21.977770,1.701499,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3725
+21.979472,0.056928,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3726
+21.979809,0.017920,,,,,,,,,,4.000000,217.982701,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3729
+21.979834,0.426399,,,,,,,,,,4.000000,9.161021,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3730
+22.108103,3.586870,,,,,,,,,,32.000000,8.712331,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3740
+22.111708,2.733880,,,,,,,,,,32.000000,11.430641,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3741
+22.114451,0.060320,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3744
+22.114878,1.702715,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3746
+22.116582,0.058943,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3747
+22.116942,0.018336,,,,,,,,,,4.000000,213.037195,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3750
+22.116967,0.427390,,,,,,,,,,4.000000,9.139779,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3751
+22.250931,3.633909,,,,,,,,,,32.000000,8.599555,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3761
+22.254591,2.959639,,,,,,,,,,32.000000,10.558720,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3762
+22.257559,0.060256,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3765
+22.259541,1.750491,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3767
+22.261292,0.057983,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3768
+22.261627,0.017696,,,,,,,,,,4.000000,220.741976,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3771
+22.261649,0.428575,,,,,,,,,,4.000000,9.114507,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3772
+22.389970,3.587925,,,,,,,,,,32.000000,8.709770,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3782
+22.393585,2.942487,,,,,,,,,,32.000000,10.620268,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3783
+22.396572,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3786
+22.397038,1.696859,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3788
+22.398736,0.056064,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3789
+22.399844,0.017408,,,,,,,,,,4.000000,224.393957,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3792
+22.399869,0.427583,,,,,,,,,,4.000000,9.135653,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3793
+22.530156,4.223923,,,,,,,,,,32.000000,7.398336,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3803
+22.534439,3.397110,,,,,,,,,,32.000000,9.198996,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3804
+22.537845,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3807
+22.538264,1.703035,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3809
+22.539969,0.058048,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3810
+22.540298,0.017504,,,,,,,,,,4.000000,223.163277,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3813
+22.540323,0.374399,,,,,,,,,,4.000000,10.433388,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3814
+22.671464,2.945175,,,,,,,,,,32.000000,10.610575,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3824
+22.674413,2.736120,,,,,,,,,,32.000000,11.421283,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3825
+22.677153,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3828
+22.677561,1.698459,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3830
+22.679261,0.056736,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3831
+22.680489,0.017599,,,,,,,,,,4.000000,221.958634,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3834
+22.680513,0.326848,,,,,,,,,,4.000000,11.951274,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3835
+22.808339,2.942168,,,,,,,,,,32.000000,10.621419,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3845
+22.811285,2.734040,,,,,,,,,,32.000000,11.429972,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3846
+22.814025,0.060512,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3849
+22.814440,1.756059,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3851
+22.816198,0.057408,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3852
+22.816537,0.017311,,,,,,,,,,4.000000,225.651320,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3855
+22.816561,0.344159,,,,,,,,,,4.000000,11.350132,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3856
+22.944286,2.958935,,,,,,,,,,32.000000,10.561232,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3866
+22.947249,2.734168,,,,,,,,,,32.000000,11.429437,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3867
+22.949994,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3870
+22.950422,1.692892,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3872
+22.952116,0.058751,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3873
+22.952452,0.017248,,,,,,,,,,4.000000,226.475533,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3876
+22.952476,0.325311,,,,,,,,,,4.000000,12.007740,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3877
+23.080274,2.951544,,,,,,,,,,32.000000,10.587679,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3887
+23.083229,2.734872,,,,,,,,,,32.000000,11.426495,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3888
+23.085969,0.060160,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3891
+23.086405,1.695644,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3893
+23.088101,0.057279,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3894
+23.088441,0.017696,,,,,,,,,,4.000000,220.741976,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3897
+23.088465,0.325855,,,,,,,,,,4.000000,11.987694,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3898
+23.218007,2.951160,,,,,,,,,,32.000000,10.589057,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3908
+23.220962,2.734360,,,,,,,,,,32.000000,11.428634,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3909
+23.223704,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3912
+23.224119,1.703100,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3914
+23.225823,0.057951,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3915
+23.226169,0.017184,,,,,,,,,,4.000000,227.319018,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3918
+23.226193,0.326879,,,,,,,,,,4.000000,11.950141,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3919
+23.355951,2.851095,,,,,,,,,,32.000000,10.960701,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3929
+23.358859,2.939544,,,,,,,,,,32.000000,10.630901,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3930
+23.361816,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3933
+23.362395,1.700923,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3935
+23.364097,0.057248,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3936
+23.364557,0.019361,,,,,,,,,,4.000000,201.758690,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3939
+23.364579,0.369758,,,,,,,,,,4.000000,10.564342,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3940
+23.506338,3.157975,,,,,,,,,,32.000000,9.895582,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3950
+23.509500,2.732440,,,,,,,,,,32.000000,11.436665,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3951
+23.512241,0.060513,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3954
+23.512643,1.703260,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3956
+23.514347,0.057119,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3957
+23.514680,0.017568,,,,,,,,,,4.000000,222.350296,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3960
+23.514704,0.325152,,,,,,,,,,4.000000,12.013612,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3961
+23.643438,2.748759,,,,,,,,,,32.000000,11.368767,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3971
+23.646191,2.743385,,,,,,,,,,32.000000,11.391037,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3972
+23.648945,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3975
+23.649340,1.703931,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3977
+23.651045,0.057024,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3978
+23.651375,0.017343,,,,,,,,,,4.000000,225.234965,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",3981
+23.651398,0.325407,,,,,,,,,,4.000000,12.004198,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",3982
+23.780332,3.098295,,,,,,,,,,32.000000,10.086193,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",3992
+23.783461,2.733944,,,,,,,,,,32.000000,11.430373,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",3993
+23.786202,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",3996
+23.786636,1.751003,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",3998
+23.788388,0.057312,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",3999
+23.788723,0.018527,,,,,,,,,,4.000000,210.840935,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4002
+23.788750,0.325823,,,,,,,,,,4.000000,11.988871,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4003
+23.916706,2.772056,,,,,,,,,,32.000000,11.273221,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4013
+23.919482,2.732119,,,,,,,,,,32.000000,11.438008,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4014
+23.922222,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4017
+23.923234,1.753915,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4019
+23.924989,0.057151,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4020
+23.925323,0.018209,,,,,,,,,,4.000000,214.523038,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4023
+23.925346,0.325183,,,,,,,,,,4.000000,12.012467,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4024
+24.053236,2.744888,,,,,,,,,,32.000000,11.384800,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4034
+24.055985,2.732984,,,,,,,,,,32.000000,11.434388,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4035
+24.058727,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4038
+24.059129,1.699451,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4040
+24.060829,0.057984,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4041
+24.061156,0.016736,,,,,,,,,,4.000000,233.404039,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4044
+24.061178,0.325727,,,,,,,,,,4.000000,11.992405,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4045
+24.198432,3.331799,,,,,,,,,,32.000000,9.379317,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4055
+24.201794,2.920503,,,,,,,,,,32.000000,10.700212,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4056
+24.204720,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4059
+24.205138,1.700411,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4061
+24.206839,0.057472,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4062
+24.207182,0.017920,,,,,,,,,,4.000000,217.982701,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4065
+24.207209,0.428030,,,,,,,,,,4.000000,9.126113,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4066
+24.335317,3.548629,,,,,,,,,,32.000000,8.806218,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4076
+24.338891,2.734233,,,,,,,,,,32.000000,11.429165,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4077
+24.341634,0.060576,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4080
+24.342057,1.758011,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4082
+24.343816,0.058144,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4083
+24.344253,0.017920,,,,,,,,,,4.000000,217.982701,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4086
+24.344279,0.427263,,,,,,,,,,4.000000,9.142495,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4087
+24.472663,3.461750,,,,,,,,,,32.000000,9.027226,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4097
+24.476347,2.766680,,,,,,,,,,32.000000,11.295126,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4098
+24.479123,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4101
+24.479530,1.745499,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4103
+24.481277,0.057695,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4104
+24.481617,0.017505,,,,,,,,,,4.000000,223.150528,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4107
+24.481656,0.436990,,,,,,,,,,4.000000,8.938992,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4108
+24.610145,3.565974,,,,,,,,,,32.000000,8.763384,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4118
+24.613727,2.733720,,,,,,,,,,32.000000,11.431310,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4119
+24.616467,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4122
+24.616925,1.750650,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4124
+24.618676,0.057120,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4125
+24.619023,0.018079,,,,,,,,,,4.000000,216.065601,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4128
+24.619047,0.428447,,,,,,,,,,4.000000,9.117230,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4129
+24.747490,3.499286,,,,,,,,,,32.000000,8.930393,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4139
+24.751015,2.935511,,,,,,,,,,32.000000,10.645506,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4140
+24.753961,0.060448,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4143
+24.754380,1.746043,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4145
+24.756127,0.058048,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4146
+24.756470,0.018464,,,,,,,,,,4.000000,211.560334,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4149
+24.756496,0.450111,,,,,,,,,,4.000000,8.678415,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4150
+24.886666,3.843221,,,,,,,,,,32.000000,8.131200,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4160
+24.890554,2.769272,,,,,,,,,,32.000000,11.284554,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4161
+24.893334,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4164
+24.894326,1.701371,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4166
+24.896028,0.057472,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4167
+24.896435,0.019968,,,,,,,,,,4.000000,195.625501,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4170
+24.896463,0.476126,,,,,,,,,,4.000000,8.204236,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4171
+25.026390,3.524566,,,,,,,,,,32.000000,8.866340,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4181
+25.029948,2.935255,,,,,,,,,,32.000000,10.646434,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4182
+25.032891,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4185
+25.034193,1.755451,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4187
+25.035949,0.057471,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4188
+25.036289,0.017984,,,,,,,,,,4.000000,217.206962,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4191
+25.036315,0.426719,,,,,,,,,,4.000000,9.154151,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4192
+25.166951,2.751960,,,,,,,,,,32.000000,11.355543,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4202
+25.169716,2.732728,,,,,,,,,,32.000000,11.435459,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4203
+25.172458,0.060160,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4206
+25.174358,1.701019,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4208
+25.176060,0.058080,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4209
+25.176392,0.017376,,,,,,,,,,4.000000,224.807205,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4212
+25.176416,0.396703,,,,,,,,,,4.000000,9.846787,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4213
+25.306157,4.180563,,,,,,,,,,32.000000,7.475070,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4223
+25.310401,3.672694,,,,,,,,,,32.000000,8.508740,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4224
+25.314083,0.060383,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4227
+25.315020,1.697979,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4229
+25.316719,0.057600,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4230
+25.317057,0.017568,,,,,,,,,,4.000000,222.350296,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4233
+25.317082,0.460126,,,,,,,,,,4.000000,8.489522,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4234
+25.448089,3.181527,,,,,,,,,,32.000000,9.822327,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4244
+25.451284,2.734904,,,,,,,,,,32.000000,11.426361,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4245
+25.454029,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4248
+25.454868,1.699868,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4250
+25.456569,0.057631,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4251
+25.456923,0.017984,,,,,,,,,,4.000000,217.206962,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4254
+25.456948,0.421662,,,,,,,,,,4.000000,9.263937,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4255
+25.590241,2.777336,,,,,,,,,,32.000000,11.251789,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4265
+25.593023,2.732984,,,,,,,,,,32.000000,11.434388,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4266
+25.595766,0.060256,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4269
+25.596187,1.751931,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4271
+25.597940,0.057504,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4272
+25.600043,0.017920,,,,,,,,,,4.000000,217.982701,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4275
+25.600067,0.397727,,,,,,,,,,4.000000,9.821435,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4276
+25.731962,2.753784,,,,,,,,,,32.000000,11.348021,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4286
+25.734720,2.738871,,,,,,,,,,32.000000,11.409811,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4287
+25.737470,0.060512,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4290
+25.737883,1.754491,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4292
+25.739638,0.058272,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4293
+25.740320,0.017888,,,,,,,,,,4.000000,218.372652,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4296
+25.740344,0.326783,,,,,,,,,,4.000000,11.953651,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4297
+25.868246,2.760376,,,,,,,,,,32.000000,11.320921,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4307
+25.871010,2.732888,,,,,,,,,,32.000000,11.434790,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4308
+25.873753,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4311
+25.874159,1.702426,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4313
+25.875863,0.058209,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4314
+25.876208,0.017280,,,,,,,,,,4.000000,226.056134,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4317
+25.876232,0.325951,,,,,,,,,,4.000000,11.984163,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4318
+26.003837,2.746072,,,,,,,,,,32.000000,11.379891,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4328
+26.006587,2.736024,,,,,,,,,,32.000000,11.421683,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4329
+26.009332,0.060256,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4332
+26.009738,1.758747,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4334
+26.011498,0.057855,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4335
+26.011844,0.017408,,,,,,,,,,4.000000,224.393957,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4338
+26.011868,0.325888,,,,,,,,,,4.000000,11.986480,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4339
+26.141497,2.751512,,,,,,,,,,32.000000,11.357392,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4349
+26.144252,2.743224,,,,,,,,,,32.000000,11.391706,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4350
+26.147005,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4353
+26.147460,1.749275,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4355
+26.149211,0.059167,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4356
+26.149612,0.018687,,,,,,,,,,4.000000,209.035693,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4359
+26.149639,0.338335,,,,,,,,,,4.000000,11.545510,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4360
+26.281949,2.752536,,,,,,,,,,32.000000,11.353167,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4370
+26.284705,2.742392,,,,,,,,,,32.000000,11.395162,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4371
+26.287458,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4374
+26.287998,1.703291,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4376
+26.289702,0.058656,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4377
+26.290106,0.019104,,,,,,,,,,4.000000,204.472885,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4380
+26.290126,0.328223,,,,,,,,,,4.000000,11.901207,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4381
+26.420720,2.755288,,,,,,,,,,32.000000,11.341827,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4391
+26.423479,2.733272,,,,,,,,,,32.000000,11.433183,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4392
+26.426216,0.060512,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4395
+26.427894,1.699227,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4397
+26.429595,0.057792,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4398
+26.429936,0.017632,,,,,,,,,,4.000000,221.543217,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4401
+26.429960,0.325375,,,,,,,,,,4.000000,12.005378,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4402
+26.557639,2.774072,,,,,,,,,,32.000000,11.265028,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4412
+26.560417,2.733912,,,,,,,,,,32.000000,11.430507,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4413
+26.563158,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4416
+26.563535,1.703003,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4418
+26.565239,0.058624,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4419
+26.565577,0.017152,,,,,,,,,,4.000000,227.743120,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4422
+26.565600,0.325631,,,,,,,,,,4.000000,11.995940,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4423
+26.696383,3.252311,,,,,,,,,,32.000000,9.608552,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4433
+26.699664,2.735737,,,,,,,,,,32.000000,11.422882,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4434
+26.702409,0.060447,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4437
+26.702844,1.752827,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4439
+26.704598,0.056768,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4440
+26.704947,0.018752,,,,,,,,,,4.000000,208.311113,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4443
+26.704974,0.432287,,,,,,,,,,4.000000,9.036242,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4444
+26.833448,3.725141,,,,,,,,,,32.000000,8.388944,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4454
+26.837192,2.742168,,,,,,,,,,32.000000,11.396092,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4455
+26.839941,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4458
+26.842223,1.749627,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4460
+26.843974,0.058464,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4461
+26.844257,0.017312,,,,,,,,,,4.000000,225.638286,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4464
+26.844281,0.326112,,,,,,,,,,4.000000,11.978247,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4465
+26.972559,2.746488,,,,,,,,,,32.000000,11.378167,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4475
+26.975310,2.740248,,,,,,,,,,32.000000,11.404077,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4476
+26.978061,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4479
+26.978450,1.698875,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4481
+26.980150,0.057408,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4482
+26.980489,0.017344,,,,,,,,,,4.000000,225.221979,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4485
+26.980514,0.333023,,,,,,,,,,4.000000,11.729670,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4486
+27.113891,2.754296,,,,,,,,,,32.000000,11.345912,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4496
+27.116649,2.735096,,,,,,,,,,32.000000,11.425559,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4497
+27.119389,0.060256,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4500
+27.119816,1.699003,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4502
+27.121516,0.058272,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4503
+27.123047,0.017632,,,,,,,,,,4.000000,221.543217,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4506
+27.123071,0.325567,,,,,,,,,,4.000000,11.998298,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4507
+27.250842,2.765369,,,,,,,,,,32.000000,11.300481,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4517
+27.253611,2.733495,,,,,,,,,,32.000000,11.432251,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4518
+27.256350,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4521
+27.256753,1.747035,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4523
+27.258501,0.059040,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4524
+27.259108,0.017248,,,,,,,,,,4.000000,226.475533,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4527
+27.259132,0.325503,,,,,,,,,,4.000000,12.000657,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4528
+27.386613,2.772056,,,,,,,,,,32.000000,11.273221,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4538
+27.389389,2.732696,,,,,,,,,,32.000000,11.435593,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4539
+27.392131,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4542
+27.392532,1.700475,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4544
+27.394233,0.058208,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4545
+27.394574,0.017600,,,,,,,,,,4.000000,221.946023,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4548
+27.394599,0.326143,,,,,,,,,,4.000000,11.977108,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4549
+27.522338,2.750200,,,,,,,,,,32.000000,11.362810,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4559
+27.525092,2.744952,,,,,,,,,,32.000000,11.384534,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4560
+27.527843,0.060224,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4563
+27.528250,1.756987,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4565
+27.530008,0.056799,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4566
+27.530335,0.017248,,,,,,,,,,4.000000,226.475533,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4569
+27.530359,0.326016,,,,,,,,,,4.000000,11.981774,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4570
+27.657801,2.756185,,,,,,,,,,32.000000,11.338136,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4580
+27.660561,2.733368,,,,,,,,,,32.000000,11.432782,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4581
+27.663305,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4584
+27.664278,1.701276,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4586
+27.665981,0.057343,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4587
+27.666306,0.018336,,,,,,,,,,4.000000,213.037195,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4590
+27.666329,0.325599,,,,,,,,,,4.000000,11.997119,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4591
+27.794045,2.750873,,,,,,,,,,32.000000,11.360030,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4601
+27.796810,2.733304,,,,,,,,,,32.000000,11.433050,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4602
+27.799552,0.060192,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4605
+27.800583,1.759451,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4607
+27.802344,0.058335,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4608
+27.802673,0.016960,,,,,,,,,,4.000000,230.321344,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4611
+27.802697,0.325472,,,,,,,,,,4.000000,12.001800,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4612
+27.935795,2.768472,,,,,,,,,,32.000000,11.287815,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy HtoD]",4622
+27.938567,2.732312,,,,,,,,,,32.000000,11.437200,"Pageable","Device","Tesla V100-PCIE-32GB (0)","1","17","[CUDA memcpy HtoD]",4623
+27.941309,0.060191,32,1024,1,32,1,1,16,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","initialize_matmul_result_1_0_1(float*, int, int)",4626
+27.941710,1.751995,8,16,16,128,1,1,113,10.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","Thread_block_grid_1_1_5(float const *, float const *, float*, int, int, int)",4628
+27.943463,0.058623,16,1024,1,32,1,1,30,0.000000,0,,,,,"Tesla V100-PCIE-32GB (0)","1","16","reduction_map_1_1_8(float*, float const *, int, int)",4629
+27.945205,0.017951,,,,,,,,,,4.000000,217.606261,"Device","Device","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoD]",4632
+27.945229,0.325951,,,,,,,,,,4.000000,11.984163,"Device","Pageable","Tesla V100-PCIE-32GB (0)","1","16","[CUDA memcpy DtoH]",4633
