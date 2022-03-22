@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 parser = ArgumentParser()
 parser.add_argument("-r", "--repetitions", type=int, dest='repetitions', nargs="?", default=200)
 parser.add_argument("-p", "--path", type=str, dest='path', nargs="?", default="/home/jacobsi/Bachelorthesis/Milestone_2/performance_test_results/final/")
-parser.add_argument("-t", "--test", type=int, dest='test', choices=[1, 2, 3, 4, 12, 34], required=True)
+parser.add_argument("-t", "--test", type=int, dest='test', choices=[1, 2, 3, 4, 12, 34, 5, 6], required=True)
 args = parser.parse_args()
 
 # helpers.print_info("Running performance tests...", False)
@@ -189,7 +189,7 @@ def run_1024_1024(precision):
         helpers.print_info("Running: " + str(result_path), False)
         subprocess.run(nvprof_options + [path + result_path + ".csv"] + python_options + optims)
 
-    for k, v in optimizations_dbs.items():
+    for result_path, optims in optimizations_dbs.items():
         helpers.print_info("Running: dbs" + str(result_path), False)
         subprocess.run(nvprof_options + [path + "dbs" + result_path + ".csv"] + python_options + ["--double-buffering-shared"] + optims)
 
@@ -306,6 +306,10 @@ elif args.test == 1234:
     run_256_10240_256(32)
     run_256_10240_256(64)
     helpers.print_success("Performance tests finished.", False)
+elif args.test == 5:
+    run_256_10240_256(32)
+elif args.test == 6:
+    run_256_10240_256(64)
 else:
     helpers.print_error("Invalid test number.", False)
 
