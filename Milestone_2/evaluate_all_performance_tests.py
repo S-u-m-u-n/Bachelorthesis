@@ -9,7 +9,7 @@ sns.set_theme(style="whitegrid")
 
 parser = ArgumentParser()
 parser.add_argument("-r", "--repetitions", type=int, dest='repetitions', nargs="?", default=200)
-parser.add_argument("-p", "--path", type=str, dest='path', nargs="?", default="/home/jacobsi/Bachelorthesis/Milestone_2/performance_test_results/final/")
+parser.add_argument("-p", "--path", type=str, dest='path', nargs="?", default="./performance_test_results/final/")
 parser.add_argument("-t", "--test", type=int, dest='test', choices=[1, 2, 3, 4], required=True)
 args = parser.parse_args()
 
@@ -24,11 +24,10 @@ def read_nvprof_data(path_to_csv):
     # if (df[1])
     df = df.filter(['Duration', 'Name']).iloc[1:]
 
-    df = df[df['Name'].str.contains("Thread_block_grid|dgemm|sgemm|cosmaSgemm|cutlass")].filter(['Duration']).reset_index(drop=True).apply(pd.to_numeric, errors='coerce').iloc[1:, :]
+    df = df[df['Name'].str.contains("Thread_block_grid|dgemm|sgemm|cosmaSgemm|cutlass")].filter(['Duration']).reset_index(drop=True).apply(pd.to_numeric, errors='coerce').iloc[100:, :]
     if flag:
         df /= 1000
 
-    # TODO: remove repetitions/2 iterations due to warmup
     return df
 
 
@@ -37,22 +36,21 @@ def read_nvprof_data(path_to_csv):
 def eval_1024_1024(precision):
     path = str(args.path) + "1024_1024_1024_" + str(precision) + "bit/"
 
-    best_avg_perf = 0
+    best_avg_perf = 99999999999
     best_name = "empty"
     best = []
     for file in os.listdir(path):
         tmp = read_nvprof_data(path + str(file))
         avg_perf = tmp.mean()
-        if avg_perf > best_avg_perf:
+        if avg_perf < best_avg_perf:
             best_avg_perf = avg_perf
             best_name = str(file)
             best = tmp
 
     helpers.print_info("Best average performance: " + best_avg_perf, False)
-    helpers.print_info(("From file: " + best_name, False)
+    helpers.print_info("From file: " + best_name, False)
 
-
-    peak_performance = 1024 * 1024 * (2 * 1024 - 1) / 7 * 1000 * 1000 * 1000 # OPS/(FLOPS/ms) = ms
+    peak_performance = 1024 * 1024 * (2 * 1024 - 1) / (7 * 1000 * 1000 * 1000) # OPS/(FLOPS/ms) = ms
     if precision == 32:
         peak_performance = peak_performance * 2
         precision_str = "Single precision: "
@@ -301,22 +299,22 @@ def eval_1024_1024(precision):
 def eval_4096_4096(precision):
     path = str(args.path) + "4096_4096_4096_" + str(precision) + "bit/"
 
-    best_avg_perf = 0
+    best_avg_perf = 99999999999
     best_name = "empty"
     best = []
     for file in os.listdir(path):
         tmp = read_nvprof_data(path + str(file))
-        avg_perf = tmp.mean()
-        if avg_perf > best_avg_perf:
+        avg_perf = tmp['Duration'].mean()
+        if avg_perf < best_avg_perf:
             best_avg_perf = avg_perf
             best_name = str(file)
             best = tmp
 
-    helpers.print_info("Best average performance: " + best_avg_perf, False)
-    helpers.print_info(("From file: " + best_name, False)
+    helpers.print_info("Best average performance: " + str(best_avg_perf), False)
+    helpers.print_info("From file: " + best_name, False)
+    print(best)
 
-
-    peak_performance = 4096 * 4096 * (2 * 4096 - 1) / 7 * 1000 * 1000 * 1000 # OPS/(FLOPS/ms) = ms
+    peak_performance = 4096 * 4096 * (2 * 4096 - 1) / (7 * 1000 * 1000 * 1000) # OPS/(FLOPS/ms) = ms
     if precision == 32:
         peak_performance = peak_performance * 2
         precision_str = "Single precision: "
@@ -610,22 +608,22 @@ def eval_4096_4096(precision):
 def eval_1024_8192_1024(precision):
     path = str(args.path) + "1024_1024_8192_" + str(precision) + "bit/"
 
-    best_avg_perf = 0
+    best_avg_perf = 99999999999
     best_name = "empty"
     best = []
     for file in os.listdir(path):
         tmp = read_nvprof_data(path + str(file))
         avg_perf = tmp.mean()
-        if avg_perf > best_avg_perf:
+        if avg_perf < best_avg_perf:
             best_avg_perf = avg_perf
             best_name = str(file)
             best = tmp
 
     helpers.print_info("Best average performance: " + best_avg_perf, False)
-    helpers.print_info(("From file: " + best_name, False)
+    helpers.print_info("From file: " + best_name, False)
 
 
-    peak_performance = 1024 * 1024 * (2 * 8192 - 1) / 7 * 1000 * 1000 * 1000 # OPS/(FLOPS/ms) = ms
+    peak_performance = 1024 * 1024 * (2 * 8192 - 1) / (7 * 1000 * 1000 * 1000) # OPS/(FLOPS/ms) = ms
     if precision == 32:
         peak_performance = peak_performance * 2
         precision_str = "Single precision: "
@@ -730,4 +728,22 @@ if args.test == 5:
     sns.violinplot(data=db).set(xticklabels=["Unoptimized", "Double Buffering"], ylabel="Runtime [ms]", title="M = 1024, N = 1024, K = 1024") # , xlabel=""
     fig_db.savefig(path + "1024_1024_1024_isolated_optimizations_db.png")
 
-helpers.print_success("Performance plots created.", False)
+
+if args.test == 1:
+    eval_1024_1024(32)
+    eval_1024_1024(64)
+    helpers.print_success("Performance tests finished.", False)
+elif args.test == 2:
+    eval_4096_4096(32)
+    eval_4096_4096(64)
+    helpers.print_success("Performance tests finished.", False)
+elif args.test == 3:
+    eval_1024_8192_1024(32)
+    eval_1024_8192_1024(64)
+    helpers.print_success("Performance tests finished.", False)
+elif args.test == 4:
+    eval_256_10240_256(32)
+    eval_256_10240_256(64)
+    helpers.print_success("Performance tests finished.", False)
+
+# helpers.print_success("Performance plots created.", False)

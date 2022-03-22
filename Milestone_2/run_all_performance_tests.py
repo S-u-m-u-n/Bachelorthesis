@@ -182,12 +182,12 @@ def run_1024_1024(precision):
     path = str(args.path) + "1024_1024_1024_" + str(precision) + "bit/"
     subprocess.run(["mkdir", "-p", path])
 
-    subprocess.run(nvprof_options + [path + "unoptimized.csv"] + python_options)
-    subprocess.run(nvprof_options + [path + "dbs.csv"] + python_options + ["--double-buffering-shared"])
+    # subprocess.run(nvprof_options + [path + "unoptimized.csv"] + python_options)
+    # subprocess.run(nvprof_options + [path + "dbs.csv"] + python_options + ["--double-buffering-shared"])
 
-    for result_path, optims in optimizations.items():
-        helpers.print_info("Running: " + str(result_path), False)
-        subprocess.run(nvprof_options + [path + result_path + ".csv"] + python_options + optims)
+    # for result_path, optims in optimizations.items():
+    #     helpers.print_info("Running: " + str(result_path), False)
+    #     subprocess.run(nvprof_options + [path + result_path + ".csv"] + python_options + optims)
 
     for result_path, optims in optimizations_dbs.items():
         helpers.print_info("Running: dbs" + str(result_path), False)
@@ -308,8 +308,10 @@ elif args.test == 1234:
     helpers.print_success("Performance tests finished.", False)
 elif args.test == 5:
     run_256_10240_256(32)
+    helpers.print_success("Performance tests finished.", False)
 elif args.test == 6:
     run_256_10240_256(64)
+    helpers.print_success("Performance tests finished.", False)
 else:
     helpers.print_error("Invalid test number.", False)
 
