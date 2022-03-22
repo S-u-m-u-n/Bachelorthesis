@@ -12,7 +12,7 @@ parser.add_argument("-M", type=int, dest='M', nargs="?", default=640)
 parser.add_argument("-K", type=int, dest='K', nargs="?", default=640)
 parser.add_argument("-N", type=int, dest='N', nargs="?", default=640)
 parser.add_argument("--alpha", type=np.float64, dest='alpha', nargs="?", default=1.0)
-parser.add_argument("--beta", type=np.float64, dest='beta', nargs="?", default=1.0)
+parser.add_argument("--beta", type=np.float64, dest='beta', nargs="?", default=0.0)
 parser.add_argument("-r", "--repetitions", type=int, dest='repetitions', nargs="?", default=1)
 parser.add_argument('-p', '--precision',
                     type=int,
