@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 parser = ArgumentParser()
 parser.add_argument("-r", "--repetitions", type=int, dest='repetitions', nargs="?", default=200)
 parser.add_argument("-p", "--path", type=str, dest='path', nargs="?", default="/home/jacobsi/Bachelorthesis/Milestone_2/performance_test_results/final/")
-parser.add_argument("-t", "--test", type=int, dest='test', choices=[1, 2, 3, 4, 12, 34, 5, 6], required=True)
+parser.add_argument("-t", "--test", type=int, dest='test', choices=[1, 11, 111, 2, 3, 4, 12, 34, 5, 6], required=True)
 args = parser.parse_args()
 
 # helpers.print_info("Running performance tests...", False)
@@ -270,6 +270,12 @@ def run_256_10240_256(precision):
 
 if args.test == 1:
     run_1024_1024(32)
+    run_1024_1024(64)
+    helpers.print_success("Performance tests finished.", False)
+elif args.test == 11:
+    run_1024_1024(32)
+    helpers.print_success("Performance tests finished.", False)
+elif args.test == 111:
     run_1024_1024(64)
     helpers.print_success("Performance tests finished.", False)
 elif args.test == 2:
