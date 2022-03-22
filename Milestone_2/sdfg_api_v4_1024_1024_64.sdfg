@@ -4567,7 +4567,7 @@
         "type": "PatternTransformation",
         "transformation": "DoubleBuffering",
         "reverse": true,
-        "full_data": false,
+        "full_data": true,
         "sdfg_id": 1,
         "state_id": 1,
         "_subgraph": {
@@ -4592,7 +4592,7 @@
     "_rdistrarrays": {},
     "callback_mapping": {},
     "name": "gemm_1024_1024_64",
-    "hash": "87cf0a5ae0a3fe550ca78c6a43902aee4019e5fdf776feefc9fab95c9d823752"
+    "hash": "5285057aadb0a845192ba65c89e20feb6ab66316cc00d0c40e88cf211868adc1"
   },
   "nodes": [
     {
@@ -6084,16 +6084,16 @@
                               ]
                             },
                             "_arrays": {
-                              "shared_memory_B": {
+                              "shared_memory_A": {
                                 "type": "Array",
                                 "attributes": {
                                   "allow_conflicts": false,
                                   "strides": [
-                                    "1024",
-                                    "128",
-                                    "1"
+                                    "256",
+                                    "1",
+                                    "32"
                                   ],
-                                  "total_size": "2048",
+                                  "total_size": "512",
                                   "offset": [
                                     "0",
                                     "0",
@@ -6105,8 +6105,8 @@
                                   "dtype": "float64",
                                   "shape": [
                                     "2",
-                                    "8",
-                                    "128"
+                                    "32",
+                                    "8"
                                   ],
                                   "transient": true,
                                   "storage": "GPU_Shared",
@@ -6143,16 +6143,16 @@
                                   "debuginfo": null
                                 }
                               },
-                              "shared_memory_A": {
+                              "shared_memory_B": {
                                 "type": "Array",
                                 "attributes": {
                                   "allow_conflicts": false,
                                   "strides": [
-                                    "256",
-                                    "1",
-                                    "32"
+                                    "1024",
+                                    "128",
+                                    "1"
                                   ],
-                                  "total_size": "512",
+                                  "total_size": "2048",
                                   "offset": [
                                     "0",
                                     "0",
@@ -6164,8 +6164,8 @@
                                   "dtype": "float64",
                                   "shape": [
                                     "2",
-                                    "32",
-                                    "8"
+                                    "8",
+                                    "128"
                                   ],
                                   "transient": true,
                                   "storage": "GPU_Shared",
@@ -6192,8 +6192,8 @@
                                   "start_offset": 0,
                                   "dtype": "float64",
                                   "shape": [
-                                    "size_thread_block_tile_m",
-                                    "num_K_tiles*size_K_tile"
+                                    "M",
+                                    "K"
                                   ],
                                   "transient": false,
                                   "storage": "Default",
@@ -6220,8 +6220,8 @@
                                   "start_offset": 0,
                                   "dtype": "float64",
                                   "shape": [
-                                    "num_K_tiles*size_K_tile",
-                                    "size_thread_block_tile_n"
+                                    "K",
+                                    "N"
                                   ],
                                   "transient": false,
                                   "storage": "Default",
@@ -6248,8 +6248,8 @@
                                   "start_offset": 0,
                                   "dtype": "float64",
                                   "shape": [
-                                    "size_thread_tile_m + ceiling(-size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m*bitwise_and(right_shift(Mod(num_threads_per_thread_block + 31, 32), 1), warp_height - 1) + size_warp_tile_m*floor(floor(num_threads_per_thread_block/32 - 1/32)/num_warps_n))",
-                                    "size_thread_tile_n + ceiling(-size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 28), 1), bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 1)) + size_warp_tile_n*Mod(floor(num_threads_per_thread_block/32 - 1/32), num_warps_n))"
+                                    "M",
+                                    "N"
                                   ],
                                   "transient": false,
                                   "storage": "Default",
@@ -6263,17 +6263,8 @@
                               "K": "int32",
                               "M": "int32",
                               "N": "int32",
-                              "num_K_tiles": "int32",
-                              "num_threads_per_thread_block": "int32",
-                              "num_warps_n": "int32",
-                              "size_K_tile": "int32",
-                              "size_thread_block_tile_m": "int32",
-                              "size_thread_block_tile_n": "int32",
-                              "size_thread_tile_m": "int32",
-                              "size_thread_tile_n": "int32",
-                              "size_warp_tile_m": "int32",
-                              "size_warp_tile_n": "int32",
-                              "warp_height": "int32"
+                              "thread_block_i": "int64",
+                              "thread_block_j": "int64"
                             },
                             "instrument": "No_Instrumentation",
                             "global_code": {
@@ -8994,8 +8985,8 @@
                                           "type": "Range",
                                           "ranges": [
                                             {
-                                              "start": "0",
-                                              "end": "size_thread_block_tile_m - 1",
+                                              "start": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE))",
+                                              "end": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_block_tile_m - 1",
                                               "step": "1",
                                               "tile": "1"
                                             },
@@ -9039,8 +9030,8 @@
                                           "type": "Range",
                                           "ranges": [
                                             {
-                                              "start": "0",
-                                              "end": "size_thread_block_tile_m - 1",
+                                              "start": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE))",
+                                              "end": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_block_tile_m - 1",
                                               "step": "1",
                                               "tile": "1"
                                             },
@@ -9102,8 +9093,8 @@
                                               "tile": "1"
                                             },
                                             {
-                                              "start": "0",
-                                              "end": "size_thread_block_tile_n - 1",
+                                              "start": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE)",
+                                              "end": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_block_tile_n - 1",
                                               "step": "1",
                                               "tile": "1"
                                             }
@@ -9147,8 +9138,8 @@
                                               "tile": "1"
                                             },
                                             {
-                                              "start": "0",
-                                              "end": "size_thread_block_tile_n - 1",
+                                              "start": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE)",
+                                              "end": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_block_tile_n - 1",
                                               "step": "1",
                                               "tile": "1"
                                             }
@@ -9192,8 +9183,8 @@
                                     "data": {
                                       "type": "Memlet",
                                       "attributes": {
-                                        "volume": "num_threads_per_thread_block*size_K_tile*size_thread_tile_m",
-                                        "dynamic": false,
+                                        "volume": "0",
+                                        "dynamic": true,
                                         "subset": {
                                           "type": "Range",
                                           "ranges": [
@@ -9247,7 +9238,7 @@
                                           ]
                                         },
                                         "dst_subset": null,
-                                        "num_accesses": "num_threads_per_thread_block*size_K_tile*size_thread_tile_m"
+                                        "num_accesses": -1
                                       }
                                     }
                                   },
@@ -9262,8 +9253,8 @@
                                     "data": {
                                       "type": "Memlet",
                                       "attributes": {
-                                        "volume": "num_threads_per_thread_block*size_K_tile*size_thread_tile_n",
-                                        "dynamic": false,
+                                        "volume": "0",
+                                        "dynamic": true,
                                         "subset": {
                                           "type": "Range",
                                           "ranges": [
@@ -9317,7 +9308,7 @@
                                           ]
                                         },
                                         "dst_subset": null,
-                                        "num_accesses": "num_threads_per_thread_block*size_K_tile*size_thread_tile_n"
+                                        "num_accesses": -1
                                       }
                                     }
                                   },
@@ -9332,8 +9323,8 @@
                                     "data": {
                                       "type": "Memlet",
                                       "attributes": {
-                                        "volume": "size_thread_tile_m*(size_K_tile - 1) + size_thread_tile_m",
-                                        "dynamic": false,
+                                        "volume": "0",
+                                        "dynamic": true,
                                         "subset": {
                                           "type": "Range",
                                           "ranges": [
@@ -9387,7 +9378,7 @@
                                           ]
                                         },
                                         "dst_subset": null,
-                                        "num_accesses": "size_thread_tile_m*(size_K_tile - 1) + size_thread_tile_m"
+                                        "num_accesses": -1
                                       }
                                     }
                                   },
@@ -9402,8 +9393,8 @@
                                     "data": {
                                       "type": "Memlet",
                                       "attributes": {
-                                        "volume": "size_thread_tile_n*(size_K_tile - 1) + size_thread_tile_n",
-                                        "dynamic": false,
+                                        "volume": "0",
+                                        "dynamic": true,
                                         "subset": {
                                           "type": "Range",
                                           "ranges": [
@@ -9457,7 +9448,7 @@
                                           ]
                                         },
                                         "dst_subset": null,
-                                        "num_accesses": "size_thread_tile_n*(size_K_tile - 1) + size_thread_tile_n"
+                                        "num_accesses": -1
                                       }
                                     }
                                   },
@@ -9472,20 +9463,20 @@
                                     "data": {
                                       "type": "Memlet",
                                       "attributes": {
-                                        "volume": "size_thread_tile_m*size_thread_tile_n*(size_K_tile - 1) + size_thread_tile_m*size_thread_tile_n",
-                                        "dynamic": false,
+                                        "volume": "0",
+                                        "dynamic": true,
                                         "subset": {
                                           "type": "Range",
                                           "ranges": [
                                             {
                                               "start": "0",
-                                              "end": "size_thread_tile_m - 1",
+                                              "end": "7",
                                               "step": "1",
                                               "tile": "1"
                                             },
                                             {
                                               "start": "0",
-                                              "end": "size_thread_tile_n - 1",
+                                              "end": "1",
                                               "step": "1",
                                               "tile": "1"
                                             }
@@ -9503,19 +9494,19 @@
                                           "ranges": [
                                             {
                                               "start": "0",
-                                              "end": "size_thread_tile_m - 1",
+                                              "end": "7",
                                               "step": "1",
                                               "tile": "1"
                                             },
                                             {
                                               "start": "0",
-                                              "end": "size_thread_tile_n - 1",
+                                              "end": "1",
                                               "step": "1",
                                               "tile": "1"
                                             }
                                           ]
                                         },
-                                        "num_accesses": "size_thread_tile_m*size_thread_tile_n*(size_K_tile - 1) + size_thread_tile_m*size_thread_tile_n"
+                                        "num_accesses": -1
                                       }
                                     }
                                   },
@@ -9663,8 +9654,8 @@
                                           "type": "Range",
                                           "ranges": [
                                             {
-                                              "start": "0",
-                                              "end": "size_thread_block_tile_m - 1",
+                                              "start": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE))",
+                                              "end": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_block_tile_m - 1",
                                               "step": "1",
                                               "tile": "1"
                                             },
@@ -9708,8 +9699,8 @@
                                           "type": "Range",
                                           "ranges": [
                                             {
-                                              "start": "0",
-                                              "end": "size_thread_block_tile_m - 1",
+                                              "start": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE))",
+                                              "end": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_block_tile_m - 1",
                                               "step": "1",
                                               "tile": "1"
                                             },
@@ -9771,8 +9762,8 @@
                                               "tile": "1"
                                             },
                                             {
-                                              "start": "0",
-                                              "end": "size_thread_block_tile_n - 1",
+                                              "start": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE)",
+                                              "end": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_block_tile_n - 1",
                                               "step": "1",
                                               "tile": "1"
                                             }
@@ -9816,8 +9807,8 @@
                                               "tile": "1"
                                             },
                                             {
-                                              "start": "0",
-                                              "end": "size_thread_block_tile_n - 1",
+                                              "start": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE)",
+                                              "end": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_block_tile_n - 1",
                                               "step": "1",
                                               "tile": "1"
                                             }
@@ -12456,14 +12447,14 @@
                                           "type": "Range",
                                           "ranges": [
                                             {
-                                              "start": "-size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m*bitwise_and(right_shift(Mod(thread, 32), 1), warp_height - 1) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
-                                              "end": "-size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m*bitwise_and(right_shift(Mod(thread, 32), 1), warp_height - 1) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
+                                              "start": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(Mod(thread, 32), 1), warp_height - 1) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
+                                              "end": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(Mod(thread, 32), 1), warp_height - 1) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
                                               "step": "1",
                                               "tile": "1"
                                             },
                                             {
-                                              "start": "-size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(thread, 32), 28), 1), bitwise_and(Mod(thread, 32), 1)) + size_warp_tile_n*Mod(floor(thread/32), num_warps_n)",
-                                              "end": "-size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(thread, 32), 28), 1), bitwise_and(Mod(thread, 32), 1)) + size_thread_tile_n + size_warp_tile_n*Mod(floor(thread/32), num_warps_n) - 1",
+                                              "start": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(thread, 32), 28), 1), bitwise_and(Mod(thread, 32), 1)) + size_warp_tile_n*Mod(floor(thread/32), num_warps_n)",
+                                              "end": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(thread, 32), 28), 1), bitwise_and(Mod(thread, 32), 1)) + size_thread_tile_n + size_warp_tile_n*Mod(floor(thread/32), num_warps_n) - 1",
                                               "step": "1",
                                               "tile": "1"
                                             }
@@ -12480,14 +12471,14 @@
                                           "type": "Range",
                                           "ranges": [
                                             {
-                                              "start": "-size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m*bitwise_and(right_shift(Mod(thread, 32), 1), warp_height - 1) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
-                                              "end": "-size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m*bitwise_and(right_shift(Mod(thread, 32), 1), warp_height - 1) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
+                                              "start": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(Mod(thread, 32), 1), warp_height - 1) + size_warp_tile_m*floor(floor(thread/32)/num_warps_n)",
+                                              "end": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(Mod(thread, 32), 1), warp_height - 1) + size_thread_tile_m + size_warp_tile_m*floor(floor(thread/32)/num_warps_n) - 1",
                                               "step": "1",
                                               "tile": "1"
                                             },
                                             {
-                                              "start": "-size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(thread, 32), 28), 1), bitwise_and(Mod(thread, 32), 1)) + size_warp_tile_n*Mod(floor(thread/32), num_warps_n)",
-                                              "end": "-size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(thread, 32), 28), 1), bitwise_and(Mod(thread, 32), 1)) + size_thread_tile_n + size_warp_tile_n*Mod(floor(thread/32), num_warps_n) - 1",
+                                              "start": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(thread, 32), 28), 1), bitwise_and(Mod(thread, 32), 1)) + size_warp_tile_n*Mod(floor(thread/32), num_warps_n)",
+                                              "end": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(thread, 32), 28), 1), bitwise_and(Mod(thread, 32), 1)) + size_thread_tile_n + size_warp_tile_n*Mod(floor(thread/32), num_warps_n) - 1",
                                               "step": "1",
                                               "tile": "1"
                                             }
@@ -12508,8 +12499,8 @@
                                     "data": {
                                       "type": "Memlet",
                                       "attributes": {
-                                        "volume": "num_threads_per_thread_block*size_K_tile*size_thread_tile_m",
-                                        "dynamic": false,
+                                        "volume": "0",
+                                        "dynamic": true,
                                         "subset": {
                                           "type": "Range",
                                           "ranges": [
@@ -12563,7 +12554,7 @@
                                           ]
                                         },
                                         "dst_subset": null,
-                                        "num_accesses": "num_threads_per_thread_block*size_K_tile*size_thread_tile_m"
+                                        "num_accesses": -1
                                       }
                                     }
                                   },
@@ -12578,8 +12569,8 @@
                                     "data": {
                                       "type": "Memlet",
                                       "attributes": {
-                                        "volume": "num_threads_per_thread_block*size_K_tile*size_thread_tile_n",
-                                        "dynamic": false,
+                                        "volume": "0",
+                                        "dynamic": true,
                                         "subset": {
                                           "type": "Range",
                                           "ranges": [
@@ -12633,7 +12624,7 @@
                                           ]
                                         },
                                         "dst_subset": null,
-                                        "num_accesses": "num_threads_per_thread_block*size_K_tile*size_thread_tile_n"
+                                        "num_accesses": -1
                                       }
                                     }
                                   },
@@ -12654,14 +12645,14 @@
                                           "type": "Range",
                                           "ranges": [
                                             {
-                                              "start": "0",
-                                              "end": "-size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m*bitwise_and(right_shift(Mod(num_threads_per_thread_block + 31, 32), 1), warp_height - 1) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_thread_block/32 - 1/32)/num_warps_n) - 1",
+                                              "start": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1)",
+                                              "end": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(Mod(num_threads_per_thread_block + 31, 32), 1), warp_height - 1) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_thread_block/32 - 1/32)/num_warps_n) - 1",
                                               "step": "1",
                                               "tile": "1"
                                             },
                                             {
-                                              "start": "0",
-                                              "end": "-size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 28), 1), bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 1)) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_thread_block/32 - 1/32), num_warps_n) - 1",
+                                              "start": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1))",
+                                              "end": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 28), 1), bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 1)) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_thread_block/32 - 1/32), num_warps_n) - 1",
                                               "step": "1",
                                               "tile": "1"
                                             }
@@ -12678,14 +12669,14 @@
                                           "type": "Range",
                                           "ranges": [
                                             {
-                                              "start": "0",
-                                              "end": "-size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m*bitwise_and(right_shift(Mod(num_threads_per_thread_block + 31, 32), 1), warp_height - 1) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_thread_block/32 - 1/32)/num_warps_n) - 1",
+                                              "start": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1)",
+                                              "end": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(Mod(num_threads_per_thread_block + 31, 32), 1), warp_height - 1) + size_thread_tile_m + size_warp_tile_m*floor(floor(num_threads_per_thread_block/32 - 1/32)/num_warps_n) - 1",
                                               "step": "1",
                                               "tile": "1"
                                             },
                                             {
-                                              "start": "0",
-                                              "end": "-size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 28), 1), bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 1)) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_thread_block/32 - 1/32), num_warps_n) - 1",
+                                              "start": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1))",
+                                              "end": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 28), 1), bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 1)) + size_thread_tile_n + size_warp_tile_n*Mod(floor(num_threads_per_thread_block/32 - 1/32), num_warps_n) - 1",
                                               "step": "1",
                                               "tile": "1"
                                             }
@@ -12706,8 +12697,8 @@
                                     "data": {
                                       "type": "Memlet",
                                       "attributes": {
-                                        "volume": "size_thread_tile_m*(size_K_tile - 1) + size_thread_tile_m",
-                                        "dynamic": false,
+                                        "volume": "0",
+                                        "dynamic": true,
                                         "subset": {
                                           "type": "Range",
                                           "ranges": [
@@ -12761,7 +12752,7 @@
                                           ]
                                         },
                                         "dst_subset": null,
-                                        "num_accesses": "size_thread_tile_m*(size_K_tile - 1) + size_thread_tile_m"
+                                        "num_accesses": -1
                                       }
                                     }
                                   },
@@ -12776,8 +12767,8 @@
                                     "data": {
                                       "type": "Memlet",
                                       "attributes": {
-                                        "volume": "size_thread_tile_n*(size_K_tile - 1) + size_thread_tile_n",
-                                        "dynamic": false,
+                                        "volume": "0",
+                                        "dynamic": true,
                                         "subset": {
                                           "type": "Range",
                                           "ranges": [
@@ -12831,7 +12822,7 @@
                                           ]
                                         },
                                         "dst_subset": null,
-                                        "num_accesses": "size_thread_tile_n*(size_K_tile - 1) + size_thread_tile_n"
+                                        "num_accesses": -1
                                       }
                                     }
                                   },
@@ -12846,20 +12837,20 @@
                                     "data": {
                                       "type": "Memlet",
                                       "attributes": {
-                                        "volume": "size_thread_tile_m*size_thread_tile_n*(size_K_tile - 1) + size_thread_tile_m*size_thread_tile_n",
-                                        "dynamic": false,
+                                        "volume": "0",
+                                        "dynamic": true,
                                         "subset": {
                                           "type": "Range",
                                           "ranges": [
                                             {
                                               "start": "0",
-                                              "end": "size_thread_tile_m - 1",
+                                              "end": "7",
                                               "step": "1",
                                               "tile": "1"
                                             },
                                             {
                                               "start": "0",
-                                              "end": "size_thread_tile_n - 1",
+                                              "end": "1",
                                               "step": "1",
                                               "tile": "1"
                                             }
@@ -12877,19 +12868,19 @@
                                           "ranges": [
                                             {
                                               "start": "0",
-                                              "end": "size_thread_tile_m - 1",
+                                              "end": "7",
                                               "step": "1",
                                               "tile": "1"
                                             },
                                             {
                                               "start": "0",
-                                              "end": "size_thread_tile_n - 1",
+                                              "end": "1",
                                               "step": "1",
                                               "tile": "1"
                                             }
                                           ]
                                         },
-                                        "num_accesses": "size_thread_tile_m*size_thread_tile_n*(size_K_tile - 1) + size_thread_tile_m*size_thread_tile_n"
+                                        "num_accesses": -1
                                       }
                                     }
                                   },
@@ -13027,7 +13018,9 @@
                         "symbol_mapping": {
                           "K": "K",
                           "M": "M",
-                          "N": "N"
+                          "N": "N",
+                          "thread_block_i": "thread_block_i",
+                          "thread_block_j": "thread_block_j"
                         },
                         "debuginfo": {
                           "type": "DebugInfo",
@@ -13071,13 +13064,13 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "size_thread_block_tile_m*(SWIZZLE*(num_thread_blocks_m - 1) + Mod(num_thread_blocks_n - 1, SWIZZLE)) + size_thread_block_tile_m - 1",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "num_K_tiles*size_K_tile - 1",
+                                  "end": "K - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -13094,13 +13087,13 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "size_thread_block_tile_m*(SWIZZLE*(num_thread_blocks_m - 1) + Mod(num_thread_blocks_n - 1, SWIZZLE)) + size_thread_block_tile_m - 1",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "num_K_tiles*size_K_tile - 1",
+                                  "end": "K - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -13129,13 +13122,13 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "num_K_tiles*size_K_tile - 1",
+                                  "end": "K - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "size_thread_block_tile_n*floor((num_thread_blocks_n - 1)/SWIZZLE) + size_thread_block_tile_n - 1",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -13152,13 +13145,13 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "num_K_tiles*size_K_tile - 1",
+                                  "end": "K - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "size_thread_block_tile_n*floor((num_thread_blocks_n - 1)/SWIZZLE) + size_thread_block_tile_n - 1",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -13186,14 +13179,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE))",
-                                  "end": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_block_tile_m - 1",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "num_K_tiles*size_K_tile - 1",
+                                  "end": "K - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -13209,14 +13202,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE))",
-                                  "end": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_block_tile_m - 1",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
                                   "start": "0",
-                                  "end": "num_K_tiles*size_K_tile - 1",
+                                  "end": "K - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -13245,13 +13238,13 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "num_K_tiles*size_K_tile - 1",
+                                  "end": "K - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE)",
-                                  "end": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_block_tile_n - 1",
+                                  "start": "0",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -13268,13 +13261,13 @@
                               "ranges": [
                                 {
                                   "start": "0",
-                                  "end": "num_K_tiles*size_K_tile - 1",
+                                  "end": "K - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE)",
-                                  "end": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_block_tile_n - 1",
+                                  "start": "0",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -13302,14 +13295,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1)",
-                                  "end": "size_thread_block_tile_m*(SWIZZLE*(num_thread_blocks_m - 1) + Mod(num_thread_blocks_n - 1, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m + ceiling(-size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m*bitwise_and(right_shift(Mod(num_threads_per_thread_block + 31, 32), 1), warp_height - 1) + size_warp_tile_m*floor(floor(num_threads_per_thread_block/32 - 1/32)/num_warps_n)) - 1",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1))",
-                                  "end": "size_thread_block_tile_n*floor((num_thread_blocks_n - 1)/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n + ceiling(-size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 28), 1), bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 1)) + size_warp_tile_n*Mod(floor(num_threads_per_thread_block/32 - 1/32), num_warps_n)) - 1",
+                                  "start": "0",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -13326,14 +13319,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1)",
-                                  "end": "size_thread_block_tile_m*(SWIZZLE*(num_thread_blocks_m - 1) + Mod(num_thread_blocks_n - 1, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m + ceiling(-size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m*bitwise_and(right_shift(Mod(num_threads_per_thread_block + 31, 32), 1), warp_height - 1) + size_warp_tile_m*floor(floor(num_threads_per_thread_block/32 - 1/32)/num_warps_n)) - 1",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1))",
-                                  "end": "size_thread_block_tile_n*floor((num_thread_blocks_n - 1)/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n + ceiling(-size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 28), 1), bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 1)) + size_warp_tile_n*Mod(floor(num_threads_per_thread_block/32 - 1/32), num_warps_n)) - 1",
+                                  "start": "0",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -13360,14 +13353,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1)",
-                                  "end": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m + ceiling(-size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m*bitwise_and(right_shift(Mod(num_threads_per_thread_block + 31, 32), 1), warp_height - 1) + size_warp_tile_m*floor(floor(num_threads_per_thread_block/32 - 1/32)/num_warps_n)) - 1",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1))",
-                                  "end": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n + ceiling(-size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 28), 1), bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 1)) + size_warp_tile_n*Mod(floor(num_threads_per_thread_block/32 - 1/32), num_warps_n)) - 1",
+                                  "start": "0",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
@@ -13384,14 +13377,14 @@
                               "type": "Range",
                               "ranges": [
                                 {
-                                  "start": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1)",
-                                  "end": "size_thread_block_tile_m*(SWIZZLE*thread_block_i + Mod(thread_block_j, SWIZZLE)) + size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m + ceiling(-size_thread_tile_m*bitwise_and(right_shift(0, 1), warp_height - 1) + size_thread_tile_m*bitwise_and(right_shift(Mod(num_threads_per_thread_block + 31, 32), 1), warp_height - 1) + size_warp_tile_m*floor(floor(num_threads_per_thread_block/32 - 1/32)/num_warps_n)) - 1",
+                                  "start": "0",
+                                  "end": "M - 1",
                                   "step": "1",
                                   "tile": "1"
                                 },
                                 {
-                                  "start": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1))",
-                                  "end": "size_thread_block_tile_n*floor(thread_block_j/SWIZZLE) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n + ceiling(-size_thread_tile_n*bitwise_or(right_shift(bitwise_and(0, 28), 1), bitwise_and(0, 1)) + size_thread_tile_n*bitwise_or(right_shift(bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 28), 1), bitwise_and(Mod(num_threads_per_thread_block + 31, 32), 1)) + size_warp_tile_n*Mod(floor(num_threads_per_thread_block/32 - 1/32), num_warps_n)) - 1",
+                                  "start": "0",
+                                  "end": "N - 1",
                                   "step": "1",
                                   "tile": "1"
                                 }
