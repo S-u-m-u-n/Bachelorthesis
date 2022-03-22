@@ -17,6 +17,9 @@ helpers.print_info("Creating performance plots...", False)
 
 def read_nvprof_data(path_to_csv, warmup_already_removed=False):
     df = pd.read_csv(path_to_csv, skiprows=3)
+    
+
+    
     flag = False
     if (df['Duration'][0] == 'us'):
         flag = True
@@ -28,11 +31,14 @@ def read_nvprof_data(path_to_csv, warmup_already_removed=False):
         start = 0
     else:
         start = args.repetitions / 2
-    df = df[df['Name'].str.contains("Thread_block_grid|dgemm|sgemm|cosmaSgemm|cutlass")].filter(['Duration']).reset_index(drop=True).apply(pd.to_numeric, errors='coerce').iloc[start:, :]
+
+    df = df[df['Name'].str.contains("Thread_block_grid|dgemm|sgemm|cosmaSgemm|cutlass")].filter(['Duration']).reset_index(drop=True).apply(pd.to_numeric, errors='coerce').iloc[int(start):, :]
     if flag:
         df /= 1000
 
+    # print(df['Duration'])
     return df
+    # return df['Duration']
 
 
 
@@ -44,15 +50,16 @@ def eval_1024_1024(precision):
     best_name = "empty"
     best = []
     for file in os.listdir(path):
-        tmp = read_nvprof_data(path + str(file))
-        avg_perf = tmp.mean()
-        if avg_perf < best_avg_perf:
-            best_avg_perf = avg_perf
-            best_name = str(file)
-            best = tmp
+        if file.endswith('csv') and not file.startswith('cu'):
+            tmp = read_nvprof_data(path + str(file))
+            avg_perf = tmp['Duration'].mean()
+            if avg_perf < best_avg_perf:
+                best_avg_perf = avg_perf
+                best_name = str(file)
+                best = tmp
 
-    helpers.print_info("Best average performance: " + best_avg_perf, False)
-    helpers.print_info("From file: " + best_name, False)
+    helpers.print_info("Best average performance: " + str(best_avg_perf), False)
+    helpers.print_info("From file: " + str(best_name), False)
 
     peak_performance = 1024 * 1024 * (2 * 1024 - 1) / (7 * 1000 * 1000 * 1000) # OPS/(FLOPS/ms) = ms
     if precision == 32:
@@ -62,33 +69,35 @@ def eval_1024_1024(precision):
         precision_str = "Double precision: "
 
     # Single optimization or no optimizations (5 + 1):
-    unoptimized = read_nvprof_data(path + "unoptimized.csv")
-    _st = read_nvprof_data(path + "_st.csv")
-    _stb = read_nvprof_data(path + "_stb.csv")
-    _rev = read_nvprof_data(path + "_rev.csv")
-    _col = read_nvprof_data(path + "_col.csv")
-    _dbr = read_nvprof_data(path + "_dbr.csv")
+    unoptimized = read_nvprof_data(path + "unoptimized.csv").values
+    _st = read_nvprof_data(path + "_st.csv").values
+    _stb = read_nvprof_data(path + "_stb.csv").values
+    _rev = read_nvprof_data(path + "_rev.csv").values
+    _col = read_nvprof_data(path + "_col.csv").values
+    _dbr = read_nvprof_data(path + "_dbr.csv").values
+
+    # print(unoptimized.values)
 
     combined_df = pd.concat([unoptimized, _st, _stb, _rev, _col, _dbr], axis=1)
-    # combined_df.columns = ["-", "st", "stb", "st+stb"]
+    combined_df.columns = ["-", "st", "stb", "st+stb", "as", "sdf"]
     fig_1 = plt.figure()
     sns.violinplot(data=combined_df).set(xticklabels=["-", "ST", "STB", "REV", "COL", "DBR"], ylabel="Runtime [ms]", title=precision_str + "M = 1024, N = 1024, K = 1024") # , xlabel=""
     fig_1.savefig(path + "comparison_0_1.png")
 
     # Two optimizations (10):
-    _st_stb = read_nvprof_data(path + "_st_stb.csv")
-    _st_rev = read_nvprof_data(path + "_st_rev.csv")
-    _st_col = read_nvprof_data(path + "_st_col.csv")
-    _st_dbr = read_nvprof_data(path + "_st_dbr.csv")
+    _st_stb = read_nvprof_data(path + "_st_stb.csv").values
+    _st_rev = read_nvprof_data(path + "_st_rev.csv").values
+    _st_col = read_nvprof_data(path + "_st_col.csv").values
+    _st_dbr = read_nvprof_data(path + "_st_dbr.csv").values
 
-    _stb_rev = read_nvprof_data(path + "_stb_rev.csv")
-    _stb_col = read_nvprof_data(path + "_stb_col.csv")
-    _stb_dbr = read_nvprof_data(path + "_stb_dbr.csv")
+    _stb_rev = read_nvprof_data(path + "_stb_rev.csv").values
+    _stb_col = read_nvprof_data(path + "_stb_col.csv").values
+    _stb_dbr = read_nvprof_data(path + "_stb_dbr.csv").values
     
-    _rev_col = read_nvprof_data(path + "_rev_col.csv")
-    _rev_dbr = read_nvprof_data(path + "_rev_dbr.csv")
+    _rev_col = read_nvprof_data(path + "_rev_col.csv").values
+    _rev_dbr = read_nvprof_data(path + "_rev_dbr.csv").values
 
-    _col_dbr = read_nvprof_data(path + "_col_dbr.csv")
+    _col_dbr = read_nvprof_data(path + "_col_dbr.csv").values
 
     combined_df = pd.concat([_st_stb, _st_rev, _st_col, _st_dbr, _stb_rev, _stb_col, _stb_dbr, _rev_col, _rev_dbr, _col_dbr], axis=1)
     fig_2 = plt.figure()
@@ -283,15 +292,16 @@ def eval_1024_1024(precision):
     dbs_fig_5.savefig(path + "dbs_comparison_5.png")
 
     ###############################################################################
-    cutlass = read_nvprof_data(base_path + "cutlass.csv")
-    cublas = read_nvprof_data(base_path + "cublas.csv")
+    cublas = read_nvprof_data(path + "cublas.csv")
     fig_best = plt.figure(figsize=(10,5))
     if args.precision == 32:
-        cucosma = read_nvprof_data(base_path + "cucosma.csv")
+        cutlass = read_nvprof_data(path + "cutlass.csv", True)
+        cucosma = read_nvprof_data(path + "cucosma.csv", True)
         combined_df = pd.concat([best, cutlass, cucosma, cublas], axis=1)
         # combined_df_db.columns = ["db", "db+st", "db+stb", "db+st+stb", "cutlass", "cucosma", "cublas"]
         sns.violinplot(data=combined_df).set(xticklabels=["DaCe", "cuCOSMA", "CUTLASS", "cuBLAS"], ylabel="Runtime [ms]", title=precision_str + "M = 1024, N = 1024, K = 1024") # , xlabel=""
     else:
+        cutlass = read_nvprof_data(path + "cutlass.csv")
         combined_df_db = pd.concat([best, cutlass, cublas], axis=1)
         # combined_df_db.columns = ["db", "db+st", "db+stb", "db+st+stb", "cutlass", "cublas"]
         sns.violinplot(data=combined_df_db).set(xticklabels=["DaCe", "CUTLASS", "cuBLAS"], ylabel="Runtime [ms]", title=precision_str + "M = 1024, N = 1024, K = 1024") # , xlabel=""
@@ -307,12 +317,13 @@ def eval_4096_4096(precision):
     best_name = "empty"
     best = []
     for file in os.listdir(path):
-        tmp = read_nvprof_data(path + str(file))
-        avg_perf = tmp['Duration'].mean()
-        if avg_perf < best_avg_perf:
-            best_avg_perf = avg_perf
-            best_name = str(file)
-            best = tmp
+        if not file.startswith('cu'):
+            tmp = read_nvprof_data(path + str(file))
+            avg_perf = tmp.mean()
+            if avg_perf < best_avg_perf:
+                best_avg_perf = avg_perf
+                best_name = str(file)
+                best = tmp
 
     helpers.print_info("Best average performance: " + str(best_avg_perf), False)
     helpers.print_info("From file: " + best_name, False)
@@ -547,15 +558,16 @@ def eval_4096_4096(precision):
     dbs_fig_5.savefig(path + "dbs_comparison_5.png")
 
     ###############################################################################
-    cutlass = read_nvprof_data(base_path + "cutlass.csv")
-    cublas = read_nvprof_data(base_path + "cublas.csv")
+    cublas = read_nvprof_data(path + "cublas.csv")
     fig_best = plt.figure(figsize=(10,5))
     if args.precision == 32:
-        cucosma = read_nvprof_data(base_path + "cucosma.csv")
+        cutlass = read_nvprof_data(path + "cutlass.csv", True)
+        cucosma = read_nvprof_data(path + "cucosma.csv", True)
         combined_df = pd.concat([best, cutlass, cucosma, cublas], axis=1)
         # combined_df_db.columns = ["db", "db+st", "db+stb", "db+st+stb", "cutlass", "cucosma", "cublas"]
         sns.violinplot(data=combined_df).set(xticklabels=["DaCe", "cuCOSMA", "CUTLASS", "cuBLAS"], ylabel="Runtime [ms]", title=precision_str + "M = 4096, N = 4096, K = 4096") # , xlabel=""
     else:
+        cutlass = read_nvprof_data(path + "cutlass.csv")
         combined_df_db = pd.concat([best, cutlass, cublas], axis=1)
         # combined_df_db.columns = ["db", "db+st", "db+stb", "db+st+stb", "cutlass", "cublas"]
         sns.violinplot(data=combined_df_db).set(xticklabels=["DaCe", "CUTLASS", "cuBLAS"], ylabel="Runtime [ms]", title=precision_str + "M = 4096, N = 4096, K = 4096") # , xlabel=""
@@ -564,7 +576,7 @@ def eval_4096_4096(precision):
     fig_db.savefig(path + "best_comparison.png")
 
 
-### (1024 x 1024) x (1024 x 1024)
+### (1024 x 8192) x (8192 x 1024)
 def eval_1024_8192_1024(precision):
     path = str(args.path) + "1024_1024_8192_" + str(precision) + "bit/"
 
@@ -572,12 +584,13 @@ def eval_1024_8192_1024(precision):
     best_name = "empty"
     best = []
     for file in os.listdir(path):
-        tmp = read_nvprof_data(path + str(file))
-        avg_perf = tmp.mean()
-        if avg_perf < best_avg_perf:
-            best_avg_perf = avg_perf
-            best_name = str(file)
-            best = tmp
+        if not file.startswith('cu'):
+            tmp = read_nvprof_data(path + str(file))
+            avg_perf = tmp.mean()
+            if avg_perf < best_avg_perf:
+                best_avg_perf = avg_perf
+                best_name = str(file)
+                best = tmp
 
     helpers.print_info("Best average performance: " + best_avg_perf, False)
     helpers.print_info("From file: " + best_name, False)
@@ -636,12 +649,13 @@ def eval_256_10240_256(precision):
     best_name = "empty"
     best = []
     for file in os.listdir(path):
-        tmp = read_nvprof_data(path + str(file))
-        avg_perf = tmp.mean()
-        if avg_perf < best_avg_perf:
-            best_avg_perf = avg_perf
-            best_name = str(file)
-            best = tmp
+        if not file.startswith('cu'):
+            tmp = read_nvprof_data(path + str(file))
+            avg_perf = tmp.mean()
+            if avg_perf < best_avg_perf:
+                best_avg_perf = avg_perf
+                best_name = str(file)
+                best = tmp
 
     helpers.print_info("Best average performance: " + best_avg_perf, False)
     helpers.print_info("From file: " + best_name, False)
